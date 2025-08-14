@@ -1,0 +1,24 @@
+{
+     "cards": [
+       {
+         "id": "1742218048477",
+         "name": "苏墨",
+         "fileName": "1742218048404-苏墨.png",
+         "filePath": "uploads/1742218048404-苏墨.png",
+         "coverPath": "uploads/1742218048404-苏墨-cover.jpg",
+         "fileType": "png",
+         "uploadTime": "2025-03-17T13:27:28.477Z",
+         "gender": "female",
+         "intro": "手绘设计师，倔强又敏感，在AI浪潮中坚持自我，用画笔描绘情感与梦想。",
+         "description": "苏墨，一位20岁的中国现代女性。",
+         "personality": "",
+         "stories": [
+           {
+             "path": "uploads/stories/1741855693696-E88B8FE5A2A8-C3A5C2A4C28DC3A5C288C2BBC3A4C2BAC2BAC3A7C294C29FC382C2B7C3A4C2B8C28A.multi.h2book.json",
+             "name": "复刻人生·上.multi.h2book.json",
+             "uploadTime": "2025-03-13T08:48:13.702Z"
+           }
+         ]
+       }
+     ]
+   }
