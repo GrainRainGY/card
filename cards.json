@@ -3,22 +3,15 @@
        {
          "id": "1742218048477",
          "name": "花璃",
-         "fileName": "花璃.jpg",
-         "filePath": "img/花璃.jpg",
-         "coverPath": "img/花璃.jpg",
-         "fileType": "jpg",
+         "fileName": "花璃.png",
+         "filePath": "img/花璃.png",
+         "coverPath": "img/花璃.png",
+         "fileType": "png",
          "uploadTime": "2025-03-17T13:27:28.477Z",
          "gender": "female",
          "intro": "夏川的青梅竹马,可爱又活泼,喜欢穿情趣内衣",
          "description": "花璃,16岁的高中生,性感而纯洁",
          "personality": "",
-         "stories": [
-           {
-             "path": "",
-             "name": "",
-             "uploadTime": ""
-           }
-         ]
        }
      ]
    }
