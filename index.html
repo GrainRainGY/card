@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omate角色卡管理器</title>
+    <title>GitHub仓库管理器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #8a6cff;
-            --primary-light: #a18eff;
-            --text: #333333;
-            --bg: #f5f7ff;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --sidebar-bg: rgba(255, 255, 255, 0.7);
-            --glass: rgba(255, 255, 255, 0.5);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --radius: 16px;
-            --transition: all 0.4s ease;
-            --blur: 12px;
-            --github: #181717;
-            --github-light: #2d2c2c;
+            --primary: #2f81f7;
+            --primary-light: #58a6ff;
+            --text: #24292e;
+            --bg: #f6f8fa;
+            --card-bg: #ffffff;
+            --sidebar-bg: #f6f8fa;
+            --border: #e1e4e8;
+            --shadow: 0 1px 3px rgba(27,31,35,0.12);
+            --radius: 6px;
+            --transition: all 0.3s ease;
+            --github: #24292e;
+            --github-light: #2d333b;
         }
 
         [data-theme="dark"] {
-            --primary: #7b5cfa;
-            --primary-light: #8f73ff;
-            --text: #e0e0e0;
-            --bg: #161a2d;
-            --card-bg: rgba(27, 33, 58, 0.8);
-            --sidebar-bg: rgba(27, 33, 58, 0.7);
-            --glass: rgba(27, 33, 58, 0.5);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --github: #f0f0f0;
-            --github-light: #d4d4d4;
+            --primary: #58a6ff;
+            --primary-light: #79c0ff;
+            --text: #e6edf3;
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --sidebar-bg: #0d1117;
+            --border: #30363d;
+            --shadow: 0 1px 3px rgba(0,0,0,0.5);
+            --github: #f0f6fc;
+            --github-light: #c9d1d9;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
@@ -47,10 +46,11 @@
             color: var(--text);
             min-height: 100vh;
             transition: var(--transition);
+            line-height: 1.5;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -60,27 +60,24 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid var(--glass);
-            margin-bottom: 30px;
-            backdrop-filter: blur(calc(var(--blur) * 1.2));
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
         }
 
         .logo-icon {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--primary);
         }
 
@@ -91,436 +88,220 @@
         }
 
         .theme-toggle {
-            background: var(--card-bg);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            background: transparent;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: none;
+            border: 1px solid var(--border);
             cursor: pointer;
-            backdrop-filter: blur(var(--blur));
-            box-shadow: var(--shadow);
             transition: var(--transition);
             color: var(--text);
         }
 
         .settings-btn {
-            background: var(--card-bg);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            background: transparent;
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: none;
+            border: 1px solid var(--border);
             cursor: pointer;
-            backdrop-filter: blur(var(--blur));
-            box-shadow: var(--shadow);
             transition: var(--transition);
             color: var(--text);
         }
 
         .github-btn {
             background: var(--github);
-            border-radius: 12px;
-            padding: 10px 15px;
+            border-radius: 6px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
             gap: 8px;
             border: none;
             cursor: pointer;
-            backdrop-filter: blur(var(--blur));
-            box-shadow: var(--shadow);
             transition: var(--transition);
             color: white;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .github-btn:hover {
             background: var(--github-light);
-            transform: translateY(-2px);
         }
 
         .settings-btn:hover, .theme-toggle:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.05) rotate(8deg);
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--primary);
         }
 
         main {
             display: flex;
-            gap: 30px;
+            gap: 25px;
             min-height: calc(100vh - 150px);
         }
 
         .sidebar {
-            flex: 0 0 320px;
+            flex: 0 0 280px;
             background: var(--sidebar-bg);
             border-radius: var(--radius);
             padding: 20px;
-            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition);
             height: fit-content;
             max-height: 80vh;
+            overflow-y: auto;
         }
 
-        .search-bar {
+        .repo-info {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .search-bar input {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 50px;
-            border: 2px solid var(--glass);
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .search-bar input:focus {
-            border-color: var(--primary);
-            outline: none;
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .new-card-btn {
-            padding: 12px 15px;
-            border-radius: 50px;
+        .repo-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: var(--primary);
-            color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .repo-details h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .repo-details p {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .file-browser {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
-        .new-card-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
-        }
-
-        .cards-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .card-item {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: var(--transition);
+        .file-item {
             display: flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .card-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        .file-item:hover {
+            background: rgba(88, 166, 255, 0.1);
         }
 
-        .card-item.selected {
-            transform: translateX(10px);
-            border-left: 4px solid var(--primary);
-            background: var(--glass);
+        .file-item.selected {
+            background: rgba(88, 166, 255, 0.15);
+            border-left: 3px solid var(--primary);
         }
 
-        .card-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        .file-icon {
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .card-info {
-            flex: 1;
-        }
-
-        .card-info h3 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .card-info p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .card-actions button {
-            background: none;
-            border: none;
             color: var(--text);
-            opacity: 0.5;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.9rem;
+            opacity: 0.7;
         }
 
-        .card-actions button:hover {
-            opacity: 1;
-            color: var(--primary);
+        .file-name {
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
-        .editor {
+        .file-path {
+            font-size: 0.8rem;
+            color: var(--text);
+            opacity: 0.6;
+            margin-top: 2px;
+        }
+
+        .content-area {
             flex: 1;
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 25px;
-            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            transition: var(--transition);
-            animation: fadeIn 0.6s ease-out;
+            overflow-y: auto;
         }
 
-        .editor-header {
+        .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--glass);
+            border-bottom: 1px solid var(--border);
         }
 
-        .editor-header h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .content-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text);
         }
 
-        .editor-actions {
+        .content-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .save-btn {
-            padding: 10px 20px;
-            border-radius: 50px;
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary {
             background: var(--primary);
             color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .save-btn.github-save {
-            background: var(--github);
-        }
-
-        .save-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
-        }
-
-        .save-btn.github-save:hover {
-            background: var(--github-light);
-        }
-
-        .delete-btn {
-            padding: 10px 20px;
-            border-radius: 50px;
-            background: transparent;
-            color: #ff6b6b;
-            border: 2px solid #ff6b6b;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .delete-btn:hover {
-            background: rgba(255, 107, 107, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .editor-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            opacity: 0.9;
-        }
-
-        .form-group input, 
-        .form-group textarea, 
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 2px solid var(--glass);
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--text);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus, 
-        .form-group textarea:focus, 
-        .form-group select:focus {
             border-color: var(--primary);
-            outline: none;
-            background: rgba(255, 255, 255, 0.25);
         }
 
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
+        .action-btn.primary:hover {
+            background: var(--primary-light);
         }
 
-        .image-upload {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .upload-area {
-            flex: 1;
-            border: 2px dashed var(--primary);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            background: rgba(138, 108, 255, 0.05);
-        }
-
-        .upload-area:hover {
-            background: rgba(138, 108, 255, 0.1);
-        }
-
-        .upload-area i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .upload-area p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .image-preview {
-            width: 100%;
-            height: 150px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--glass);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .stories-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .story-item {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .story-item input {
-            flex: 1;
-        }
-
-        .add-story-btn {
-            margin-top: 10px;
-            padding: 8px 15px;
-            border-radius: 50px;
-            background: var(--glass);
-            border: 2px dashed var(--primary);
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .add-story-btn:hover {
-            background: rgba(138, 108, 255, 0.2);
-            border-style: solid;
-        }
-
-        .remove-story {
-            color: #ff6b6b;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
-            border-radius: 5px;
-            transition: var(--transition);
-        }
-
-        .remove-story:hover {
-            background: rgba(255, 107, 107, 0.1);
+        .file-content {
+            padding: 15px 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text);
         }
 
         .settings-panel {
@@ -530,8 +311,8 @@
             width: 380px;
             height: 100vh;
             background: var(--card-bg);
-            backdrop-filter: blur(calc(var(--blur) * 1.5));
-            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            border-left: 1px solid var(--border);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
             padding: 25px;
             transition: var(--transition);
             z-index: 100;
@@ -548,12 +329,12 @@
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 1px solid var(--glass);
+            border-bottom: 1px solid var(--border);
         }
 
         .settings-header h2 {
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .close-settings {
@@ -565,111 +346,73 @@
 
         .close-settings:hover {
             color: var(--primary);
-            transform: scale(1.2);
         }
 
         .github-section {
-            padding: 20px;
-            background: rgba(138, 108, 255, 0.1);
-            border-radius: 12px;
             margin-bottom: 25px;
+        }
+
+        .github-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
 
         .github-input {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 2px solid var(--glass);
-            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
             color: var(--text);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
-            margin: 8px 0 15px;
         }
 
         .github-input:focus {
             border-color: var(--primary);
             outline: none;
-            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
         }
 
         .save-config-btn {
             width: 100%;
-            padding: 15px;
-            border-radius: 50px;
+            padding: 12px;
+            border-radius: var(--radius);
             background: var(--primary);
             color: white;
             border: none;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             font-size: 1rem;
         }
 
-        .save-config-btn.github-btn {
-            background: var(--github);
-            margin-top: 15px;
-        }
-
-        .save-config-btn.github-btn:hover {
-            background: var(--github-light);
-        }
-
-        .slider-group {
-            margin-bottom: 25px;
-        }
-
-        .slider-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .slider-value {
-            width: 40px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .slider {
-            flex: 1;
-            height: 6px;
-            -webkit-appearance: none;
-            background: var(--glass);
-            border-radius: 10px;
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .slider::-webkit-slider-thumb:hover {
+        .save-config-btn:hover {
             background: var(--primary-light);
-            transform: scale(1.2);
         }
 
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 25px;
-            border-radius: 12px;
+            padding: 15px 20px;
+            border-radius: var(--radius);
             background: var(--card-bg);
-            backdrop-filter: blur(var(--blur));
+            border-left: 4px solid var(--primary);
             box-shadow: var(--shadow);
             z-index: 1000;
             transform: translateX(150%);
@@ -677,6 +420,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            border: 1px solid var(--border);
         }
 
         .notification.show {
@@ -684,133 +428,69 @@
         }
 
         .notification.success {
-            border-left: 4px solid #4CAF50;
+            border-left-color: #2ea44f;
         }
 
         .notification.error {
-            border-left: 4px solid #f44336;
+            border-left-color: #cb2431;
         }
 
         .notification.info {
-            border-left: 4px solid #2196F3;
+            border-left-color: var(--primary);
         }
 
         .notification i {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
         }
 
         .notification.success i {
-            color: #4CAF50;
+            color: #2ea44f;
         }
 
         .notification.error i {
-            color: #f44336;
+            color: #cb2431;
         }
 
         .notification.info i {
-            color: #2196F3;
+            color: var(--primary);
         }
 
-        .github-browser {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            z-index: 1000;
+        .empty-state {
             display: flex;
             flex-direction: column;
-            transition: var(--transition);
-        }
-
-        .github-header {
-            padding: 20px;
-            background: var(--card-bg);
-            backdrop-filter: blur(var(--blur));
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .github-header h2 {
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .github-header i {
-            color: var(--primary);
-        }
-
-        .repo-path {
-            padding: 10px 20px;
-            background: var(--glass);
-            border-bottom: 1px solid var(--glass);
-            font-family: monospace;
-            font-size: 1.1rem;
-        }
-
-        .file-browser {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .file-item {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-
-        .file-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
-
-        .file-item i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .file-item.folder i {
-            color: var(--primary-light);
-        }
-
-        .file-item.file.selected {
-            background: rgba(138, 108, 255, 0.2);
-            border: 2px solid var(--primary);
-        }
-
-        .file-name {
-            font-weight: 600;
-            word-break: break-all;
-        }
-
-        .file-actions {
-            margin-top: 20px;
-            display: flex;
             justify-content: center;
-            gap: 15px;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text);
+            opacity: 0.7;
         }
 
-        .open-file-btn {
-            padding: 12px 25px;
-            border-radius: 50px;
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
             background: var(--primary);
             color: white;
             border: none;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
@@ -818,20 +498,8 @@
             gap: 8px;
         }
 
-        .open-file-btn:hover {
+        .btn:hover {
             background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Mobile responsiveness */
@@ -845,82 +513,37 @@
                 max-height: 40vh;
             }
             
-            .editor-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .settings-panel {
                 width: 100%;
                 right: -100%;
             }
-            
-            .image-upload {
-                flex-direction: column;
-            }
-            
-            .file-browser {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
         }
 
         @media (max-width: 500px) {
-            .editor-header {
+            .content-header {
                 flex-direction: column;
                 gap: 15px;
+                align-items: flex-start;
             }
             
-            .editor-actions {
+            .content-actions {
                 width: 100%;
                 justify-content: space-between;
             }
             
-            .save-btn, .delete-btn {
+            .action-btn {
                 flex: 1;
                 text-align: center;
-            }
-            
-            .file-browser {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
         }
     </style>
 </head>
 <body>
-    <!-- GitHub文件浏览器视图 -->
-    <div class="github-browser" id="githubBrowser">
-        <div class="github-header">
-            <h2><i class="fab fa-github"></i> GitHub 仓库浏览器</h2>
-            <div class="controls">
-                <button class="theme-toggle" id="browserThemeToggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="settings-btn" id="browserSettingsBtn">
-                    <i class="fas fa-cog"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="repo-path" id="repoPath">
-            /<span id="currentPath">仓库名称</span>
-        </div>
-        
-        <div class="file-browser" id="fileBrowser">
-            <!-- 文件夹和文件将通过JS动态生成 -->
-        </div>
-        
-        <div class="file-actions">
-            <button class="open-file-btn" id="openFileBtn">
-                <i class="fas fa-folder-open"></i> 打开选中的文件
-            </button>
-        </div>
-    </div>
-
-    <!-- 主应用视图 -->
-    <div class="container hidden" id="mainApp">
+    <div class="container">
         <header>
             <div class="logo">
-                <i class="fas fa-ghost logo-icon"></i>
-                <h1>Omate角色卡管理器</h1>
+                <i class="fab fa-github logo-icon"></i>
+                <h1>GitHub仓库管理器</h1>
             </div>
             <div class="controls">
                 <button class="github-btn" id="githubBtn">
@@ -937,111 +560,36 @@
 
         <main>
             <div class="sidebar">
-                <div class="search-bar">
-                    <input type="text" placeholder="搜索角色名或介绍..." id="searchInput">
-                    <button class="new-card-btn" id="newCardBtn">
-                        <i class="fas fa-plus"></i> 新建
-                    </button>
+                <div class="repo-info">
+                    <div class="repo-avatar">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="repo-details">
+                        <h2>omate-character-cards</h2>
+                        <p>main branch</p>
+                    </div>
                 </div>
-                <div class="cards-list" id="cardsList">
-                    <!-- 角色卡片列表会通过JS动态生成 -->
+                
+                <div class="file-browser" id="fileBrowser">
+                    <!-- 文件列表会通过JS动态生成 -->
                 </div>
             </div>
 
-            <div class="editor" id="editor">
-                <div class="editor-header">
-                    <h2 id="editorTitle">角色信息编辑</h2>
-                    <div class="editor-actions">
-                        <button class="save-btn" id="saveCardBtn">
+            <div class="content-area" id="contentArea">
+                <div class="content-header">
+                    <h2 id="contentTitle">文件内容</h2>
+                    <div class="content-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-download"></i> 下载
+                        </button>
+                        <button class="action-btn primary">
                             <i class="fas fa-save"></i> 保存
-                        </button>
-                        <button class="save-btn github-save" id="saveToGitHubBtn">
-                            <i class="fab fa-github"></i> GitHub保存
-                        </button>
-                        <button class="delete-btn" id="deleteCardBtn">
-                            <i class="fas fa-trash-alt"></i> 删除
                         </button>
                     </div>
                 </div>
                 
-                <div class="editor-grid">
-                    <div class="form-group">
-                        <label for="cardId">ID *</label>
-                        <input type="text" id="cardId" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="cardName">角色名 *</label>
-                        <input type="text" id="cardName" required>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <div class="image-upload">
-                            <div class="upload-area" id="cardImageUpload">
-                                <i class="fas fa-image"></i>
-                                <p>上传角色卡图片</p>
-                                <div class="image-preview" id="cardImagePreview">
-                                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                                </div>
-                                <input type="file" id="cardImageInput" accept="image/*" style="display: none;">
-                            </div>
-                            
-                            <div class="upload-area" id="coverImageUpload">
-                                <i class="fas fa-image"></i>
-                                <p>上传封面图片</p>
-                                <div class="image-preview" id="coverImagePreview">
-                                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
-                                </div>
-                                <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="fileName">图片文件名</label>
-                        <input type="text" id="fileName" readonly>
-                    </极简>
-                    
-                    <div class="form-group">
-                        <label for="filePath">图片路径</label>
-                        <input type="text" id="filePath" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="coverPath">封面路径</label>
-                        <input type="text" id="coverPath" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="gender">性别 *</label>
-                        <select id="gender">
-                            <option value="male">男</option>
-                            <option value="female">女</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <极简 for="intro">简介</label>
-                        <textarea id="intro"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="personality">个性</label>
-                        <textarea id="personality"></textarea>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label>故事</label>
-                        <div class="stories-list" id="storiesList">
-                            <div class="story-item">
-                                <input type="text" placeholder="故事文本" class="story-input">
-                                <i class="fas fa-times remove-story"></i>
-                            </div>
-                        </div>
-                        <button class="add-story-btn" id="addStoryBtn">
-                            <i class="fas fa-plus"></i> 添加故事
-                        </button>
-                    </div>
+                <div class="file-content" id="fileContent">
+                    <!-- 文件内容会通过JS动态加载 -->
                 </div>
             </div>
         </main>
@@ -1049,7 +597,7 @@
 
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
-            <h2>设置面板</h2>
+            <h2>设置</h2>
             <div class="close-settings" id="closeSettings">
                 <i class="fas fa-times"></i>
             </div>
@@ -1057,53 +605,30 @@
         
         <div class="github-section">
             <h3><i class="fab fa-github"></i> GitHub 设置</h3>
-            <p>连接到您的GitHub仓库管理角色卡</p>
             
-            <label for="githubToken">GitHub Token:</label>
-            <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
+            <div class="form-group">
+                <label for="githubToken">GitHub Token</label>
+                <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
             
-            <label for="repoName">仓库名称:</label>
-            <input type="text" id="repoName" class="github-input" placeholder="username/reponame">
+            <div class="form-group">
+                <label for="repoName">仓库名称</label>
+                <input type="text" id="repoName" class="github-input" placeholder="username/reponame">
+            </div>
             
-            <label for="branchName">分支名称:</label>
-            <input type="text" id="branchName" class="github-input" placeholder="main" value="main">
+            <div class="form-group">
+                <label for="branchName">分支名称</label>
+                <input type="text" id="branchName" class="github-input" placeholder="main" value="main">
+            </div>
             
             <button class="save-config-btn" id="saveGitHubConfig">
                 保存配置
             </button>
         </div>
-        
-        <div class="slider-group">
-            <label>毛玻璃效果强度</label>
-            <div class="slider-container">
-                <span class="slider-value" id="blurValue">12</span>
-                <input type="range" min="0" max="20" value="12" class="slider" id="blurSlider">
-            </div>
-        </div>
-        
-        <div class="slider-group">
-            <label>动效速度</label>
-            <div class="slider-container">
-                <span class="slider-value" id="animationValue">4</span>
-                <input type="range" min="1" max="10" value="4" class="slider" id="animationSlider">
-            </div>
-        </div>
-        
-        <div class="slider-group">
-            <label>UI透明度</label>
-            <div class="slider-container">
-                <span class="slider-value" id="opacityValue">70%</span>
-                <input type="range" min="20" max="90" value="70" class="slider" id="opacitySlider">
-            </div>
-        </div>
-        
-        <button class="save-config-btn" id="applyUISettings">
-            应用UI设置
-        </button>
     </div>
 
     <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
+        <i class="fas fa-info-circle"></i>
         <span id="notificationText">操作成功！</span>
     </div>
 
@@ -1111,71 +636,30 @@
         // 状态管理
         const state = {
             currentTheme: localStorage.getItem('theme') || 'light',
-            cards: [],
-            currentCard: null,
-            blurStrength: localStorage.getItem('blur') || 12,
-            animationSpeed: localStorage.getItem('animationSpeed') || 4,
-            opacityValue: localStorage.getItem('opacity') || 70,
             githubToken: localStorage.getItem('githubToken') || '',
-            repoName: localStorage.getItem极简('repoName') || '',
+            repoName: localStorage.getItem('repoName') || '',
             branchName: localStorage.getItem('branchName') || 'main',
-            cardImage: null,
-            coverImage: null,
-            cardsLoaded: false,
-            currentPath: '/',
-            selectedFile: null
+            currentFile: null,
+            files: []
         };
 
         // DOM元素引用
         const elements = {
-            githubBrowser: document.getElementById('githubBrowser'),
-            mainApp: document.getElementById('mainApp'),
-            repoPath: document.getElementById('repoPath'),
-            currentPath: document.getElementById('currentPath'),
-            fileBrowser: document.getElementById('fileBrowser'),
-            openFileBtn: document.getElementById('openFileBtn'),
-            browserThemeToggle: document.getElementById('browserThemeToggle'),
-            browserSettingsBtn: document.getElementById('browserSettingsBtn'),
             themeToggle: document.getElementById('themeToggle'),
             settingsBtn: document.getElementById('settingsBtn'),
             closeSettings: document.getElementById('closeSettings'),
             settingsPanel: document.getElementById('settingsPanel'),
             githubBtn: document.getElementById('githubBtn'),
-            newCardBtn: document.getElementById('newCardBtn'),
-            saveCardBtn: document.getElementById('saveCardBtn'),
-            saveToGitHubBtn: document.getElementById('saveToGitHubBtn'),
-            deleteCardBtn: document.getElementById('deleteCardBtn'),
-            addStoryBtn: document.getElementById('addStoryBtn'),
             saveGitHubConfig: document.getElementById('saveGitHubConfig'),
-            applyUISettings: document.getElementById('applyUISettings'),
-            cardsList: document.getElementById('cardsList'),
-            storiesList: document.getElementById('storiesList'),
+            fileBrowser: document.getElementById('fileBrowser'),
+            contentArea: document.getElementById('contentArea'),
+            contentTitle: document.getElementById('contentTitle'),
+            fileContent: document.getElementById('fileContent'),
             notification: document.getElementById('notification'),
             notificationText: document.getElementById('notificationText'),
-            blurSlider: document.getElementById('blurSlider'),
-            blurValue: document.getElementById('blurValue'),
-            animationSlider: document.getElementById('animationSlider'),
-            animationValue: document.getElementById('animationValue'),
-            opacitySlider: document.getElementById('opacitySlider'),
-            opacityValue: document.getElementById('opacityValue'),
             githubToken: document.getElementById('githubToken'),
             repoName: document.getElementById('repoName'),
-            branchName: document.getElementById('branchName'),
-            cardId: document.getElementById('cardId'),
-            cardName: document.getElementById('cardName'),
-            fileName: document.getElementById('fileName'),
-            filePath: document.getElementById('filePath'),
-            coverPath: document.getElementById('coverPath'),
-            gender: document.getElementById('gender'),
-            intro: document.getElementById('intro'),
-            personality: document.getElementById('personality'),
-            cardImageUpload: document.getElementById('cardImageUpload'),
-            coverImageUpload: document.getElementById('coverImageUpload'),
-            cardImageInput: document.getElementById('cardImageInput'),
-            coverImageInput: document.getElementById('coverImageInput'),
-            cardImagePreview: document.getElementById('cardImagePreview'),
-            coverImagePreview: document.getElementById('coverImagePreview'),
-            editorTitle: document.getElementById('editorTitle')
+            branchName: document.getElementById('branchName')
         };
 
         // 初始化应用
@@ -1183,7 +667,7 @@
             applyTheme();
             applyUIValues();
             setupEventListeners();
-            generateFileBrowser();
+            loadRepoFiles();
         }
 
         // 应用主题
@@ -1191,249 +675,90 @@
             if (state.currentTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                elements.browserThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             } else {
                 document.documentElement.removeAttribute('data-theme');
                 elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                elements.browserThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
         }
 
         // 应用UI设置
         function applyUIValues() {
-            document.documentElement.style.setProperty('--blur', `${state.blurStrength}px`);
-            document.documentElement.style.setProperty('--transition', `all ${0.4 - (state.animationSpeed/40)}s ease`);
-            
-            elements.blurSlider.value = state.blurStrength;
-            elements.blurValue.textContent = state.blurStrength;
-            
-            elements.animationSlider.value = state.animationSpeed;
-            elements.animationValue.textContent = state.animationSpeed;
-            
-            elements.opacitySlider.value = state.opacityValue;
-            elements.opacityValue.textContent = `${state.opacityValue}%`;
-            
             elements.githubToken.value = state.githubToken;
             elements.repoName.value = state.repoName;
             elements.branchName.value = state.branchName;
         }
 
-        // 生成文件浏览器
-        function generateFileBrowser() {
+        // 加载仓库文件
+        function loadRepoFiles() {
+            // 模拟从GitHub加载文件
+            state.files = [
+                { id: 'file1', name: 'cards.json', path: '/cards.json', type: 'file', content: '{\n  "cards": [\n    {\n      "id": "arc001",\n      "name": "赛博忍者",\n      "fileName": "cyber-ninja-card.png",\n      "filePath": "img/cyber-ninja-card.png",\n      "coverPath": "img/cyber-ninja.png",\n      "fileType": "png",\n      "uploadTime": "2025-03-17T13:27:28.477Z",\n      "gender": "male",\n      "intro": "融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。",\n      "personality": "冷静、神秘、高效，很少表露情感",\n      "stories": [\n        "在城市的地下世界执行机密任务",\n        "使用古老的忍术对抗现代科技",\n        "守护着人类与技术之间的平衡"\n      ]\n    },\n    {\n      "id": "arc002",\n      "name": "星界歌姬",\n      "fileName": "star-singer-card.png",\n      "filePath": "img/star-singer-card.png",\n      "coverPath": "img/star-singer.png",\n      "fileType": "png",\n      "uploadTime": "2025-04-22T09:15:42.120Z",\n      "gender": "female",\n      "intro": "拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。",\n      "personality": "活泼、有创造力、情感丰富",\n      "stories": [\n        "举办星际巡回演唱会",\n        "用歌声化解文明间的冲突",\n        "探索神秘的音乐维度"\n      ]\n    }\n  ]\n}' },
+                { id: 'file2', name: 'README.md', path: '/README.md', type: 'file', content: '# Omate角色卡仓库\n\n这个仓库包含所有Omate平台的角色卡数据。\n\n## 结构\n\n- `cards.json`: 主要角色卡数据文件\n- `img/`: 角色卡图片目录\n- `covers/`: 封面图片目录\n\n## 使用\n\n1. 克隆本仓库\n2. 编辑`cards.json`文件添加新角色卡\n3. 将图片放入相应目录\n4. 提交更改并推送\n' },
+                { id: 'folder1', name: 'img', path: '/img', type: 'folder', content: '' },
+                { id: 'folder2', name: 'covers', path: '/covers', type: 'folder', content: '' },
+                { id: 'file3', name: 'config.json', path: '/config.json', type: 'file', content: '{\n  "appName": "Omate角色卡管理器",\n  "version": "1.0.0",\n  "defaultBranch": "main",\n  "maxFileSize": 5242880\n}' }
+            ];
+            
+            renderFileBrowser();
+            
+            // 默认选择第一个文件
+            if (state.files.length > 0) {
+                selectFile(state.files[0]);
+            }
+        }
+
+        // 渲染文件浏览器
+        function renderFileBrowser() {
             elements.fileBrowser.innerHTML = '';
             
-            // 模拟仓库文件结构
-            const folders = [
-                { name: 'img', type: 'folder' },
-                { name: 'covers', type: 'folder' },
-                { name: 'characters', type: 'folder' },
-                { name: 'data', type: 'folder' }
-            ];
-            
-            const files = [
-                { name: 'cards.json', type: 'file' },
-                { name: 'config.json', type: 'file' },
-                { name: 'README.md', type: 'file' }
-            ];
-            
-            // 添加文件夹
-            folders.forEach(folder => {
-                const folderEl = document.createElement('div');
-                folderEl.className = 'file-item folder';
-                folderEl.innerHTML = `
-                    <i class="fas fa-folder"></i>
-                    <div class="file-name">${folder.name}</div>
+            if (state.files.length === 0) {
+                elements.fileBrowser.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>仓库为空</h3>
+                        <p>当前仓库没有文件或文件夹</p>
+                    </div>
                 `;
-                folderEl.addEventListener('click', () => {
-                    state.currentPath += `${folder.name}/`;
-                    elements.currentPath.textContent = state.currentPath;
-                    generateFileBrowser();
-                });
-                elements.fileBrowser.appendChild(folderEl);
-            });
+                return;
+            }
             
-            // 添加文件
-            files.forEach(file => {
+            state.files.forEach(file => {
                 const fileEl = document.createElement('div');
-                fileEl.className = 'file-item file';
+                fileEl.className = `file-item ${state.currentFile === file ? 'selected' : ''}`;
                 fileEl.innerHTML = `
-                    <i class="fas fa-file-code"></i>
-                    <div class="file-name">${file.name}</div>
+                    <div class="file-icon">
+                        <i class="${file.type === 'folder' ? 'fas fa-folder' : 'fas fa-file-code'}"></i>
+                    </div>
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-path">${file.path}</div>
+                    </div>
                 `;
-                fileEl.addEventListener('click', () => {
-                    // 移除之前的选择
-                    document.querySelectorAll('.file-item.file').forEach(el => {
-                        el.classList.remove('selected');
-                    });
-                    // 选中当前文件
-                    fileEl.classList.add('selected');
-                    state.selectedFile = file.name;
-                });
+                fileEl.addEventListener('click', () => selectFile(file));
                 elements.fileBrowser.appendChild(fileEl);
             });
         }
 
-        // 打开选中的文件
-        function openSelectedFile() {
-            if (!state.selectedFile) {
-                showNotification('请先选择一个文件！', 'error');
-                return;
+        // 选择文件
+        function selectFile(file) {
+            state.currentFile = file;
+            renderFileBrowser();
+            
+            // 更新内容标题
+            elements.contentTitle.textContent = file.name;
+            
+            // 显示文件内容
+            if (file.type === 'file') {
+                elements.fileContent.textContent = file.content;
+                elements.contentArea.style.display = 'block';
+            } else {
+                elements.contentArea.style.display = 'none';
+                showNotification(`"${file.name}" 是一个文件夹`, 'info');
             }
-            
-            if (state.selectedFile !== 'cards.json') {
-                showNotification('请选择cards.json文件！', 'error');
-                return;
-            }
-            
-            showNotification('正在加载角色卡数据...', 'info');
-            
-            // 模拟加载延迟
-            setTimeout(() => {
-                // 模拟从GitHub加载的卡片数据
-                const demoCards = [
-                    {
-                        id: 'arc001',
-                        name: '赛博忍者',
-                        fileName: 'cyber-ninja-card.png',
-                        filePath: 'img/cyber-ninja-card.png',
-                        coverPath: 'img/cyber-ninja.png',
-                        fileType: 'png',
-                        uploadTime: new Date().toISOString(),
-                        gender: 'male',
-                        intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
-                        personality: '冷静、神秘、高效，很少表露情感',
-                        stories: [
-                            '在城市的地下世界执行机密任务',
-                            '使用古老的忍术对抗现代科技',
-                            '守护着人类与技术之间的平衡'
-                        ]
-                    },
-                    {
-                        id: 'arc002',
-                        name: '星界歌姬',
-                        fileName: 'star-singer-card.png',
-                        filePath: 'img/star-singer-card.png',
-                        coverPath: 'img/star-singer.png',
-                        fileType: 'png',
-                        uploadTime: new Date().toISOString(),
-                        gender: 'female',
-                        intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
-                        personality: '活泼、有创造力、情感丰富',
-                        stories: [
-                            '举办星际巡回演唱会',
-                            '用歌声化解文明间的冲突',
-                            '探索神秘的音乐维度'
-                        ]
-                    }
-                ];
-                
-                state.cards = demoCards;
-                state.cardsLoaded = true;
-                renderCardsList();
-                
-                if (state.cards.length > 0) {
-                    selectCard(state.cards[0]);
-                }
-                
-                // 切换到主应用视图
-                elements.githubBrowser.classList.add('hidden');
-                elements.mainApp.classList.remove('hidden');
-                
-                showNotification(`成功加载 ${state.cards.length} 张角色卡！`);
-            }, 1500);
-        }
-
-        // 渲染卡片列表
-        function renderCardsList() {
-            elements.cardsList.innerHTML = '';
-            
-            if (!state.cardsLoaded) {
-                elements.cardsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-cloud-download-alt"></i>
-                        <h3>未加载角色卡数据</h3>
-                        <p>请先连接GitHub仓库并加载cards.json文件</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            if (state.cards.length === 0) {
-                elements.cardsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class极简="fas fa-folder-open"></i>
-                        <h3>没有角色卡数据</h3>
-                        <p>cards.json文件中没有角色卡数据，请创建新角色卡</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            state.cards.forEach(card => {
-                const cardEl = document.createElement('div');
-                cardEl.className = `card-item ${state.currentCard === card ? 'selected' : ''}`;
-                cardEl.innerHTML = `
-                    <div class="card-avatar">
-                        <i class="fas ${card.gender === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
-                    </div>
-                    <div class="card-info">
-                        <h3>${card.name}</h3>
-                        <p>${card.intro.substring(0, 60)}${card.intro.length > 60 ? '...' : ''}</p>
-                    </div>
-                    <div class="card-actions">
-                        <button><i class="fas fa-pen"></i></button>
-                    </div>
-                `;
-                cardEl.addEventListener('click', () => selectCard(card));
-                elements.cardsList.appendChild(cardEl);
-            });
-        }
-
-        // 选择卡片
-        function selectCard(card) {
-            state.currentCard = card;
-            renderCardsList();
-            
-            // 更新编辑器标题
-            elements.editorTitle.textContent = `编辑角色卡: ${card.name}`;
-            
-            // 填充编辑表单
-            elements.cardId.value = card.id;
-            elements.cardName.value = card.name;
-            elements.fileName.value = card.fileName;
-            elements.filePath.value = card.filePath;
-            elements.coverPath.value = card.coverPath;
-            elements.gender.value = card.gender;
-            elements.intro.value = card.intro;
-            elements.personality.value = card.personality;
-            
-            // 显示图片预览
-            if (card.filePath) {
-                elements.cardImagePreview.innerHTML = `<img src="${card.filePath}" alt="${card.name}">`;
-            }
-            
-            if (card.coverPath) {
-                elements.coverImagePreview.innerHTML = `<img src="${card.coverPath}" alt="${card.name}封面">`;
-            }
-            
-            // 填充故事
-            elements.storiesList.innerHTML = '';
-            card.stories.forEach(story => {
-                const storyItem = document.createElement('div');
-                storyItem.className = 'story-item';
-                storyItem.innerHTML = `
-                    <input type="text" value="${story}" class="story-input">
-                    <i class="fas fa-times remove-story"></i>
-                `;
-                storyItem.querySelector('.remove-story').addEventListener('click', () => {
-                    storyItem.remove();
-                });
-                elements.storiesList.appendChild(storyItem);
-            });
         }
 
         // 显示通知
-        function showNotification(message, type = 'success') {
+        function showNotification(message, type = 'info') {
             elements.notification.className = `notification ${type}`;
             elements.notificationText.textContent = message;
             elements.notification.classList.add('show');
@@ -1441,226 +766,6 @@
             setTimeout(() => {
                 elements.notification.classList.remove('show');
             }, 3000);
-        }
-
-        // 添加新故事
-        function addNewStory() {
-            const storyItem = document.createElement('div');
-            storyItem.className = 'story-item';
-            storyItem.innerHTML = `
-                <input type="text" placeholder="故事文本" class="story-input">
-                <i class="fas fa-times remove-story"></i>
-            `;
-            storyItem.querySelector('.remove-story').addEventListener('click', () => {
-                storyItem.remove();
-            });
-            elements.storiesList.appendChild(storyItem);
-        }
-
-        // 上传图片处理
-        function handleImageUpload(inputElement, previewElement, type) {
-            return new Promise((resolve) => {
-                const file = inputElement.files[0];
-                if (!file) return resolve(null);
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    
-                    img.onload = function() {
-                        // 创建canvas进行压缩
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        // 设置最大尺寸
-                        const maxWidth = 800;
-                        const maxHeight = 800;
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        if (width > height) {
-                            if (width > maxWidth) {
-                                height *= maxWidth / width;
-                                width = maxWidth;
-                            }
-                        } else {
-                            if (height > maxHeight) {
-                                width *= maxHeight / height;
-                                height = maxHeight;
-                            }
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // 转换为Data URL
-                        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
-                        
-                        // 显示预览
-                        previewElement.innerHTML = `<img src="${dataURL}" alt="预览">`;
-                        
-                        // 保存到状态
-                        if (type === 'card') {
-                            state.cardImage = {
-                                file: file,
-                                dataURL: dataURL,
-                                name: file.name
-                            };
-                        } else {
-                            state.coverImage = {
-                                file: file,
-                                dataURL: dataURL,
-                                name: file.name
-                            };
-                        }
-                        
-                        resolve(dataURL);
-                    };
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // 生成图片路径
-        function generateImagePaths(cardName) {
-            // 移除特殊字符并替换空格
-            const safeName = cardName
-                .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '')
-                .replace(/\s+/g, '-')
-                .toLowerCase();
-            
-            const timestamp = new Date().getTime();
-            
-            return {
-                fileName: `${safeName}-card.png`,
-                filePath: `img/${safeName}-card.png`,
-                coverPath: `img/${safeName}.png`
-            };
-        }
-
-        // 保存卡片
-        function saveCard() {
-            if (!elements.cardId.value || !elements.cardName.value) {
-                showNotification('ID和角色名是必填字段！', 'error');
-                return;
-            }
-            
-            const stories = Array.from(document.querySelectorAll('.story-input')).map(input => input.value);
-            
-            // 生成图片路径
-            const imagePaths = generateImagePaths(elements.cardName.value);
-            
-            if (state.currentCard) {
-                // 更新现有卡片
-                state.currentCard.id = elements.cardId.value;
-                state.currentCard.name = elements.cardName.value;
-                
-                // 如果有新图片，更新路径
-                if (state.cardImage) {
-                    state.currentCard.fileName = imagePaths.fileName;
-                    state.currentCard.filePath = imagePaths.filePath;
-                }
-                
-                if (state.coverImage) {
-                    state.currentCard.coverPath = imagePaths.coverPath;
-                }
-                
-                state.currentCard.gender = elements.gender.value;
-                state.currentCard.intro = elements.intro.value;
-                state.currentCard.personality = elements.personality.value;
-                state.currentCard.stories = stories;
-                
-                showNotification('角色卡更新成功！');
-            } else {
-                // 创建新卡片
-                const newCard = {
-                    id: elements.cardId.value,
-                    name: elements.cardName.value,
-                    fileName: imagePaths.fileName,
-                    filePath: imagePaths.filePath,
-                    coverPath: imagePaths.coverPath,
-                    fileType: 'png',
-                    uploadTime: new Date().toISOString(),
-                    gender: elements.gender.value,
-                    intro: elements.intro.value,
-                    personality: elements.personality.value,
-                    stories: stories
-                };
-                state.cards.push(newCard);
-                state.currentCard = newCard;
-                
-                showNotification('新角色卡创建成功！');
-            }
-            
-            // 更新表单中的路径显示
-            elements.fileName.value = state.currentCard.fileName;
-            elements.filePath.value = state.currentCard.filePath;
-            elements.coverPath.value = state.currentCard.coverPath;
-            
-            renderCardsList();
-        }
-
-        // 删除卡片
-        function deleteCard() {
-            if (!state.currentCard) {
-                showNotification('请先选择一个角色卡！', 'error');
-                return;
-            }
-            
-            if (confirm('确定要删除这个角色卡吗？此操作不可恢复。')) {
-                const index = state.cards.indexOf(state.currentCard);
-                if (index !== -1) {
-                    state.cards.splice(index, 1);
-                    if (state.cards.length > 0) {
-                        selectCard(state.cards[0]);
-                    } else {
-                        state.currentCard = null;
-                        clearForm();
-                    }
-                    renderCardsList();
-                    showNotification('角色卡已删除！');
-                }
-            }
-        }
-
-        // 清空表单
-        function clearForm() {
-            elements.cardId.value = '';
-            elements.cardName.value = '';
-            elements.fileName.value = '';
-            elements.filePath.value = '';
-            elements.coverPath.value = '';
-            elements.gender.value = 'male';
-            elements.intro.value = '';
-            elements.personality.value = '';
-            
-            // 重置图片预览
-            elements.cardImagePreview.innerHTML = '<i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>';
-            elements.coverImagePreview.innerHTML = '<i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>';
-            
-            // 重置图片状态
-            state.cardImage = null;
-            state.coverImage = null;
-            
-            // 重置故事列表
-            elements.storiesList.innerHTML = `
-                <div class="story-item">
-                    <input type="text" placeholder="故事文本" class="story-input">
-                    <i class="fas fa-times remove-story"></i>
-                </div>
-            `;
-            
-            // 更新编辑器标题
-            elements.editorTitle.textContent = '创建新角色卡';
-        }
-
-        // 新建卡片
-        function createNewCard() {
-            state.currentCard = null;
-            clearForm();
-            showNotification('准备创建新角色卡...', 'info');
         }
 
         // 保存GitHub配置
@@ -1673,38 +778,11 @@
             localStorage.setItem('repoName', state.repoName);
             localStorage.setItem('branchName', state.branchName);
             
-            showNotification('GitHub配置已保存！');
-        }
-
-        // 应用UI设置
-        function applyUISettings() {
-            state.blurStrength = parseInt(elements.blurSlider.value);
-            state.animationSpeed = parseInt(elements.animationSlider.value);
-            state.opacityValue = parseInt(elements.opacitySlider.value);
+            showNotification('GitHub配置已保存！', 'success');
+            elements.settingsPanel.classList.remove('active');
             
-            localStorage.setItem('blur', state.blurStrength);
-            localStorage.setItem('animationSpeed', state.animationSpeed);
-            localStorage.setItem('opacity', state.opacityValue);
-            
-            document.documentElement.style.setProperty('--blur', `${state.blurStrength}px`);
-            document.documentElement.style.setProperty('--transition', `all ${0.4 - (state.animationSpeed/40)}s ease`);
-            
-            showNotification('UI设置已应用！');
-        }
-
-        // 保存到GitHub
-        function saveToGitHub() {
-            if (!state.githubToken || !state.re极简Name) {
-                showNotification('请先在设置中配置GitHub信息！', 'error');
-                return;
-            }
-            
-            // 模拟保存过程
-            showNotification('正在保存到GitHub仓库...', 'info');
-            
-            setTimeout(() => {
-                showNotification(`成功保存 ${state.cards.length} 张角色卡到 ${state.repoName} 仓库！`);
-            }, 2000);
+            // 重新加载仓库文件
+            loadRepoFiles();
         }
 
         // 切换主题
@@ -1712,93 +790,41 @@
             state.currentTheme = state.currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', state.currentTheme);
             applyTheme();
-            showNotification(`已切换到${state.currentTheme === 'dark' ? '暗色' : '亮色'}主题`);
-        }
-
-        // 打开设置面板
-        function openSettings() {
-            elements.settingsPanel.classList.add('active');
-        }
-
-        // 关闭设置面板
-        function closeSettings() {
-            elements.settingsPanel.classList.remove('active');
+            showNotification(`已切换到${state.currentTheme === 'dark' ? '暗色' : '亮色'}主题`, 'info');
         }
 
         // 设置事件监听器
         function setupEventListeners() {
             // 主题切换
             elements.themeToggle.addEventListener('click', toggleTheme);
-            elements.browserThemeToggle.addEventListener('click', toggleTheme);
             
-            // 设置面板 - 主应用
-            elements.settingsBtn.addEventListener('click', openSettings);
-            
-            // 设置面板 - GitHub浏览器
-            elements.browserSettingsBtn.addEventListener('click', openSettings);
-            
-            // 关闭设置面板
-            elements.closeSettings.addEventListener('click', closeSettings);
-            
-            // GitHub按钮
-            elements.githubBtn.addEventListener('click', () => {
-                // 返回文件浏览器
-                elements.mainApp.classList.add('hidden');
-                elements.githubBrowser.classList.remove('hidden');
+            // 设置面板
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsPanel.classList.add('active');
             });
             
-            // 打开文件按钮
-            elements.openFileBtn.addEventListener('click', openSelectedFile);
-            
-            // 新建卡片
-            elements.newCardBtn.addEventListener('click', createNewCard);
-            
-            // 保存卡片
-            elements.saveCardBtn.addEventListener('click', saveCard);
-            
-            // 保存到GitHub
-            elements.saveToGitHubBtn.addEventListener('click', saveToGitHub);
-            
-            // 删除卡片
-            elements.deleteCardBtn.addEventListener('click', deleteCard);
-            
-            // 添加故事
-            elements.addStoryBtn.addEventListener('click', addNewStory);
+            elements.closeSettings.addEventListener('click', () => {
+                elements.settingsPanel.classList.remove('active');
+            });
             
             // 保存GitHub配置
             elements.saveGitHubConfig.addEventListener('click', saveGitHubConfig);
             
-            // 应用UI设置
-            elements.applyUISettings.addEventListener('click', applyUISettings);
-            
-            // 滑块事件
-            elements.blurSlider.addEventListener('input', (e) => {
-                elements.blurValue.textContent = e.target.value;
-            });
-            
-            elements.animationSlider.addEventListener('input', (e) => {
-                elements.animationValue.textContent = e.target.value;
-            });
-            
-            elements.opacitySlider.addEventListener('input', (e) => {
-                elements.opacityValue.textContent = `${e.target.value}%`;
-            });
-            
-            // 图片上传处理
-            elements.cardImageUpload.addEventListener('click', () => {
-                elements.cardImageInput.click();
-            });
-            
-            elements.coverImageUpload.addEventListener('click', () => {
-                elements.coverImageInput.click();
-            });
-            
-            elements.cardImageInput.addEventListener('change', () => {
-                handleImageUpload(elements.cardImageInput, elements.cardImagePreview, 'card');
-            });
-            
-            elements.coverImageInput.addEventListener('change', () => {
-                handleImageUpload(elements.coverImageInput, elements.coverImagePreview, 'cover');
+            // GitHub按钮
+            elements.githubBtn.addEventListener('click', () => {
+                if (!state.githubToken || !state.repoName) {
+                    showNotification('请先在设置中配置GitHub信息！', 'error');
+                    elements.settingsPanel.classList.add('active');
+                    return;
+                }
+                
+                showNotification('正在连接GitHub仓库...', 'info');
+                
+                // 模拟连接过程
+                setTimeout(() => {
+                    showNotification(`成功连接到 ${state.repoName} 仓库！`, 'success');
+                    loadRepoFiles();
+                }, 1500);
             });
         }
 
