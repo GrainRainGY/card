@@ -336,7 +336,7 @@
             border: none;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: var(--transition;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1000,7 +1000,7 @@
                     <div class="form-group">
                         <label for="fileName">图片文件名</label>
                         <input type="text" id="fileName" readonly>
-                    </div>
+                    </极简>
                     
                     <div class="form-group">
                         <label for="filePath">图片路径</label>
@@ -1021,7 +1021,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="intro">简介</label>
+                        <极简 for="intro">简介</label>
                         <textarea id="intro"></textarea>
                     </div>
                     
@@ -1117,7 +1117,7 @@
             animationSpeed: localStorage.getItem('animationSpeed') || 4,
             opacityValue: localStorage.getItem('opacity') || 70,
             githubToken: localStorage.getItem('githubToken') || '',
-            repoName: localStorage.getItem('repoName') || '',
+            repoName: localStorage.getItem极简('repoName') || '',
             branchName: localStorage.getItem('branchName') || 'main',
             cardImage: null,
             coverImage: null,
@@ -1361,7 +1361,7 @@
             if (state.cards.length === 0) {
                 elements.cardsList.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-folder-open"></i>
+                        <i class极简="fas fa-folder-open"></i>
                         <h3>没有角色卡数据</h3>
                         <p>cards.json文件中没有角色卡数据，请创建新角色卡</p>
                     </div>
@@ -1694,7 +1694,7 @@
 
         // 保存到GitHub
         function saveToGitHub() {
-            if (!state.githubToken || !state.repoName) {
+            if (!state.githubToken || !state.re极简Name) {
                 showNotification('请先在设置中配置GitHub信息！', 'error');
                 return;
             }
@@ -1731,9 +1731,13 @@
             elements.themeToggle.addEventListener('click', toggleTheme);
             elements.browserThemeToggle.addEventListener('click', toggleTheme);
             
-            // 设置面板
+            // 设置面板 - 主应用
             elements.settingsBtn.addEventListener('click', openSettings);
+            
+            // 设置面板 - GitHub浏览器
             elements.browserSettingsBtn.addEventListener('click', openSettings);
+            
+            // 关闭设置面板
             elements.closeSettings.addEventListener('click', closeSettings);
             
             // GitHub按钮
