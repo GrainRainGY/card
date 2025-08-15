@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub仓库浏览器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         :root {
@@ -31,8 +30,7 @@
         }
 
         body {
-            background: url('https://images.unsplash.com/photo-1491895200224-0b3bea8c41ca?ixlib=rb-4.0.3') no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -45,7 +43,7 @@
         .glass-container {
             width: 100%;
             max-width: 1200px;
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 24px;
@@ -105,7 +103,7 @@
             top: 20px;
             right: 20px;
             font-size: 8rem;
-            opacity: 0.08;
+            opacity: 0.1;
             z-index: 1;
             animation: spin 30s linear infinite;
         }
@@ -358,6 +356,22 @@
             color: var(--danger);
         }
 
+        .token-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 245, 158, 0.25);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .token-info i {
+            color: var(--warning);
+        }
+
         footer {
             text-align: center;
             padding: 25px;
@@ -441,7 +455,11 @@
                 <label for="token"><i class="fas fa-key"></i> GitHub Token</label>
                 <div class="input-with-icon">
                     <i class="fas fa-lock"></i>
-                    <input type="password" id="token" placeholder="输入您的GitHub访问令牌">
+                    <input type="password" id="token" placeholder="输入GitHub访问令牌（可选）">
+                </div>
+                <div class="token-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>公开仓库可不填token，私有仓库需要token</span>
                 </div>
             </div>
             
@@ -449,7 +467,7 @@
                 <label for="owner"><i class="fas fa-user"></i> 仓库所有者</label>
                 <div class="input-with-icon">
                     <i class="fas fa-at"></i>
-                    <input type="text" id="owner" placeholder="组织或用户名">
+                    <input type="text" id="owner" placeholder="组织或用户名" value="microsoft">
                 </div>
             </div>
             
@@ -457,7 +475,7 @@
                 <label for="repo"><i class="fas fa-book"></i> 仓库名称</label>
                 <div class="input-with-icon">
                     <i class="fas fa-repository"></i>
-                    <input type="text" id="repo" placeholder="仓库名称">
+                    <input type="text" id="repo" placeholder="仓库名称" value="TypeScript">
                 </div>
             </div>
             
@@ -465,7 +483,7 @@
                 <label for="branch"><i class="fas fa-code-branch"></i> 分支名称</label>
                 <div class="input-with-icon">
                     <i class="fas fa-share-alt"></i>
-                    <input type="text" id="branch" placeholder="默认: main" value="main">
+                    <input type="text" id="branch" placeholder="默认分支（无需填写）">
                 </div>
             </div>
         </div>
@@ -585,25 +603,48 @@
                 const token = tokenInput.value.trim();
                 const owner = ownerInput.value.trim();
                 const repo = repoInput.value.trim();
-                const branch = branchInput.value.trim() || 'main';
+                const branch = branchInput.value.trim();
                 
-                if (!token || !owner || !repo) {
-                    showStatus('请填写Token、所有者和仓库名称', false);
+                if (!owner || !repo) {
+                    showStatus('请填写所有者(Owner)和仓库名称(Repo)', false);
                     return;
                 }
                 
                 // 显示加载状态
                 fileList.innerHTML = '<li class="file-item"><i class="fas fa-spinner fa-spin"></i> 正在加载内容...</li>';
                 
-                fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`, {
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                })
+                // 构建API URL - 修复404问题的关键
+                let apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents`;
+                
+                if (path) {
+                    apiUrl += `/${encodeURIComponent(path.replace(/^\//, ''))}`;
+                }
+                
+                if (branch) {
+                    apiUrl += `?ref=${encodeURIComponent(branch)}`;
+                }
+                
+                // 设置请求头
+                const headers = new Headers();
+                if (token) {
+                    headers.append('Authorization', `token ${token}`);
+                }
+                headers.append('Accept', 'application/vnd.github.v3+json');
+                
+                // 处理API请求
+                fetch(apiUrl, { headers: headers })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('API请求失败: ' + response.status);
+                        // 处理错误响应
+                        if (response.status === 404) {
+                            throw new Error(`仓库未找到: ${owner}/${repo}`);
+                        } else if (response.status === 403) {
+                            throw new Error('API速率限制已达上限 - 使用Token可提升限制');
+                        } else if (response.status === 401) {
+                            throw new Error('认证失败 - 请检查您的Token');
+                        } else {
+                            throw new Error(`API请求失败: ${response.status}`);
+                        }
                     }
                     return response.json();
                 })
@@ -674,8 +715,6 @@
             // 获取并显示文件内容
             function fetchFileContent(file) {
                 const token = tokenInput.value.trim();
-                const owner = ownerInput.value.trim();
-                const repo = repoInput.value.trim();
                 
                 // 显示加载状态
                 contentArea.textContent = '正在加载文件内容...';
@@ -683,12 +722,14 @@
                 noFile.style.display = 'none';
                 metadata.style.display = 'flex';
                 
-                fetch(file.url, {
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3.raw'
-                    }
-                })
+                // 设置请求头
+                const headers = new Headers();
+                if (token) {
+                    headers.append('Authorization', `token ${token}`);
+                }
+                headers.append('Accept', 'application/vnd.github.v3.raw');
+                
+                fetch(file.download_url, { headers: headers })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('文件加载失败: ' + response.status);
@@ -702,7 +743,7 @@
                     // 更新元数据
                     pathValue.textContent = file.path;
                     sizeValue.textContent = `${(file.size / 1024).toFixed(2)} KB`;
-                    encodingValue.textContent = file.encoding === 'base64' ? 'Base64' : 'UTF-8';
+                    encodingValue.textContent = 'UTF-8';
                     
                     showStatus(`成功加载文件: ${file.name}`, true);
                 })
@@ -728,9 +769,10 @@
                 }
             });
             
-            // 示例仓库信息
-            ownerInput.value = 'octocat';
-            repoInput.value = 'Spoon-Knife';
+            // 初始加载示例仓库
+            setTimeout(() => {
+                connectBtn.click();
+            }, 500);
         });
     </script>
 </body>
