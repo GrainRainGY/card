@@ -422,6 +422,56 @@
             resize: vertical;
         }
 
+        .image-upload {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            flex: 1;
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(138, 108, 255, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(138, 108, 255, 0.1);
+        }
+
+        .upload-area i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
         .stories-list {
             display: flex;
             flex-direction: column;
@@ -686,6 +736,10 @@
                 width: 100%;
                 right: -100%;
             }
+            
+            .image-upload {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 500px) {
@@ -741,7 +795,7 @@
 
             <div class="editor" id="editor">
                 <div class="editor-header">
-                    <h2>角色信息编辑</h2>
+                    <h2 id="editorTitle">角色信息编辑</h2>
                     <div class="editor-actions">
                         <button class="save-btn" id="saveCardBtn">
                             <i class="fas fa-save"></i> 保存
@@ -766,19 +820,41 @@
                         <input type="text" id="cardName" required>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="fileName">图片文件名 *</label>
-                        <input type="text" id="fileName">
+                    <div class="form-group full-width">
+                        <div class="image-upload">
+                            <div class="upload-area" id="cardImageUpload">
+                                <i class="fas fa-image"></i>
+                                <p>上传角色卡图片</p>
+                                <div class="image-preview" id="cardImagePreview">
+                                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                                </div>
+                                <input type="file" id="cardImageInput" accept="image/*" style="display: none;">
+                            </div>
+                            
+                            <div class="upload-area" id="coverImageUpload">
+                                <i class="fas fa-image"></i>
+                                <p>上传封面图片</p>
+                                <div class="image-preview" id="coverImagePreview">
+                                    <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+                                </div>
+                                <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="filePath">图片路径 *</label>
-                        <input type="text" id="filePath">
+                        <label for="fileName">图片文件名</label>
+                        <input type="text" id="fileName" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="filePath">图片路径</label>
+                        <input type="text" id="filePath" readonly>
                     </div>
                     
                     <div class="form-group">
                         <label for="coverPath">封面路径</label>
-                        <input type="text" id="coverPath">
+                        <input type="text" id="coverPath" readonly>
                     </div>
                     
                     <div class="form-group">
@@ -887,7 +963,9 @@
             opacityValue: localStorage.getItem('opacity') || 70,
             githubToken: localStorage.getItem('githubToken') || '',
             repoName: localStorage.getItem('repoName') || '',
-            branchName: localStorage.getItem('branchName') || 'main'
+            branchName: localStorage.getItem('branchName') || 'main',
+            cardImage: null,
+            coverImage: null
         };
 
         // DOM元素引用
@@ -924,15 +1002,22 @@
             coverPath: document.getElementById('coverPath'),
             gender: document.getElementById('gender'),
             intro: document.getElementById('intro'),
-            personality: document.getElementById('personality')
+            personality: document.getElementById('personality'),
+            cardImageUpload: document.getElementById('cardImageUpload'),
+            coverImageUpload: document.getElementById('coverImageUpload'),
+            cardImageInput: document.getElementById('cardImageInput'),
+            coverImageInput: document.getElementById('coverImageInput'),
+            cardImagePreview: document.getElementById('cardImagePreview'),
+            coverImagePreview: document.getElementById('coverImagePreview'),
+            editorTitle: document.getElementById('editorTitle')
         };
 
         // 初始化应用
         function initApp() {
             applyTheme();
             applyUIValues();
-            generateDemoCards();
             setupEventListeners();
+            loadDemoCards();
         }
 
         // 应用主题
@@ -965,66 +1050,54 @@
             elements.branchName.value = state.branchName;
         }
 
-        // 生成演示卡片
-        function generateDemoCards() {
-            state.cards = [
-                {
-                    id: 'arc001',
-                    name: '赛博忍者',
-                    fileName: 'cyber-ninja.png',
-                    filePath: 'images/cyber-ninja.png',
-                    coverPath: 'covers/cyber-ninja-cover.png',
-                    fileType: 'png',
-                    uploadTime: new Date().toISOString(),
-                    gender: 'male',
-                    intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
-                    personality: '冷静、神秘、高效，很少表露情感',
-                    stories: [
-                        '在城市的地下世界执行机密任务',
-                        '使用古老的忍术对抗现代科技',
-                        '守护着人类与技术之间的平衡'
-                    ]
-                },
-                {
-                    id: 'arc002',
-                    name: '星界歌姬',
-                    fileName: 'star-singer.png',
-                    filePath: 'images/star-singer.png',
-                    coverPath: 'covers/star-singer-cover.png',
-                    fileType: 'png',
-                    uploadTime: new Date().toISOString(),
-                    gender: 'female',
-                    intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
-                    personality: '活泼、有创造力、情感丰富',
-                    stories: [
-                        '举办星际巡回演唱会',
-                        '用歌声化解文明间的冲突',
-                        '探索神秘的音乐维度'
-                    ]
-                },
-                {
-                    id: 'arc003',
-                    name: '机械智者',
-                    fileName: 'mech-sage.png',
-                    filePath: 'images/mech-sage.png',
-                    coverPath: 'covers/mech-sage-cover.png',
-                    fileType: 'png',
-                    uploadTime: new Date().toISOString(),
-                    gender: 'male',
-                    intro: '拥有超越人类智慧与机械精密性的合成体，思考宇宙之谜。',
-                    personality: '理性、深思、有耐心',
-                    stories: [
-                        '建造星系尺度的计算机',
-                        '研究宇宙的终极问题',
-                        '为不同的文明提供智慧解决方案'
-                    ]
+        // 加载演示卡片
+        function loadDemoCards() {
+            // 模拟从GitHub加载卡片
+            setTimeout(() => {
+                state.cards = [
+                    {
+                        id: 'arc001',
+                        name: '赛博忍者',
+                        fileName: 'cyber-ninja-card.png',
+                        filePath: 'img/cyber-ninja-card.png',
+                        coverPath: 'img/cyber-ninja.png',
+                        fileType: 'png',
+                        uploadTime: new Date().toISOString(),
+                        gender: 'male',
+                        intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
+                        personality: '冷静、神秘、高效，很少表露情感',
+                        stories: [
+                            '在城市的地下世界执行机密任务',
+                            '使用古老的忍术对抗现代科技',
+                            '守护着人类与技术之间的平衡'
+                        ]
+                    },
+                    {
+                        id: 'arc002',
+                        name: '星界歌姬',
+                        fileName: 'star-singer-card.png',
+                        filePath: 'img/star-singer-card.png',
+                        coverPath: 'img/star-singer.png',
+                        fileType: 'png',
+                        uploadTime: new Date().toISOString(),
+                        gender: 'female',
+                        intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
+                        personality: '活泼、有创造力、情感丰富',
+                        stories: [
+                            '举办星际巡回演唱会',
+                            '用歌声化解文明间的冲突',
+                            '探索神秘的音乐维度'
+                        ]
+                    }
+                ];
+                
+                renderCardsList();
+                if (state.cards.length > 0) {
+                    selectCard(state.cards[0]);
                 }
-            ];
-            
-            renderCardsList();
-            if (state.cards.length > 0) {
-                selectCard(state.cards[0]);
-            }
+                
+                showNotification('角色卡加载成功！');
+            }, 1000);
         }
 
         // 渲染卡片列表
@@ -1056,6 +1129,9 @@
             state.currentCard = card;
             renderCardsList();
             
+            // 更新编辑器标题
+            elements.editorTitle.textContent = `编辑角色卡: ${card.name}`;
+            
             // 填充编辑表单
             elements.cardId.value = card.id;
             elements.cardName.value = card.name;
@@ -1065,6 +1141,15 @@
             elements.gender.value = card.gender;
             elements.intro.value = card.intro;
             elements.personality.value = card.personality;
+            
+            // 显示图片预览
+            if (card.filePath) {
+                elements.cardImagePreview.innerHTML = `<img src="${card.filePath}" alt="${card.name}">`;
+            }
+            
+            if (card.coverPath) {
+                elements.coverImagePreview.innerHTML = `<img src="${card.coverPath}" alt="${card.name}封面">`;
+            }
             
             // 填充故事
             elements.storiesList.innerHTML = '';
@@ -1107,6 +1192,89 @@
             elements.storiesList.appendChild(storyItem);
         }
 
+        // 上传图片处理
+        function handleImageUpload(inputElement, previewElement, type) {
+            return new Promise((resolve) => {
+                const file = inputElement.files[0];
+                if (!file) return resolve(null);
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    
+                    img.onload = function() {
+                        // 创建canvas进行压缩
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // 设置最大尺寸
+                        const maxWidth = 800;
+                        const maxHeight = 800;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // 转换为Data URL
+                        const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        // 显示预览
+                        previewElement.innerHTML = `<img src="${dataURL}" alt="预览">`;
+                        
+                        // 保存到状态
+                        if (type === 'card') {
+                            state.cardImage = {
+                                file: file,
+                                dataURL: dataURL,
+                                name: file.name
+                            };
+                        } else {
+                            state.coverImage = {
+                                file: file,
+                                dataURL: dataURL,
+                                name: file.name
+                            };
+                        }
+                        
+                        resolve(dataURL);
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 生成图片路径
+        function generateImagePaths(cardName) {
+            // 移除特殊字符并替换空格
+            const safeName = cardName
+                .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '')
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+            
+            const timestamp = new Date().getTime();
+            
+            return {
+                fileName: `${safeName}-card-${timestamp}.png`,
+                filePath: `img/${safeName}-card-${timestamp}.png`,
+                coverPath: `img/${safeName}-${timestamp}.png`
+            };
+        }
+
         // 保存卡片
         function saveCard() {
             if (!elements.cardId.value || !elements.cardName.value) {
@@ -1116,13 +1284,24 @@
             
             const stories = Array.from(document.querySelectorAll('.story-input')).map(input => input.value);
             
+            // 生成图片路径
+            const imagePaths = generateImagePaths(elements.cardName.value);
+            
             if (state.currentCard) {
                 // 更新现有卡片
                 state.currentCard.id = elements.cardId.value;
                 state.currentCard.name = elements.cardName.value;
-                state.currentCard.fileName = elements.fileName.value;
-                state.currentCard.filePath = elements.filePath.value;
-                state.currentCard.coverPath = elements.coverPath.value;
+                
+                // 如果有新图片，更新路径
+                if (state.cardImage) {
+                    state.currentCard.fileName = imagePaths.fileName;
+                    state.currentCard.filePath = imagePaths.filePath;
+                }
+                
+                if (state.coverImage) {
+                    state.currentCard.coverPath = imagePaths.coverPath;
+                }
+                
                 state.currentCard.gender = elements.gender.value;
                 state.currentCard.intro = elements.intro.value;
                 state.currentCard.personality = elements.personality.value;
@@ -1134,9 +1313,9 @@
                 const newCard = {
                     id: elements.cardId.value,
                     name: elements.cardName.value,
-                    fileName: elements.fileName.value,
-                    filePath: elements.filePath.value,
-                    coverPath: elements.coverPath.value,
+                    fileName: imagePaths.fileName,
+                    filePath: imagePaths.filePath,
+                    coverPath: imagePaths.coverPath,
                     fileType: 'png',
                     uploadTime: new Date().toISOString(),
                     gender: elements.gender.value,
@@ -1149,6 +1328,11 @@
                 
                 showNotification('新角色卡创建成功！');
             }
+            
+            // 更新表单中的路径显示
+            elements.fileName.value = state.currentCard.fileName;
+            elements.filePath.value = state.currentCard.filePath;
+            elements.coverPath.value = state.currentCard.coverPath;
             
             renderCardsList();
         }
@@ -1187,12 +1371,24 @@
             elements.intro.value = '';
             elements.personality.value = '';
             
+            // 重置图片预览
+            elements.cardImagePreview.innerHTML = '<i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>';
+            elements.coverImagePreview.innerHTML = '<i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>';
+            
+            // 重置图片状态
+            state.cardImage = null;
+            state.coverImage = null;
+            
+            // 重置故事列表
             elements.storiesList.innerHTML = `
                 <div class="story-item">
                     <input type="text" placeholder="故事文本" class="story-input">
                     <i class="fas fa-times remove-story"></i>
                 </div>
             `;
+            
+            // 更新编辑器标题
+            elements.editorTitle.textContent = '创建新角色卡';
         }
 
         // 新建卡片
@@ -1309,6 +1505,23 @@
             
             elements.opacitySlider.addEventListener('input', (e) => {
                 elements.opacityValue.textContent = `${e.target.value}%`;
+            });
+            
+            // 图片上传处理
+            elements.cardImageUpload.addEventListener('click', () => {
+                elements.cardImageInput.click();
+            });
+            
+            elements.coverImageUpload.addEventListener('click', () => {
+                elements.coverImageInput.click();
+            });
+            
+            elements.cardImageInput.addEventListener('change', () => {
+                handleImageUpload(elements.cardImageInput, elements.cardImagePreview, 'card');
+            });
+            
+            elements.coverImageInput.addEventListener('change', () => {
+                handleImageUpload(elements.coverImageInput, elements.coverImagePreview, 'cover');
             });
         }
 
