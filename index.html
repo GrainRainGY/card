@@ -3,227 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ODCM - Oasis 数据卡片管理系统</title>
+    <title>卡片与图片管理系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* 浅色主题变量 */
-            --primary: #5b8cff;
-            --secondary: #4361ee;
-            --accent: #4cc9f0;
-            --background: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #2d3748;
-            --text-secondary: #718096;
-            --border: #e2e8f0;
-            --success: #48bb78;
-            --warning: #ecc94b;
-            --danger: #f56565;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
             --transition: all 0.3s ease;
-            --radius: 12px;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --header-bg: linear-gradient(135deg, #4361ee, #3f37c9);
         }
-
+        
+        /* 暗色主题 */
         .dark-theme {
-            /* 暗色主题变量 */
-            --primary: #7ea5ff;
-            --secondary: #5b8cff;
-            --accent: #6bd7f0;
-            --background: #1a202c;
-            --card-bg: #2d3748;
-            --text: #e2e8f0;
-            --text-secondary: #a0aec0;
-            --border: #4a5568;
-            --success: #68d391;
-            --warning: #f6e05e;
-            --danger: #fc8181;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --bg-color: #121826;
+            --card-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --header-bg: linear-gradient(135deg, #1e3a8a, #0f172a);
+            --border: #334155;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            transition: background-color var(--transition), color var(--transition);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background-color: var(--background);
-            color: var(--text);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
-            min-height: 100vh;
+            transition: var(--transition);
         }
-
+        
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
+        
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--header-bg);
             color: white;
-            padding: 15px 0;
-            box-shadow: var(--shadow);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
         }
-
+        
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
+        
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.6rem;
-            font-weight: 700;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
-
+        
         .logo i {
             font-size: 1.8rem;
-            background: rgba(255, 255, 255, 0.2);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-
+        
         .header-actions {
             display: flex;
             gap: 15px;
-            align-items: center;
         }
-
-        .theme-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .theme-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.3);
-            transition: var(--transition);
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: var(--transition);
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .btn {
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 6px rgba(91, 140, 255, 0.3);
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(67, 97, 238, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: rgba(91, 140, 255, 0.1);
-        }
-
-        .btn-sm {
-            padding: 7px 12px;
-            font-size: 0.85rem;
-        }
-
+        
         .main-content {
             display: grid;
             grid-template-columns: 1fr;
             gap: 25px;
             margin-top: 30px;
         }
-
+        
         @media (min-width: 992px) {
             .main-content {
                 grid-template-columns: 1fr 1fr;
             }
         }
-
-        @media (min-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1.2fr 1.8fr;
-            }
-        }
-
+        
         .card {
             background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
             overflow: hidden;
             transition: var(--transition);
+            border: 1px solid var(--border);
         }
-
+        
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
-
+        
         .card-header {
-            padding: 18px 22px;
+            padding: 18px 20px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             font-weight: 600;
@@ -231,18 +123,18 @@
             align-items: center;
             justify-content: space-between;
         }
-
+        
         .card-body {
-            padding: 22px;
+            padding: 20px;
         }
-
+        
         .card-list {
             max-height: 500px;
             overflow-y: auto;
         }
-
+        
         .card-item {
-            padding: 16px;
+            padding: 15px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -250,107 +142,144 @@
             cursor: pointer;
             transition: var(--transition);
         }
-
+        
         .card-item:last-child {
             border-bottom: none;
         }
-
+        
         .card-item:hover {
-            background-color: rgba(91, 140, 255, 0.05);
+            background-color: rgba(67, 97, 238, 0.1);
         }
-
+        
         .card-item.active {
-            background-color: rgba(91, 140, 255, 0.1);
+            background-color: rgba(67, 97, 238, 0.15);
             border-left: 3px solid var(--primary);
         }
-
+        
         .card-img {
             width: 60px;
             height: 60px;
-            border-radius: 10px;
-            background-color: var(--background);
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
+            color: var(--gray);
             font-size: 1.5rem;
-            overflow: hidden;
         }
-
-        .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        
         .card-info {
             flex: 1;
-            min-width: 0;
         }
-
+        
         .card-name {
             font-weight: 600;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 4px;
         }
-
+        
         .card-meta {
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            color: var(--gray);
             display: flex;
             gap: 15px;
         }
-
+        
         .card-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
-
-        .card-editor {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 20px;
         }
-
+        
         .form-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--text);
         }
-
+        
         .form-control {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 1rem;
             transition: var(--transition);
-            background: var(--card-bg);
-            color: var(--text);
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
-
+        
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
-
+        
         textarea.form-control {
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
         }
-
+        
         .image-preview {
             width: 100%;
-            height: 220px;
-            background-color: var(--background);
+            height: 200px;
+            background-color: var(--bg-color);
             border: 1px dashed var(--border);
             border-radius: 8px;
             display: flex;
@@ -359,174 +288,304 @@
             overflow: hidden;
             margin-bottom: 15px;
         }
-
+        
         .image-preview img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
-
+        
         .image-preview i {
             font-size: 3rem;
-            color: var(--text-secondary);
+            color: var(--gray);
         }
-
+        
         .upload-area {
             border: 2px dashed var(--border);
-            border-radius: var(--radius);
+            border-radius: 8px;
             padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
             margin-bottom: 20px;
-            background: var(--card-bg);
+            background-color: var(--card-bg);
         }
-
+        
         .upload-area:hover, .upload-area.drag-over {
             border-color: var(--primary);
-            background-color: rgba(91, 140, 255, 0.05);
+            background-color: rgba(67, 97, 238, 0.05);
         }
-
+        
         .upload-area i {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             color: var(--primary);
             margin-bottom: 15px;
         }
-
+        
         .upload-text {
             margin-bottom: 15px;
-            color: var(--text);
         }
-
+        
         .image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
-
+        
         .image-item {
             position: relative;
             border-radius: 8px;
             overflow: hidden;
             aspect-ratio: 1;
-            background-color: var(--background);
+            background-color: var(--bg-color);
             cursor: pointer;
-            transition: var(--transition);
         }
-
-        .image-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
+        
         .image-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
+        
         .image-item .overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             transition: var(--transition);
         }
-
+        
         .image-item:hover .overlay {
             opacity: 1;
         }
-
+        
         .image-item .delete-btn {
             color: white;
-            background: rgba(245, 101, 101, 0.8);
-            width: 32px;
-            height: 32px;
+            background: rgba(220, 53, 69, 0.8);
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
         }
-
+        
+        .image-item.selected {
+            border: 3px solid var(--primary);
+        }
+        
         .toolbar {
             display: flex;
             justify-content: space-between;
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid var(--border);
         }
-
+        
         .footer {
             text-align: center;
-            padding: 40px 0 20px;
-            color: var(--text-secondary);
+            padding: 30px 0;
+            color: var(--gray);
             margin-top: 40px;
-            font-size: 0.9rem;
         }
-
+        
         .empty-state {
             text-align: center;
             padding: 40px 20px;
-            color: var(--text-secondary);
+            color: var(--gray);
         }
-
+        
         .empty-state i {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 15px;
             opacity: 0.5;
         }
-
+        
         .toast {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
-            padding: 16px 28px;
-            border-radius: var(--radius);
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
             background: var(--card-bg);
-            color: var(--text);
-            box-shadow: var(--shadow);
+            color: var(--text-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid var(--border);
             transform: translateY(100px);
             opacity: 0;
-            transition: var(--transition);
+            transition: transform 0.3s ease, opacity 0.3s ease;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-left: 4px solid var(--primary);
         }
-
+        
         .toast.show {
             transform: translateY(0);
             opacity: 1;
         }
-
-        .toast i {
-            font-size: 1.2rem;
-            color: var(--primary);
+        
+        /* 设置模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
-
-        .loading {
-            display: inline-block;
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .theme-option {
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .theme-option.active {
+            border-color: var(--primary);
+        }
+        
+        .theme-option.active::after {
+            content: "✓";
+            position: absolute;
+            top: 5px;
+            right: 5px;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: var(--primary);
+            color: white;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
         }
-
+        
+        .color-input {
+            width: 60px;
+            height: 40px;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            background: none;
+        }
+        
+        .github-status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        .github-status.connected {
+            display: block;
+        }
+        
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -542,11 +601,6 @@
             .card-actions {
                 flex-direction: column;
             }
-            
-            .toolbar {
-                flex-direction: column;
-                gap: 12px;
-            }
         }
     </style>
 </head>
@@ -554,19 +608,15 @@
     <header>
         <div class="header-content">
             <div class="logo">
-                <i class="fas fa-database"></i>
-                <span>ODCM - Oasis 数据卡片管理系统</span>
+                <i class="fas fa-images"></i>
+                <span>卡片与图片管理系统</span>
             </div>
             <div class="header-actions">
-                <label class="theme-switch">
-                    <input type="checkbox" id="themeToggle">
-                    <span class="slider"></span>
-                </label>
-                <button id="githubBtn" class="btn btn-outline">
-                    <i class="fab fa-github"></i> GitHub
-                </button>
                 <button id="saveBtn" class="btn btn-primary">
                     <i class="fas fa-save"></i> 保存更改
+                </button>
+                <button id="settingsBtn" class="btn btn-warning">
+                    <i class="fas fa-cog"></i> 设置
                 </button>
             </div>
         </div>
@@ -574,33 +624,29 @@
 
     <div class="container">
         <div class="main-content">
-            <!-- 左侧面板：卡片管理 -->
+            <!-- 卡片管理区域 -->
             <div class="card">
                 <div class="card-header">
                     <span><i class="fas fa-address-card"></i> 卡片管理</span>
-                    <div>
-                        <button id="reloadBtn" class="btn btn-sm btn-outline">
-                            <i class="fas fa-sync-alt"></i> 重新加载
-                        </button>
-                        <button id="addCardBtn" class="btn btn-sm btn-primary">
-                            <i class="fas fa-plus"></i> 添加卡片
-                        </button>
-                    </div>
+                    <button id="addCardBtn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-plus"></i> 添加卡片
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="card-list" id="cardsList">
+                        <!-- 卡片将通过JS动态加载 -->
                         <div class="empty-state">
-                            <i class="fas fa-cloud-download-alt"></i>
-                            <h3>加载数据中...</h3>
-                            <p>正在从GitHub仓库获取cards.json</p>
+                            <i class="fas fa-address-book"></i>
+                            <h3>暂无卡片数据</h3>
+                            <p>点击"添加卡片"按钮创建新卡片</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- 右侧面板：卡片编辑器和图片管理 -->
+            <!-- 卡片编辑和图片区域 -->
             <div>
-                <!-- 卡片编辑器 -->
+                <!-- 卡片编辑表单 -->
                 <div class="card" id="cardEditor">
                     <div class="card-header">
                         <span><i class="fas fa-edit"></i> 卡片编辑器</span>
@@ -612,7 +658,7 @@
                             <p>在左侧选择一张卡片以查看或编辑其内容</p>
                         </div>
                         
-                        <form id="cardForm" style="display: none;" class="card-editor">
+                        <form id="cardForm" style="display: none;">
                             <input type="hidden" id="cardId">
                             
                             <div class="form-group">
@@ -668,10 +714,7 @@
                         </div>
                         
                         <div class="image-grid" id="imageGrid">
-                            <div class="empty-state">
-                                <i class="fas fa-images"></i>
-                                <p>上传图片后将会显示在这里</p>
-                            </div>
+                            <!-- 图片将通过JS动态加载 -->
                         </div>
                     </div>
                 </div>
@@ -680,484 +723,155 @@
     </div>
     
     <div class="footer">
-        <p>ODCM - Oasis 数据卡片管理系统 &copy; 2023 | 部署于 Cloudflare Pages</p>
-        <p>从GitHub仓库加载cards.json数据</p>
+        <p>卡片与图片管理系统 &copy; 2023 | 部署于 Cloudflare Pages</p>
     </div>
     
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span>操作成功！</span>
+    <div class="toast" id="toast">操作成功！</div>
+    
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-cog"></i> 系统设置</h3>
+                <button class="modal-close" id="closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <div class="tab active" data-tab="appearance">外观设置</div>
+                    <div class="tab" data-tab="github">GitHub 设置</div>
+                    <div class="tab" data-tab="about">关于系统</div>
+                </div>
+                
+                <!-- 外观设置 -->
+                <div class="tab-content active" id="appearanceTab">
+                    <h4>主题设置</h4>
+                    
+                    <div class="theme-selector">
+                        <div class="theme-option active" data-theme="default" style="background: linear-gradient(135deg, #4361ee, #3f37c9);"></div>
+                        <div class="theme-option" data-theme="dark" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"></div>
+                        <div class="theme-option" data-theme="green" style="background: linear-gradient(135deg, #10b981, #047857);"></div>
+                        <div class="theme-option" data-theme="purple" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"></div>
+                        <div class="theme-option" data-theme="sunset" style="background: linear-gradient(135deg, #f97316, #ea580c);"></div>
+                    </div>
+                    
+                    <h4 style="margin-top: 25px;">自定义主题</h4>
+                    <div class="form-group">
+                        <label class="form-label">主色调</label>
+                        <div class="color-picker">
+                            <input type="color" class="color-input" id="primaryColor" value="#4361ee">
+                            <span>当前值: <span id="primaryColorValue">#4361ee</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">背景颜色</label>
+                        <div class="color-picker">
+                            <input type="color" class="color-input" id="bgColor" value="#f0f2f5">
+                            <span>当前值: <span id="bgColorValue">#f0f2f5</span></span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="applyThemeBtn">
+                        <i class="fas fa-paint-brush"></i> 应用主题
+                    </button>
+                </div>
+                
+                <!-- GitHub 设置 -->
+                <div class="tab-content" id="githubTab">
+                    <h4>GitHub 仓库设置</h4>
+                    <p class="form-label">连接您的 GitHub 仓库以管理 cards.json 文件</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="githubRepo">GitHub 仓库</label>
+                        <input type="text" class="form-control" id="githubRepo" placeholder="username/repo-name">
+                        <small>例如: yourusername/cards-repository</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="githubToken">GitHub 访问令牌</label>
+                        <input type="password" class="form-control" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                        <small>需要具有仓库写入权限的 personal access token</small>
+                    </div>
+                    
+                    <div class="github-status" id="githubStatus">
+                        <i class="fas fa-check-circle"></i>
+                        <span>已连接到 GitHub 仓库: <span id="connectedRepo"></span></span>
+                    </div>
+                    
+                    <div class="toolbar">
+                        <button class="btn btn-outline" id="testGithubBtn">
+                            <i class="fas fa-plug"></i> 测试连接
+                        </button>
+                        <button class="btn btn-primary" id="saveGithubBtn">
+                            <i class="fas fa-save"></i> 保存设置
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 关于系统 -->
+                <div class="tab-content" id="aboutTab">
+                    <h4>关于卡片管理系统</h4>
+                    <div style="text-align: center; margin: 25px 0;">
+                        <i class="fas fa-images" style="font-size: 4rem; color: var(--primary);"></i>
+                        <h3 style="margin: 15px 0;">卡片与图片管理系统</h3>
+                        <p>版本: 2.0.0</p>
+                    </div>
+                    
+                    <div class="card" style="margin: 20px 0;">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i> 系统信息
+                        </div>
+                        <div class="card-body">
+                            <p>这是一个功能完整的卡片与图片管理系统，可以帮助您：</p>
+                            <ul style="padding-left: 20px; margin: 15px 0;">
+                                <li>管理 cards.json 文件</li>
+                                <li>上传和组织图片资源</li>
+                                <li>自定义系统外观主题</li>
+                                <li>连接 GitHub 仓库进行数据同步</li>
+                            </ul>
+                            <p>系统部署于 Cloudflare Pages，提供快速可靠的访问体验。</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p>© 2023 卡片管理系统 | 保留所有权利</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
-        // 从GitHub仓库加载cards.json的URL
-        const CARDS_JSON_URL = 'https://raw.githubusercontent.com/your-username/your-repo/main/cards.json';
-        
-        // 模拟图片库（实际应用中应替换为真实图片URL）
-        const IMAGE_BASE_URL = 'https://images.unsplash.com/photo-';
-        const IMAGE_IDS = [
-            '1507003211169-0a1dd7228f2d',
-            '1534528741775-53994a69daeb',
-            '1494790108377-be9c29b29330',
-            '1539571690997-8a10a9a90a5d',
-            '1529626455594-4ff0802cfb7e',
-            '1489424731084-a5d8b219a5bb',
-            '1567532939604-b6b5b0db1604'
-        ];
-        
-        // 卡片数据
-        let cardsData = { cards: [] };
-        let imageLibrary = [];
-        
-        // DOM元素
-        const cardsList = document.getElementById('cardsList');
-        const cardForm = document.getElementById('cardForm');
-        const cardEditor = document.getElementById('cardEditor');
-        const imageGrid = document.getElementById('imageGrid');
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const coverPreview = document.getElementById('coverPreview');
-        const themeToggle = document.getElementById('themeToggle');
-        
-        // 当前选中的卡片
-        let selectedCard = null;
-        
-        // 初始化
-        async function init() {
-            // 设置主题切换
-            setupThemeToggle();
-            
-            // 初始化图片库
-            initImageLibrary();
-            
-            // 从GitHub加载cards.json
-            await loadCardsFromGitHub();
-            
-            // 渲染UI
-            renderCards();
-            renderImageGrid();
-            
-            // 设置事件监听器
-            setupEventListeners();
-        }
-        
-        // 设置主题切换
-        function setupThemeToggle() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                themeToggle.checked = true;
-            }
-            
-            themeToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    document.body.classList.add('dark-theme');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.body.classList.remove('dark-theme');
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-        }
-        
-        // 初始化图片库
-        function initImageLibrary() {
-            imageLibrary = IMAGE_IDS.map(id => `${IMAGE_BASE_URL}${id}?auto=format&fit=crop&w=400&h=400&q=80`);
-        }
-        
-        // 从GitHub加载cards.json
-        async function loadCardsFromGitHub() {
-            showToast("正在从GitHub加载cards.json数据...", "loading");
-            
-            try {
-                const response = await fetch(CARDS_JSON_URL);
-                if (!response.ok) throw new Error('网络响应不正常');
-                
-                const data = await response.json();
-                cardsData = data;
-                
-                showToast("成功加载cards.json数据！");
-            } catch (error) {
-                console.error("加载cards.json失败:", error);
-                showToast("加载cards.json失败，使用示例数据", "warning");
-                
-                // 使用示例数据
-                cardsData = {
-                    cards: [
+        // 示例数据 - 在实际应用中，这将从cards.json加载
+        let cardsData = {
+            cards: [
+                {
+                    id: "1742218048477",
+                    name: "苏墨",
+                    fileName: "1742218048404-苏墨.png",
+                    filePath: "uploads/1742218048404-苏墨.png",
+                    coverPath: "uploads/1742218048404-苏墨-cover.jpg",
+                    fileType: "png",
+                    uploadTime: "2025-03-17T13:27:28.477Z",
+                    gender: "female",
+                    intro: "手绘设计师，倔强又敏感，在AI浪潮中坚持自我，用画笔描绘情感与梦想。",
+                    description: "苏墨，一位20岁的中国现代女性。",
+                    personality: "",
+                    stories: [
                         {
-                            id: "1742218048477",
-                            name: "苏墨",
-                            fileName: "1742218048404-苏墨.png",
-                            filePath: "img/1742218048404-苏墨.png",
-                            coverPath: "img/1742218048404-苏墨-cover.jpg",
-                            fileType: "png",
-                            uploadTime: "2025-03-17T13:27:28.477Z",
-                            gender: "female",
-                            intro: "手绘设计师，倔强又敏感，在AI浪潮中坚持自我，用画笔描绘情感与梦想。",
-                            description: "苏墨，一位20岁的中国现代女性。",
-                            personality: "",
-                            stories: [
-                                {
-                                    path: "uploads/stories/1741855693696-E88B8FE5A2A8-C3A5C2A4C28DC3A5C288C2BBC3A4C2BAC2BAC3A7C294C29FC382C2B7C3A4C2B8C28A.multi.h2book.json",
-                                    name: "复刻人生·上.multi.h2book.json",
-                                    uploadTime: "2025-03-13T08:48:13.702Z"
-                                }
-                            ]
-                        },
-                        {
-                            id: "1742218048478",
-                            name: "林风",
-                            fileName: "1742218048405-林风.jpg",
-                            filePath: "img/1742218048405-林风.jpg",
-                            coverPath: "img/1742218048405-林风-cover.jpg",
-                            fileType: "jpg",
-                            uploadTime: "2025-03-18T10:15:22.123Z",
-                            gender: "male",
-                            intro: "人工智能研究员，理性而富有创造力，致力于探索AI与人类共生的未来。",
-                            description: "林风，28岁的AI领域专家。",
-                            personality: "",
-                            stories: [
-                                {
-                                    path: "uploads/stories/1741855693697-林风-AI未来.multi.h2book.json",
-                                    name: "AI未来.multi.h2book.json",
-                                    uploadTime: "2025-03-14T09:30:45.321Z"
-                                }
-                            ]
-                        },
-                        {
-                            id: "1742218048479",
-                            name: "晨曦",
-                            fileName: "1742218048406-晨曦.webp",
-                            filePath: "img/1742218048406-晨曦.webp",
-                            coverPath: "img/1742218048406-晨曦-cover.jpg",
-                            fileType: "webp",
-                            uploadTime: "2025-03-19T14:45:33.789Z",
-                            gender: "female",
-                            intro: "虚拟偶像歌手，用歌声传递情感，在数字世界与粉丝建立真挚连接。",
-                            description: "晨曦，22岁的虚拟偶像歌手。",
-                            personality: "",
-                            stories: [
-                                {
-                                    path: "uploads/stories/1741855693698-晨曦-数字之歌.multi.h2book.json",
-                                    name: "数字之歌.multi.h2book.json",
-                                    uploadTime: "2025-03-15T11:20:15.654Z"
-                                }
-                            ]
+                            path: "uploads/stories/1741855693696-E88B8FE5A2A8-C3A5C2A4C28DC3A5C288C2BBC3A4C2BAC2BAC3A7C294C29FC382C2B7C3A4C2B8C28A.multi.h2book.json",
+                            name: "复刻人生·上.multi.h2book.json",
+                            uploadTime: "2025-03-13T08:48:13.702Z"
                         }
                     ]
-                };
-            }
-        }
-        
-        // 渲染卡片列表
-        function renderCards() {
-            if (cardsData.cards.length === 0) {
-                cardsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-address-book"></i>
-                        <h3>暂无卡片数据</h3>
-                        <p>点击"添加卡片"按钮创建新卡片</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            cardsList.innerHTML = '';
-            
-            cardsData.cards.forEach(card => {
-                const isActive = selectedCard && selectedCard.id === card.id;
-                const cardElement = document.createElement('div');
-                cardElement.className = `card-item ${isActive ? 'active' : ''}`;
-                cardElement.dataset.id = card.id;
-                
-                // 获取封面图片URL
-                const coverUrl = card.coverPath ? card.coverPath : imageLibrary[Math.floor(Math.random() * imageLibrary.length)];
-                
-                cardElement.innerHTML = `
-                    <div class="card-img">
-                        <img src="${coverUrl}" alt="${card.name}">
-                    </div>
-                    <div class="card-info">
-                        <div class="card-name">${card.name}</div>
-                        <div class="card-meta">
-                            <span><i class="fas fa-user"></i> ${card.gender === 'female' ? '女' : '男'}</span>
-                            <span><i class="fas fa-calendar"></i> ${formatDate(card.uploadTime)}</span>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="btn btn-sm btn-outline edit-btn">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-btn">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                
-                cardsList.appendChild(cardElement);
-                
-                // 添加点击事件
-                cardElement.addEventListener('click', () => {
-                    selectCard(card);
-                });
-                
-                // 添加编辑按钮事件
-                cardElement.querySelector('.edit-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectCard(card);
-                });
-                
-                // 添加删除按钮事件
-                cardElement.querySelector('.delete-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteCard(card.id);
-                });
-            });
-        }
-        
-        // 渲染图片网格
-        function renderImageGrid() {
-            if (imageLibrary.length === 0) {
-                imageGrid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-image"></i>
-                        <p>暂无图片，请上传图片</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            imageGrid.innerHTML = '';
-            
-            imageLibrary.forEach((img, index) => {
-                const imgElement = document.createElement('div');
-                imgElement.className = 'image-item';
-                imgElement.dataset.image = img;
-                
-                imgElement.innerHTML = `
-                    <img src="${img}" alt="图片 ${index + 1}">
-                    <div class="overlay">
-                        <div class="delete-btn">
-                            <i class="fas fa-trash"></i>
-                        </div>
-                    </div>
-                `;
-                
-                imageGrid.appendChild(imgElement);
-                
-                // 添加点击事件
-                imgElement.addEventListener('click', () => {
-                    // 如果正在编辑卡片，更新封面预览
-                    if (selectedCard) {
-                        coverPreview.innerHTML = `
-                            <img src="${img}" alt="预览">
-                        `;
-                        document.getElementById('filePath').value = `img/${img.split('/').pop()}`;
-                    }
-                });
-                
-                // 添加删除事件
-                imgElement.querySelector('.delete-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteImage(img);
-                });
-            });
-        }
-        
-        // 设置事件监听器
-        function setupEventListeners() {
-            // 添加卡片按钮
-            document.getElementById('addCardBtn').addEventListener('click', addNewCard);
-            
-            // 重新加载按钮
-            document.getElementById('reloadBtn').addEventListener('click', async () => {
-                await loadCardsFromGitHub();
-                renderCards();
-                showToast("已重新加载数据");
-            });
-            
-            // GitHub按钮
-            document.getElementById('githubBtn').addEventListener('click', () => {
-                window.open('https://github.com', '_blank');
-            });
-            
-            // 卡片表单提交
-            cardForm.addEventListener('submit', saveCard);
-            
-            // 删除卡片按钮
-            document.getElementById('deleteCardBtn').addEventListener('click', deleteSelectedCard);
-            
-            // 上传区域点击
-            uploadArea.addEventListener('click', () => {
-                fileInput.click();
-            });
-            
-            // 文件选择
-            fileInput.addEventListener('change', handleFileUpload);
-            
-            // 保存按钮
-            document.getElementById('saveBtn').addEventListener('click', () => {
-                showToast("所有更改已保存成功！", "success");
-            });
-            
-            // 选择封面按钮
-            document.getElementById('selectCoverBtn').addEventListener('click', () => {
-                showToast("请在下方图片库中选择一张图片", "info");
-            });
-        }
-        
-        // 选择卡片
-        function selectCard(card) {
-            selectedCard = card;
-            
-            // 更新卡片列表选中状态
-            document.querySelectorAll('.card-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.id === card.id) {
-                    item.classList.add('active');
-                }
-            });
-            
-            // 显示卡片编辑器
-            cardEditor.querySelector('.empty-state').style.display = 'none';
-            cardForm.style.display = 'block';
-            
-            // 填充表单
-            document.getElementById('cardId').value = card.id;
-            document.getElementById('cardName').value = card.name;
-            document.getElementById('cardDescription').value = card.description || '';
-            document.getElementById('filePath').value = card.filePath || '';
-            
-            // 更新封面预览
-            const coverUrl = card.coverPath ? card.coverPath : imageLibrary[Math.floor(Math.random() * imageLibrary.length)];
-            coverPreview.innerHTML = `
-                <img src="${coverUrl}" alt="预览">
-            `;
-        }
-        
-        // 添加新卡片
-        function addNewCard() {
-            const newCard = {
-                id: Date.now().toString(),
-                name: "新卡片",
-                fileName: "",
-                filePath: "",
-                fileType: "",
-                uploadTime: new Date().toISOString(),
-                gender: "female",
-                intro: "",
-                description: "",
-                personality: "",
-                stories: []
-            };
-            
-            cardsData.cards.push(newCard);
-            renderCards();
-            selectCard(newCard);
-            
-            showToast("已创建新卡片", "success");
-        }
-        
-        // 保存卡片
-        function saveCard(e) {
-            e.preventDefault();
-            
-            if (!selectedCard) return;
-            
-            // 更新卡片数据
-            selectedCard.name = document.getElementById('cardName').value;
-            selectedCard.description = document.getElementById('cardDescription').value;
-            selectedCard.filePath = document.getElementById('filePath').value;
-            
-            // 更新卡片列表
-            renderCards();
-            
-            showToast("卡片已保存", "success");
-        }
-        
-        // 删除卡片
-        function deleteCard(cardId) {
-            if (confirm("确定要删除这张卡片吗？此操作不可撤销。")) {
-                cardsData.cards = cardsData.cards.filter(card => card.id !== cardId);
-                
-                if (selectedCard && selectedCard.id === cardId) {
-                    selectedCard = null;
-                    cardForm.style.display = 'none';
-                    cardEditor.querySelector('.empty-state').style.display = 'block';
-                }
-                
-                renderCards();
-                showToast("卡片已删除", "success");
-            }
-        }
-        
-        // 删除选中的卡片
-        function deleteSelectedCard() {
-            if (selectedCard) {
-                deleteCard(selectedCard.id);
-            }
-        }
-        
-        // 处理文件上传
-        function handleFileUpload(e) {
-            if (e.target.files.length) {
-                showToast(`已选择 ${e.target.files.length} 个文件`, "info");
-                
-                // 模拟添加到图片库
-                Array.from(e.target.files).forEach(file => {
-                    const newImageUrl = URL.createObjectURL(file);
-                    imageLibrary.unshift(newImageUrl);
-                });
-                
-                renderImageGrid();
-            }
-        }
-        
-        // 删除图片
-        function deleteImage(imageUrl) {
-            if (confirm("确定要删除这张图片吗？")) {
-                imageLibrary = imageLibrary.filter(img => img !== imageUrl);
-                renderImageGrid();
-                showToast("图片已删除", "success");
-            }
-        }
-        
-        // 格式化日期
-        function formatDate(isoString) {
-            const date = new Date(isoString);
-            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-        }
-        
-        // 显示提示消息
-        function showToast(message, type = "success") {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = '';
-            
-            let iconClass = 'fas fa-check-circle';
-            if (type === "loading") {
-                iconClass = 'loading';
-                toast.innerHTML = `<div class="loading"></div><span>${message}</span>`;
-            } else if (type === "warning") {
-                iconClass = 'fas fa-exclamation-triangle';
-                toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
-            } else if (type === "info") {
-                iconClass = 'fas fa-info-circle';
-                toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
-            } else {
-                toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
-            }
-            
-            toast.classList.add('show');
-            
-            if (type !== "loading") {
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
-            }
-        }
-        
-        // 初始化应用
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-    </html>
+                },
+                {
+                    id: "1742218048478",
+                    name: "林风",
+                    fileName: "1742218048405-林风.jpg",
+                    filePath: "uploads/1742218048405-林风.jpg",
+                    coverPath: "uploads/1742218048405-林风-cover.jpg",
+                    fileType: "jpg",
+                    uploadTime: "2025-03
