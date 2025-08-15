@@ -612,118 +612,53 @@
             transform: scale(1.2);
         }
 
-        .modal-overlay {
+        .notification {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .github-modal {
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
             background: var(--card-bg);
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 500px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transform: translateY(20px);
-            transition: all 0.4s ease;
             backdrop-filter: blur(var(--blur));
-        }
-
-        .modal-overlay.active .github-modal {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .modal-header h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
             display: flex;
-            justify-content: center;
             align-items: center;
             gap: 10px;
         }
 
-        .repo-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 25px;
-            border-radius: var(--radius);
-            border: 2px solid var(--glass);
-            padding: 10px;
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .repo-item {
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: var(--transition);
+        .notification.success {
+            border-left: 4px solid #4CAF50;
         }
 
-        .repo-item:hover {
-            background: rgba(138, 108, 255, 0.1);
-            transform: translateX(5px);
+        .notification.error {
+            border-left: 4px solid #f44336;
         }
 
-        .no-repos {
-            text-align: center;
-            padding: 20px;
-            color: var(--text);
-            opacity: 0.7;
+        .notification.info {
+            border-left: 4px solid #2196F3;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
+        .notification i {
+            font-size: 1.5rem;
         }
 
-        .modal-btn {
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
+        .notification.success i {
+            color: #4CAF50;
         }
 
-        .modal-btn.primary {
-            background: var(--primary);
-            color: white;
+        .notification.error i {
+            color: #f44336;
         }
 
-        .modal-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .file-path {
-            font-size: 0.9rem;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin: 15px 0;
+        .notification.info i {
+            color: #2196F3;
         }
 
         /* Animations */
@@ -751,10 +686,6 @@
                 width: 100%;
                 right: -100%;
             }
-
-            .github-modal {
-                width: 95%;
-            }
         }
 
         @media (max-width: 500px) {
@@ -771,20 +702,6 @@
             .save-btn, .delete-btn {
                 flex: 1;
                 text-align: center;
-            }
-
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .controls {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .modal-actions {
-                flex-direction: column;
             }
         }
     </style>
@@ -954,177 +871,449 @@
         </button>
     </div>
 
-    <div class="modal-overlay" id="githubModal">
-        <div class="github-modal">
-            <div class="modal-header">
-                <h3><i class="fab fa-github"></i> 选择GitHub仓库</h3>
-                <p>选择包含角色卡数据的仓库</p>
-            </div>
-            
-            <div class="repo-list" id="repoList">
-                <div class="repo-item" data-repo="omate-master">
-                    <strong>omate-master</strong>
-                    <p>主仓库 · 上次更新: 2天前</p>
-                </div>
-                <div class="repo-item" data-repo="characters-cards">
-                    <strong>characters-cards</strong>
-                    <p>角色卡数据 · 上次更新: 4小时前</p>
-                </div>
-                <div class="repo-item" data-repo="my-project">
-                    <strong>my-project</strong>
-                    <p>个人项目 · 上次更新: 1个月前</p>
-                </div>
-            </div>
-            
-            <div class="file-path">
-                <p><strong>完整路径:</strong></p>
-                <p><code id="selectedRepo">username/reponame/cards.json</code></p>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="modal-btn" id="closeModal">
-                    取消
-                </button>
-                <button class="modal-btn primary" id="loadCardsBtn">
-                    <i class="fas fa-download"></i> 加载角色卡
-                </button>
-            </div>
-        </div>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">操作成功！</span>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 状态变量
-            let currentTheme = localStorage.getItem('theme') || 'light';
-            let cards = [];
-            let currentCard = null;
-            let blurStrength = localStorage.getItem('blur') || 12;
-            let animationSpeed = localStorage.getItem('animationSpeed') || 4;
-            let opacityValue = localStorage.getItem('opacity') || 70;
-            let githubToken = localStorage.getItem('githubToken') || '';
-            let repoName = localStorage.getItem('repoName') || '';
-            let branchName = localStorage.getItem('branchName') || 'main';
-            let selectedRepo = '';
+        // 状态管理
+        const state = {
+            currentTheme: localStorage.getItem('theme') || 'light',
+            cards: [],
+            currentCard: null,
+            blurStrength: localStorage.getItem('blur') || 12,
+            animationSpeed: localStorage.getItem('animationSpeed') || 4,
+            opacityValue: localStorage.getItem('opacity') || 70,
+            githubToken: localStorage.getItem('githubToken') || '',
+            repoName: localStorage.getItem('repoName') || '',
+            branchName: localStorage.getItem('branchName') || 'main'
+        };
 
-            // 初始化UI
-            const initUI = () => {
-                document.documentElement.style.setProperty('--blur', `${blurStrength}px`);
-                document.documentElement.style.setProperty('--transition', `all ${0.4 - (animationSpeed/40)}s ease`);
-                
-                if (currentTheme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-                }
-                
-                document.getElementById('blurSlider').value = blurStrength;
-                document.getElementById('blurValue').textContent = blurStrength;
-                
-                document.getElementById('animationSlider').value = animationSpeed;
-                document.getElementById('animationValue').textContent = animationSpeed;
-                
-                document.getElementById('opacitySlider').value = opacityValue;
-                document.getElementById('opacityValue').textContent = `${opacityValue}%`;
-                
-                document.getElementById('githubToken').value = githubToken;
-                document.getElementById('repoName').value = repoName;
-                document.getElementById('branchName').value = branchName;
-                
-                generateDemoCards();
-            };
+        // DOM元素引用
+        const elements = {
+            themeToggle: document.getElementById('themeToggle'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            closeSettings: document.getElementById('closeSettings'),
+            settingsPanel: document.getElementById('settingsPanel'),
+            githubBtn: document.getElementById('githubBtn'),
+            newCardBtn: document.getElementById('newCardBtn'),
+            saveCardBtn: document.getElementById('saveCardBtn'),
+            saveToGitHubBtn: document.getElementById('saveToGitHubBtn'),
+            deleteCardBtn: document.getElementById('deleteCardBtn'),
+            addStoryBtn: document.getElementById('addStoryBtn'),
+            saveGitHubConfig: document.getElementById('saveGitHubConfig'),
+            applyUISettings: document.getElementById('applyUISettings'),
+            cardsList: document.getElementById('cardsList'),
+            storiesList: document.getElementById('storiesList'),
+            notification: document.getElementById('notification'),
+            notificationText: document.getElementById('notificationText'),
+            blurSlider: document.getElementById('blurSlider'),
+            blurValue: document.getElementById('blurValue'),
+            animationSlider: document.getElementById('animationSlider'),
+            animationValue: document.getElementById('animationValue'),
+            opacitySlider: document.getElementById('opacitySlider'),
+            opacityValue: document.getElementById('opacityValue'),
+            githubToken: document.getElementById('githubToken'),
+            repoName: document.getElementById('repoName'),
+            branchName: document.getElementById('branchName'),
+            cardId: document.getElementById('cardId'),
+            cardName: document.getElementById('cardName'),
+            fileName: document.getElementById('fileName'),
+            filePath: document.getElementById('filePath'),
+            coverPath: document.getElementById('coverPath'),
+            gender: document.getElementById('gender'),
+            intro: document.getElementById('intro'),
+            personality: document.getElementById('personality')
+        };
+
+        // 初始化应用
+        function initApp() {
+            applyTheme();
+            applyUIValues();
+            generateDemoCards();
+            setupEventListeners();
+        }
+
+        // 应用主题
+        function applyTheme() {
+            if (state.currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        // 应用UI设置
+        function applyUIValues() {
+            document.documentElement.style.setProperty('--blur', `${state.blurStrength}px`);
+            document.documentElement.style.setProperty('--transition', `all ${0.4 - (state.animationSpeed/40)}s ease`);
             
-            // 生成演示卡片
-            const generateDemoCards = () => {
-                cards = [
-                    {
-                        id: 'arc001',
-                        name: '赛博忍者',
-                        fileName: 'cyber-ninja.png',
-                        filePath: 'images/cyber-ninja.png',
-                        coverPath: 'covers/cyber-ninja-cover.png',
-                        fileType: 'png',
-                        uploadTime: '2025-03-17T13:27:28.477Z',
-                        gender: 'male',
-                        intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
-                        personality: '冷静、神秘、高效，很少表露情感',
-                        stories: [
-                            '在城市的地下世界执行机密任务',
-                            '使用古老的忍术对抗现代科技',
-                            '守护着人类与技术之间的平衡'
-                        ]
-                    },
-                    {
-                        id: 'arc002',
-                        name: '星界歌姬',
-                        fileName: 'star-singer.png',
-                        filePath: 'images/star-singer.png',
-                        coverPath: 'covers/star-singer-cover.png',
-                        fileType: 'png',
-                        uploadTime: '2025-04-22T09:15:42.120Z',
-                        gender: 'female',
-                        intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
-                        personality: '活泼、有创造力、情感丰富',
-                        stories: [
-                            '举办星际巡回演唱会',
-                            '用歌声化解文明间的冲突',
-                            '探索神秘的音乐维度'
-                        ]
-                    },
-                    {
-                        id: 'arc003',
-                        name: '机械智者',
-                        fileName: 'mech-sage.png',
-                        filePath: 'images/mech-sage.png',
-                        coverPath: 'covers/mech-sage-cover.png',
-                        fileType: 'png',
-                        uploadTime: '2025-05-11T16:40:33.255Z',
-                        gender: 'male',
-                        intro: '拥有超越人类智慧与机械精密性的合成体，思考宇宙之谜。',
-                        personality: '理性、深思、有耐心',
-                        stories: [
-                            '建造星系尺度的计算机',
-                            '研究宇宙的终极问题',
-                            '为不同的文明提供智慧解决方案'
-                        ]
-                    }
-                ];
-                
-                renderCardsList();
-                if (cards.length > 0) {
-                    selectCard(cards[0]);
-                }
-            };
+            elements.blurSlider.value = state.blurStrength;
+            elements.blurValue.textContent = state.blurStrength;
             
-            // 渲染卡片列表
-            const renderCardsList = () => {
-                const cardsListEl = document.getElementById('cardsList');
-                cardsListEl.innerHTML = '';
-                
-                cards.forEach(card => {
-                    const cardEl = document.createElement('div');
-                    cardEl.className = `card-item ${currentCard === card ? 'selected' : ''}`;
-                    cardEl.innerHTML = `
-                        <div class="card-avatar">
-                            <i class="fas ${card.gender === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
-                        </div>
-                        <div class="card-info">
-                            <h3>${card.name}</h3>
-                            <p>${card.intro.substring(0, 60)}${card.intro.length > 60 ? '...' : ''}</p>
-                        </div>
-                        <div class="card-actions">
-                            <button><i class="fas fa-pen"></i></button>
-                        </div>
-                    `;
-                    cardEl.addEventListener('click', () => selectCard(card));
-                    cardsListEl.appendChild(cardEl);
+            elements.animationSlider.value = state.animationSpeed;
+            elements.animationValue.textContent = state.animationSpeed;
+            
+            elements.opacitySlider.value = state.opacityValue;
+            elements.opacityValue.textContent = `${state.opacityValue}%`;
+            
+            elements.githubToken.value = state.githubToken;
+            elements.repoName.value = state.repoName;
+            elements.branchName.value = state.branchName;
+        }
+
+        // 生成演示卡片
+        function generateDemoCards() {
+            state.cards = [
+                {
+                    id: 'arc001',
+                    name: '赛博忍者',
+                    fileName: 'cyber-ninja.png',
+                    filePath: 'images/cyber-ninja.png',
+                    coverPath: 'covers/cyber-ninja-cover.png',
+                    fileType: 'png',
+                    uploadTime: new Date().toISOString(),
+                    gender: 'male',
+                    intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
+                    personality: '冷静、神秘、高效，很少表露情感',
+                    stories: [
+                        '在城市的地下世界执行机密任务',
+                        '使用古老的忍术对抗现代科技',
+                        '守护着人类与技术之间的平衡'
+                    ]
+                },
+                {
+                    id: 'arc002',
+                    name: '星界歌姬',
+                    fileName: 'star-singer.png',
+                    filePath: 'images/star-singer.png',
+                    coverPath: 'covers/star-singer-cover.png',
+                    fileType: 'png',
+                    uploadTime: new Date().toISOString(),
+                    gender: 'female',
+                    intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
+                    personality: '活泼、有创造力、情感丰富',
+                    stories: [
+                        '举办星际巡回演唱会',
+                        '用歌声化解文明间的冲突',
+                        '探索神秘的音乐维度'
+                    ]
+                },
+                {
+                    id: 'arc003',
+                    name: '机械智者',
+                    fileName: 'mech-sage.png',
+                    filePath: 'images/mech-sage.png',
+                    coverPath: 'covers/mech-sage-cover.png',
+                    fileType: 'png',
+                    uploadTime: new Date().toISOString(),
+                    gender: 'male',
+                    intro: '拥有超越人类智慧与机械精密性的合成体，思考宇宙之谜。',
+                    personality: '理性、深思、有耐心',
+                    stories: [
+                        '建造星系尺度的计算机',
+                        '研究宇宙的终极问题',
+                        '为不同的文明提供智慧解决方案'
+                    ]
+                }
+            ];
+            
+            renderCardsList();
+            if (state.cards.length > 0) {
+                selectCard(state.cards[0]);
+            }
+        }
+
+        // 渲染卡片列表
+        function renderCardsList() {
+            elements.cardsList.innerHTML = '';
+            
+            state.cards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card-item ${state.currentCard === card ? 'selected' : ''}`;
+                cardEl.innerHTML = `
+                    <div class="card-avatar">
+                        <i class="fas ${card.gender === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>${card.name}</h3>
+                        <p>${card.intro.substring(0, 60)}${card.intro.length > 60 ? '...' : ''}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button><i class="fas fa-pen"></i></button>
+                    </div>
+                `;
+                cardEl.addEventListener('click', () => selectCard(card));
+                elements.cardsList.appendChild(cardEl);
+            });
+        }
+
+        // 选择卡片
+        function selectCard(card) {
+            state.currentCard = card;
+            renderCardsList();
+            
+            // 填充编辑表单
+            elements.cardId.value = card.id;
+            elements.cardName.value = card.name;
+            elements.fileName.value = card.fileName;
+            elements.filePath.value = card.filePath;
+            elements.coverPath.value = card.coverPath;
+            elements.gender.value = card.gender;
+            elements.intro.value = card.intro;
+            elements.personality.value = card.personality;
+            
+            // 填充故事
+            elements.storiesList.innerHTML = '';
+            card.stories.forEach(story => {
+                const storyItem = document.createElement('div');
+                storyItem.className = 'story-item';
+                storyItem.innerHTML = `
+                    <input type="text" value="${story}" class="story-input">
+                    <i class="fas fa-times remove-story"></i>
+                `;
+                storyItem.querySelector('.remove-story').addEventListener('click', () => {
+                    storyItem.remove();
                 });
-            };
+                elements.storiesList.appendChild(storyItem);
+            });
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            elements.notification.className = `notification ${type}`;
+            elements.notificationText.textContent = message;
+            elements.notification.classList.add('show');
             
-            // 选择卡片
-            const selectCard = (card) => {
-                currentCard = card;
-                renderCardsList();
+            setTimeout(() => {
+                elements.notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 添加新故事
+        function addNewStory() {
+            const storyItem = document.createElement('div');
+            storyItem.className = 'story-item';
+            storyItem.innerHTML = `
+                <input type="text" placeholder="故事文本" class="story-input">
+                <i class="fas fa-times remove-story"></i>
+            `;
+            storyItem.querySelector('.remove-story').addEventListener('click', () => {
+                storyItem.remove();
+            });
+            elements.storiesList.appendChild(storyItem);
+        }
+
+        // 保存卡片
+        function saveCard() {
+            if (!elements.cardId.value || !elements.cardName.value) {
+                showNotification('ID和角色名是必填字段！', 'error');
+                return;
+            }
+            
+            const stories = Array.from(document.querySelectorAll('.story-input')).map(input => input.value);
+            
+            if (state.currentCard) {
+                // 更新现有卡片
+                state.currentCard.id = elements.cardId.value;
+                state.currentCard.name = elements.cardName.value;
+                state.currentCard.fileName = elements.fileName.value;
+                state.currentCard.filePath = elements.filePath.value;
+                state.currentCard.coverPath = elements.coverPath.value;
+                state.currentCard.gender = elements.gender.value;
+                state.currentCard.intro = elements.intro.value;
+                state.currentCard.personality = elements.personality.value;
+                state.currentCard.stories = stories;
                 
-                // 填充编辑表单
-                document.getElementById('cardId').value = card.id;
-                document.getElementById('cardName').value = card.name;
-                document.getElementBy
+                showNotification('角色卡更新成功！');
+            } else {
+                // 创建新卡片
+                const newCard = {
+                    id: elements.cardId.value,
+                    name: elements.cardName.value,
+                    fileName: elements.fileName.value,
+                    filePath: elements.filePath.value,
+                    coverPath: elements.coverPath.value,
+                    fileType: 'png',
+                    uploadTime: new Date().toISOString(),
+                    gender: elements.gender.value,
+                    intro: elements.intro.value,
+                    personality: elements.personality.value,
+                    stories: stories
+                };
+                state.cards.push(newCard);
+                state.currentCard = newCard;
+                
+                showNotification('新角色卡创建成功！');
+            }
+            
+            renderCardsList();
+        }
+
+        // 删除卡片
+        function deleteCard() {
+            if (!state.currentCard) {
+                showNotification('请先选择一个角色卡！', 'error');
+                return;
+            }
+            
+            if (confirm('确定要删除这个角色卡吗？此操作不可恢复。')) {
+                const index = state.cards.indexOf(state.currentCard);
+                if (index !== -1) {
+                    state.cards.splice(index, 1);
+                    if (state.cards.length > 0) {
+                        selectCard(state.cards[0]);
+                    } else {
+                        state.currentCard = null;
+                        clearForm();
+                    }
+                    renderCardsList();
+                    showNotification('角色卡已删除！');
+                }
+            }
+        }
+
+        // 清空表单
+        function clearForm() {
+            elements.cardId.value = '';
+            elements.cardName.value = '';
+            elements.fileName.value = '';
+            elements.filePath.value = '';
+            elements.coverPath.value = '';
+            elements.gender.value = 'male';
+            elements.intro.value = '';
+            elements.personality.value = '';
+            
+            elements.storiesList.innerHTML = `
+                <div class="story-item">
+                    <input type="text" placeholder="故事文本" class="story-input">
+                    <i class="fas fa-times remove-story"></i>
+                </div>
+            `;
+        }
+
+        // 新建卡片
+        function createNewCard() {
+            state.currentCard = null;
+            clearForm();
+            showNotification('准备创建新角色卡...', 'info');
+        }
+
+        // 保存GitHub配置
+        function saveGitHubConfig() {
+            state.githubToken = elements.githubToken.value;
+            state.repoName = elements.repoName.value;
+            state.branchName = elements.branchName.value;
+            
+            localStorage.setItem('githubToken', state.githubToken);
+            localStorage.setItem('repoName', state.repoName);
+            localStorage.setItem('branchName', state.branchName);
+            
+            showNotification('GitHub配置已保存！');
+        }
+
+        // 应用UI设置
+        function applyUISettings() {
+            state.blurStrength = parseInt(elements.blurSlider.value);
+            state.animationSpeed = parseInt(elements.animationSlider.value);
+            state.opacityValue = parseInt(elements.opacitySlider.value);
+            
+            localStorage.setItem('blur', state.blurStrength);
+            localStorage.setItem('animationSpeed', state.animationSpeed);
+            localStorage.setItem('opacity', state.opacityValue);
+            
+            document.documentElement.style.setProperty('--blur', `${state.blurStrength}px`);
+            document.documentElement.style.setProperty('--transition', `all ${0.4 - (state.animationSpeed/40)}s ease`);
+            
+            showNotification('UI设置已应用！');
+        }
+
+        // 保存到GitHub
+        function saveToGitHub() {
+            if (!state.githubToken || !state.repoName) {
+                showNotification('请先在设置中配置GitHub信息！', 'error');
+                return;
+            }
+            
+            // 模拟保存过程
+            showNotification('正在保存到GitHub仓库...', 'info');
+            
+            setTimeout(() => {
+                showNotification(`成功保存 ${state.cards.length} 张角色卡到 ${state.repoName} 仓库！`);
+            }, 2000);
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            state.currentTheme = state.currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', state.currentTheme);
+            applyTheme();
+            showNotification(`已切换到${state.currentTheme === 'dark' ? '暗色' : '亮色'}主题`);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 主题切换
+            elements.themeToggle.addEventListener('click', toggleTheme);
+            
+            // 设置面板
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsPanel.classList.add('active');
+            });
+            
+            elements.closeSettings.addEventListener('click', () => {
+                elements.settingsPanel.classList.remove('active');
+            });
+            
+            // GitHub按钮
+            elements.githubBtn.addEventListener('click', () => {
+                if (!state.githubToken || !state.repoName) {
+                    showNotification('请先在设置中配置GitHub信息！', 'error');
+                    return;
+                }
+                saveToGitHub();
+            });
+            
+            // 新建卡片
+            elements.newCardBtn.addEventListener('click', createNewCard);
+            
+            // 保存卡片
+            elements.saveCardBtn.addEventListener('click', saveCard);
+            
+            // 保存到GitHub
+            elements.saveToGitHubBtn.addEventListener('click', saveToGitHub);
+            
+            // 删除卡片
+            elements.deleteCardBtn.addEventListener('click', deleteCard);
+            
+            // 添加故事
+            elements.addStoryBtn.addEventListener('click', addNewStory);
+            
+            // 保存GitHub配置
+            elements.saveGitHubConfig.addEventListener('click', saveGitHubConfig);
+            
+            // 应用UI设置
+            elements.applyUISettings.addEventListener('click', applyUISettings);
+            
+            // 滑块事件
+            elements.blurSlider.addEventListener('input', (e) => {
+                elements.blurValue.textContent = e.target.value;
+            });
+            
+            elements.animationSlider.addEventListener('input', (e) => {
+                elements.animationValue.textContent = e.target.value;
+            });
+            
+            elements.opacitySlider.addEventListener('input', (e) => {
+                elements.opacityValue.textContent = `${e.target.value}%`;
+            });
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
