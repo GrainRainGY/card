@@ -3,831 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub仓库浏览器</title>
+    <title>GitHub仓库文件管理工具</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #2f81f7;
-            --primary-light: #58a6ff;
-            --text: #24292e;
-            --bg: #f6f8fa;
-            --card-bg: #ffffff;
-            --sidebar-bg: #f6f8fa;
-            --border: #e1e4e8;
-            --shadow: 0 1px 3px rgba(27,31,35,0.12);
-            --radius: 6px;
-            --transition: all 0.3s ease;
-            --github: #24292e;
-            --github-light: #2d333b;
-        }
-
-        [data-theme="dark"] {
-            --primary: #58a6ff;
-            --primary-light: #79c0ff;
-            --text: #e6edf3;
-            --bg: #0d1117;
-            --card-bg: #161b22;
-            --sidebar-bg: #0d1117;
-            --border: #30363d;
-            --shadow: 0 1px 3px rgba(0,0,0,0.5);
-            --github: #f0f6fc;
-            --github-light: #c9d1d9;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2f81f7;
+            --primary-light: #58a6ff;
+            --secondary: #1f2328;
+            --text: #24292f;
+            --text-light: #57606a;
+            --bg-light: rgba(255, 255, 255, 0.8);
+            --border: rgba(208, 215, 222, 0.5);
+            --success: #2da44e;
+            --warning: #d8d417;
+            --danger: #cf222e;
         }
 
         body {
-            background: var(--bg);
-            color: var(--text);
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
             min-height: 100vh;
-            transition: var(--transition);
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 15px 0;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            color: var(--text);
+            background-attachment: fixed;
+        }
+
+        .glass-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
         }
 
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--text);
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
-        .logo-icon {
-            font-size: 2rem;
-            color: var(--primary);
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .theme-toggle {
-            background: transparent;
-            border-radius: 6px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .card {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .settings-btn {
-            background: transparent;
-            border-radius: 6px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .settings-btn:hover, .theme-toggle:hover {
-            background: rgba(88, 166, 255, 0.1);
-            border-color: var(--primary);
-        }
-
-        main {
-            display: flex;
-            gap: 25px;
-            min-height: calc(100vh - 150px);
-        }
-
-        .sidebar {
-            flex: 0 0 280px;
-            background: var(--sidebar-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            height: fit-content;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .repo-input {
+        .form-group {
             margin-bottom: 20px;
         }
 
-        .repo-input h3 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: 600;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .repo-input-field {
-            flex: 1;
-            padding: 10px 15px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: var(--bg);
             color: var(--text);
-            font-size: 1rem;
-            transition: var(--transition);
         }
 
-        .repo-input-field:focus {
-            border-color: var(--primary);
+        .input-container {
+            position: relative;
+        }
+
+        .input-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input:focus, textarea:focus {
             outline: none;
+            border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
         }
 
-        .load-repo-btn {
-            padding: 10px 15px;
-            border-radius: var(--radius);
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .load-repo-btn:hover {
-            background: var(--primary-light);
-        }
-
-        .repo-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .repo-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .repo-details h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .repo-details p {
-            font-size: 0.9rem;
-            color: var(--text);
-            opacity: 0.8;
-        }
-
-        .file-browser {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .file-item:hover {
-            background: rgba(88, 166, 255, 0.1);
-        }
-
-        .file-item.selected {
-            background: rgba(88, 166, 255, 0.15);
-            border-left: 3px solid var(--primary);
-        }
-
-        .file-icon {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text);
-            opacity: 0.7;
-        }
-
-        .file-name {
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .file-path {
-            font-size: 0.8rem;
-            color: var(--text);
-            opacity: 0.6;
-            margin-top: 2px;
-        }
-
-        .content-area {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow-y: auto;
-        }
-
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .content-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .content-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            border-radius: var(--radius);
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .action-btn:hover {
-            background: rgba(88, 166, 255, 0.1);
-            border-color: var(--primary);
-        }
-
-        .action-btn.primary {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .action-btn.primary:hover {
-            background: var(--primary-light);
-        }
-
-        .file-content {
-            padding: 15px 0;
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            color: var(--text);
-        }
-
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text);
-            opacity: 0.7;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .empty-state p {
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: var(--radius);
-            background: var(--card-bg);
-            border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            transform: translateX(150%);
-            transition: transform 0.5s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            border-left-color: #2ea44f;
-        }
-
-        .notification.error {
-            border-left-color: #cb2431;
-        }
-
-        .notification.info {
-            border-left-color: var(--primary);
-        }
-
-        .notification i {
-            font-size: 1.2rem;
-        }
-
-        .notification.success i {
-            color: #2ea44f;
-        }
-
-        .notification.error i {
-            color: #cb2431;
-        }
-
-        .notification.info i {
-            color: var(--primary);
-        }
-
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 380px;
-            height: 100vh;
-            background: var(--card-bg);
-            border-left: 1px solid var(--border);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            transition: var(--transition);
-            z-index: 100;
-            overflow-y: auto;
-        }
-
-        .settings-panel.active {
-            right: 0;
-        }
-
-        .settings-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .settings-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .close-settings {
-            font-size: 1.5rem;
-            color: var(--text);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .close-settings:hover {
-            color: var(--primary);
-            transform: scale(1.2);
-        }
-
-        .github-section {
-            padding: 20px;
-            background: rgba(138, 108, 255, 0.1);
-            border-radius: 12px;
-            margin-bottom: 25px;
-        }
-
-        .github-input {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--text);
-            font-size: 1rem;
-            transition: var(--transition);
-            margin: 8px 0 15px;
-        }
-
-        .github-input:focus {
-            border-color: var(--primary);
-            outline: none;
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .save-config-btn {
-            width: 100%;
+        textarea {
+            min-height: 200px;
+            resize: vertical;
             padding: 15px;
-            border-radius: 50px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
             background: var(--primary);
             color: white;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 1rem;
         }
 
-        .save-config-btn:hover {
-            background: var(--primary-light);
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
         }
 
-        /* Mobile responsiveness */
-        @media (max-width: 900px) {
-            main {
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--text);
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(47, 129, 247, 0.15);
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .status-bar.success {
+            background: rgba(45, 164, 78, 0.15);
+            color: var(--success);
+        }
+
+        .status-bar.error {
+            background: rgba(207, 34, 46, 0.15);
+            color: var(--danger);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .tooltip {
+            display: inline-block;
+            margin-left: 5px;
+            color: var(--text-light);
+            cursor: help;
+        }
+
+        @media (max-width: 768px) {
+            .glass-container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .buttons {
                 flex-direction: column;
+                gap: 10px;
             }
             
-            .sidebar {
-                width: 100%;
-                max-height: 40vh;
+            input, textarea, .btn {
+                padding: 12px 15px;
             }
             
-            .settings-panel {
-                width: 100%;
-                right: -100%;
+            .input-container i {
+                left: 10px;
             }
         }
 
-        @media (max-width: 500px) {
-            .content-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
             }
             
-            .content-actions {
-                width: 100%;
-                justify-content: space-between;
+            .header h1 {
+                font-size: 1.8rem;
             }
             
-            .action-btn {
-                flex: 1;
-                text-align: center;
+            .header p {
+                font-size: 0.95rem;
             }
             
-            .input-group {
-                flex-direction: column;
+            .card {
+                padding: 20px 15px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="glass-container">
+        <div class="header">
             <div class="logo">
-                <i class="fab fa-github logo-icon"></i>
-                <h1>GitHub仓库浏览器</h1>
+                <i class="fab fa-github"></i>
             </div>
-            <div class="controls">
-                <button class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-moon"></i>
+            <h1>GitHub仓库文件管理工具</h1>
+            <p>使用GitHub Token安全地读取和写入您仓库中的文件</p>
+        </div>
+        
+        <div class="card">
+            <div class="form-group">
+                <label for="token">GitHub Token <span class="tooltip" title="需要在GitHub设置中生成personal access token">ⓘ</span></label>
+                <div class="input-container">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="token" placeholder="输入您的GitHub访问令牌">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="owner">仓库所有者</label>
+                <div class="input-container">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="owner" placeholder="组织或用户名">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="repo">仓库名称</label>
+                <div class="input-container">
+                    <i class="fas fa-book"></i>
+                    <input type="text" id="repo" placeholder="仓库名称">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="branch">分支名称</label>
+                <div class="input-container">
+                    <i class="fas fa-code-branch"></i>
+                    <input type="text" id="branch" placeholder="默认: main" value="main">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="filepath">文件路径</label>
+                <div class="input-container">
+                    <i class="fas fa-file-code"></i>
+                    <input type="text" id="filepath" placeholder="例如: docs/README.md">
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button id="readBtn" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> 读取文件
                 </button>
-                <button class="settings-btn" id="settingsBtn">
-                    <i class="fas fa-cog"></i>
+                <button id="writeBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> 保存文件
                 </button>
-            </div>
-        </header>
-
-        <main>
-            <div class="sidebar">
-                <div class="repo-input">
-                    <h3>浏览GitHub仓库</h3>
-                    <div class="input-group">
-                        <input type="text" class="repo-input-field" id="repoInput" placeholder="owner/repo">
-                        <button class="load-repo-btn" id="loadRepoBtn">
-                            <i class="fas fa-search"></i> 加载
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="repo-info" id="repoInfo">
-                    <div class="repo-avatar">
-                        <i class="fas fa-folder"></i>
-                    </div>
-                    <div class="repo-details">
-                        <h2 id="repoName">仓库名称</h2>
-                        <p id="repoBranch">main分支</p>
-                    </div>
-                </div>
-                
-                <div class="file-browser" id="fileBrowser">
-                    <!-- 文件列表会通过JS动态生成 -->
-                </div>
-            </div>
-
-            <div class="content-area" id="contentArea">
-                <div class="content-header">
-                    <h2 id="contentTitle">文件内容</h2>
-                    <div class="content-actions">
-                        <button class="action-btn">
-                            <i class="fas fa-download"></i> 下载
-                        </button>
-                        <button class="action-btn">
-                            <i class="fas fa-code-branch"></i> 历史
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="file-content" id="fileContent">
-                    <!-- 文件内容会通过JS动态加载 -->
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div class="settings-panel" id="settingsPanel">
-        <div class="settings-header">
-            <h2>设置</h2>
-            <div class="close-settings" id="closeSettings">
-                <i class="fas fa-times"></i>
             </div>
         </div>
         
-        <div class="github-section">
-            <h3><i class="fab fa-github"></i> GitHub 设置</h3>
-            
-            <label for="githubToken">GitHub Token (可选)</label>
-            <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
-            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: -10px; margin-bottom: 15px;">
-                提供Token可提高API请求限制
-            </p>
-            
-            <button class="save-config-btn" id="saveGitHubConfig">
-                保存配置
-            </button>
+        <div class="card">
+            <div class="form-group">
+                <label for="content">文件内容</label>
+                <textarea id="content" placeholder="文件内容将在这里显示..."></textarea>
+            </div>
+        </div>
+        
+        <div id="statusBar" class="status-bar">
+            状态信息将在这里显示
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 GitHub文件管理工具 | 安全提示：请妥善保管您的token</p>
         </div>
     </div>
 
-    <div class="notification" id="notification">
-        <i class="fas fa-info-circle"></i>
-        <span id="notificationText">操作成功！</span>
-    </div>
-
     <script>
-        // 状态管理
-        const state = {
-            currentTheme: localStorage.getItem('theme') || 'light',
-            githubToken: localStorage.getItem('githubToken') || '',
-            currentRepo: null,
-            currentFile: null,
-            files: []
-        };
-
-        // DOM元素引用
-        const elements = {
-            themeToggle: document.getElementById('themeToggle'),
-            settingsBtn: document.getElementById('settingsBtn'),
-            closeSettings: document.getElementById('closeSettings'),
-            settingsPanel: document.getElementById('settingsPanel'),
-            loadRepoBtn: document.getElementById('loadRepoBtn'),
-            repoInput: document.getElementById('repoInput'),
-            repoInfo: document.getElementById('repoInfo'),
-            repoName: document.getElementById('repoName'),
-            repoBranch: document.getElementById('repoBranch'),
-            fileBrowser: document.getElementById('fileBrowser'),
-            contentArea: document.getElementById('contentArea'),
-            contentTitle: document.getElementById('contentTitle'),
-            fileContent: document.getElementById('fileContent'),
-            notification: document.getElementById('notification'),
-            notificationText: document.getElementById('notificationText'),
-            githubToken: document.getElementById('githubToken'),
-            saveGitHubConfig: document.getElementById('saveGitHubConfig')
-        };
-
-        // 初始化应用
-        function initApp() {
-            applyTheme();
-            applyUIValues();
-            setupEventListeners();
-        }
-
-        // 应用主题
-        function applyTheme() {
-            if (state.currentTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        }
-
-        // 应用UI设置
-        function applyUIValues() {
-            elements.githubToken.value = state.githubToken;
-        }
-
-        // 加载仓库文件
-        function loadRepoFiles() {
-            const repo = elements.repoInput.value.trim();
-            if (!repo) {
-                showNotification('请输入仓库名称（格式：owner/repo）', 'error');
-                return;
+        document.addEventListener('DOMContentLoaded', function() {
+            const tokenInput = document.getElementById('token');
+            const ownerInput = document.getElementById('owner');
+            const repoInput = document.getElementById('repo');
+            const branchInput = document.getElementById('branch');
+            const filepathInput = document.getElementById('filepath');
+            const contentTextarea = document.getElementById('content');
+            const readBtn = document.getElementById('readBtn');
+            const writeBtn = document.getElementById('writeBtn');
+            const statusBar = document.getElementById('statusBar');
+            
+            // 动画效果: 卡片进入时的小延迟
+            document.querySelectorAll('.card').forEach((card, i) => {
+                card.style.animation = `fadeIn 0.5s ease-out ${i * 0.1}s forwards`;
+                card.style.opacity = '0';
+            });
+            
+            function showStatus(message, isSuccess) {
+                statusBar.textContent = message;
+                statusBar.className = 'status-bar';
+                statusBar.classList.add(isSuccess ? 'success' : 'error');
+                statusBar.style.display = 'block';
+                
+                // 3秒后自动隐藏
+                setTimeout(() => {
+                    statusBar.style.display = 'none';
+                }, 3000);
             }
             
-            state.currentRepo = repo;
-            elements.repoName.textContent = repo;
+            function getFileSHA(owner, repo, path, token) {
+                return fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => data.sha)
+                .catch(error => {
+                    console.error('获取文件SHA失败:', error);
+                    showStatus('获取文件SHA失败，请检查输入信息', false);
+                    return null;
+                });
+            }
             
-            showNotification(`正在加载 ${repo} 仓库...`, 'info');
-            
-            // 模拟加载延迟
-            setTimeout(() => {
-                // 模拟仓库文件结构
-                state.files = [
-                    { id: 'file1', name: 'README.md', path: '/README.md', type: 'file', content: '# GitHub仓库浏览器\n\n这是一个简单的GitHub仓库浏览器工具，允许您浏览仓库的文件结构并查看文件内容。\n\n## 功能\n\n- 浏览仓库文件结构\n- 查看文件内容\n- 支持亮色/暗色主题\n- 基本文件操作（下载）\n\n## 使用说明\n\n1. 在左侧输入仓库名称（格式：owner/repo）\n2. 点击"加载"按钮\n3. 浏览文件结构并点击文件查看内容\n' },
-                    { id: 'file2', name: 'LICENSE', path: '/LICENSE', type: 'file', content: 'MIT License\n\nCopyright (c) 2023 GitHub Browser\n\nPermission is hereby granted...' },
-                    { id: 'folder1', name: 'src', path: '/src', type: 'folder', content: '' },
-                    { id: 'folder2', name: 'docs', path: '/docs', type: 'folder', content: '' },
-                    { id: 'file3', name: 'package.json', path: '/package.json', type: 'file', content: '{\n  "name": "github-repo-browser",\n  "version": "1.0.0",\n  "description": "A simple GitHub repository browser",\n  "main": "index.js",\n  "scripts": {\n    "start": "node index.js"\n  },\n  "dependencies": {\n    "express": "^4.17.1"\n  }\n}' },
-                    { id: 'file4', name: 'index.js', path: '/index.js', type: 'file', content: 'const express = require(\'express\');\nconst app = express();\nconst port = 3000;\n\napp.get(\'/\', (req, res) => {\n  res.send(\'GitHub Repository Browser API\');\n});\n\napp.listen(port, () => {\n  console.log(`Server running at http://localhost:${port}`);\n});' }
-                ];
+            readBtn.addEventListener('click', function() {
+                const token = tokenInput.value.trim();
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
+                const branch = branchInput.value.trim() || 'main';
+                const filepath = filepathInput.value.trim();
                 
-                renderFileBrowser();
-                
-                // 默认选择第一个文件
-                if (state.files.length > 0) {
-                    selectFile(state.files[0]);
+                if (!token || !owner || !repo || !filepath) {
+                    showStatus('请填写所有必填字段', false);
+                    return;
                 }
                 
-                showNotification(`成功加载 ${repo} 仓库！`, 'success');
-            }, 1500);
-        }
-
-        // 渲染文件浏览器
-        function renderFileBrowser() {
-            elements.fileBrowser.innerHTML = '';
-            
-            if (state.files.length === 0) {
-                elements.fileBrowser.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open"></i>
-                        <h3>仓库为空</h3>
-                        <p>当前仓库没有文件或文件夹</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            state.files.forEach(file => {
-                const fileEl = document.createElement('div');
-                fileEl.className = `file-item ${state.currentFile === file ? 'selected' : ''}`;
-                fileEl.innerHTML = `
-                    <div class="file-icon">
-                        <i class="${file.type === 'folder' ? 'fas fa-folder' : 'fas fa-file'}"></i>
-                    </div>
-                    <div>
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-path">${file.path}</div>
-                    </div>
-                `;
-                fileEl.addEventListener('click', () => selectFile(file));
-                elements.fileBrowser.appendChild(fileEl);
-            });
-        }
-
-        // 选择文件
-        function selectFile(file) {
-            state.currentFile = file;
-            renderFileBrowser();
-            
-            // 更新内容标题
-            elements.contentTitle.textContent = file.name;
-            
-            // 显示文件内容
-            if (file.type === 'file') {
-                elements.fileContent.textContent = file.content;
-                elements.contentArea.style.display = 'block';
-            } else {
-                elements.contentArea.style.display = 'none';
-                showNotification(`"${file.name}" 是一个文件夹`, 'info');
-            }
-        }
-
-        // 显示通知
-        function showNotification(message, type = 'info') {
-            elements.notification.className = `notification ${type}`;
-            elements.notificationText.textContent = message;
-            elements.notification.classList.add('show');
-            
-            setTimeout(() => {
-                elements.notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // 保存GitHub配置
-        function saveGitHubConfig() {
-            state.githubToken = elements.githubToken.value;
-            localStorage.setItem('githubToken', state.githubToken);
-            showNotification('GitHub配置已保存！', 'success');
-            elements.settingsPanel.classList.remove('active');
-        }
-
-        // 切换主题
-        function toggleTheme() {
-            state.currentTheme = state.currentTheme === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', state.currentTheme);
-            applyTheme();
-            showNotification(`已切换到${state.currentTheme === 'dark' ? '暗色' : '亮色'}主题`, 'info');
-        }
-
-        // 设置事件监听器
-        function setupEventListeners() {
-            // 主题切换
-            elements.themeToggle.addEventListener('click', toggleTheme);
-            
-            // 设置面板
-            elements.settingsBtn.addEventListener('click', () => {
-                elements.settingsPanel.classList.add('active');
+                // 显示加载状态
+                const originalText = readBtn.innerHTML;
+                readBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 读取中...';
+                readBtn.disabled = true;
+                
+                fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filepath}?ref=${branch}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API请求失败: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.content) {
+                        // Base64解码
+                        const content = atob(data.content.replace(/\s/g, ''));
+                        contentTextarea.value = content;
+                        showStatus(`文件读取成功 | 分支: ${branch} | SHA: ${data.sha.slice(0, 7)}`, true);
+                    } else {
+                        throw new Error('文件内容为空');
+                    }
+                })
+                .catch(error => {
+                    console.error('读取文件失败:', error);
+                    showStatus(`读取文件失败: ${error.message}`, false);
+                })
+                .finally(() => {
+                    readBtn.innerHTML = originalText;
+                    readBtn.disabled = false;
+                });
             });
             
-            elements.closeSettings.addEventListener('click', () => {
-                elements.settingsPanel.classList.remove('active');
-            });
-            
-            // 保存GitHub配置
-            elements.saveGitHubConfig.addEventListener('click', saveGitHubConfig);
-            
-            // 加载仓库
-            elements.loadRepoBtn.addEventListener('click', loadRepoFiles);
-            
-            // 支持回车键加载仓库
-            elements.repoInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    loadRepoFiles();
+            writeBtn.addEventListener('click', function() {
+                const token = tokenInput.value.trim();
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
+                const branch = branchInput.value.trim() || 'main';
+                const filepath = filepathInput.value.trim();
+                const content = contentTextarea.value.trim();
+                
+                if (!token || !owner || !repo || !filepath || !content) {
+                    showStatus('请填写所有必填字段', false);
+                    return;
                 }
+                
+                // 先获取文件的SHA（为了更新现有文件）
+                getFileSHA(owner, repo, filepath, token)
+                    .then(sha => {
+                        // 显示加载状态
+                        const originalText = writeBtn.innerHTML;
+                        writeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+                        writeBtn.disabled = true;
+                        
+                        // 构建请求数据
+                        const data = {
+                            message: `Update ${filepath} via web tool`,
+                            content: btoa(unescape(encodeURIComponent(content))),
+                            branch: branch,
+                            sha: sha  // 如果是更新，需要提供SHA值
+                        };
+                        
+                        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filepath}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Accept': 'application/vnd.github.v3+json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('API请求失败: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            showStatus(`文件保存成功! 提交: ${data.commit.sha.slice(0, 7)}`, true);
+                            // 更新文件SHA，方便后续更新
+                            data.sha = data.content.sha;
+                        })
+                        .catch(error => {
+                            console.error('保存文件失败:', error);
+                            showStatus(`保存文件失败: ${error.message}`, false);
+                        })
+                        .finally(() => {
+                            writeBtn.innerHTML = originalText;
+                            writeBtn.disabled = false;
+                        });
+                    });
             });
-        }
-
-        // 初始化应用
-        document.addEventListener('DOMContentLoaded', initApp);
+            
+            // 输入字段的动画
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.parentElement.style.transform = 'scale(1)';
+                });
+            });
+        });
     </script>
 </body>
 </html>
