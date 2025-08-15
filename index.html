@@ -18,6 +18,8 @@
             --radius: 16px;
             --transition: all 0.4s ease;
             --blur: 12px;
+            --github: #181717;
+            --github-light: #2d2c2c;
         }
 
         [data-theme="dark"] {
@@ -29,6 +31,8 @@
             --sidebar-bg: rgba(27, 33, 58, 0.7);
             --glass: rgba(27, 33, 58, 0.5);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --github: #f0f0f0;
+            --github-light: #d4d4d4;
         }
 
         * {
@@ -116,6 +120,27 @@
             box-shadow: var(--shadow);
             transition: var(--transition);
             color: var(--text);
+        }
+
+        .github-btn {
+            background: var(--github);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            color: white;
+            font-weight: 600;
+        }
+
+        .github-btn:hover {
+            background: var(--github-light);
+            transform: translateY(-2px);
         }
 
         .settings-btn:hover, .theme-toggle:hover {
@@ -317,10 +342,18 @@
             gap: 8px;
         }
 
+        .save-btn.github-save {
+            background: var(--github);
+        }
+
         .save-btn:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        }
+
+        .save-btn.github-save:hover {
+            background: var(--github-light);
         }
 
         .delete-btn {
@@ -350,6 +383,10 @@
 
         .form-group {
             margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .form-group label {
@@ -488,7 +525,7 @@
             margin-bottom: 25px;
         }
 
-        .token-input {
+        .github-input {
             width: 100%;
             padding: 12px 15px;
             border-radius: 12px;
@@ -497,10 +534,10 @@
             color: var(--text);
             font-size: 1rem;
             transition: var(--transition);
-            margin: 15px 0;
+            margin: 8px 0 15px;
         }
 
-        .token-input:focus {
+        .github-input:focus {
             border-color: var(--primary);
             outline: none;
             background: rgba(255, 255, 255, 0.25);
@@ -519,10 +556,13 @@
             font-size: 1rem;
         }
 
-        .save-config-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        .save-config-btn.github-btn {
+            background: var(--github);
+            margin-top: 15px;
+        }
+
+        .save-config-btn.github-btn:hover {
+            background: var(--github-light);
         }
 
         .slider-group {
@@ -572,6 +612,120 @@
             transform: scale(1.2);
         }
 
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .github-modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(var(--blur));
+        }
+
+        .modal-overlay.active .github-modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .repo-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            border-radius: var(--radius);
+            border: 2px solid var(--glass);
+            padding: 10px;
+        }
+
+        .repo-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .repo-item:hover {
+            background: rgba(138, 108, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .no-repos {
+            text-align: center;
+            padding: 20px;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .file-path {
+            font-size: 0.9rem;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -597,6 +751,10 @@
                 width: 100%;
                 right: -100%;
             }
+
+            .github-modal {
+                width: 95%;
+            }
         }
 
         @media (max-width: 500px) {
@@ -614,6 +772,20 @@
                 flex: 1;
                 text-align: center;
             }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .controls {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -625,6 +797,9 @@
                 <h1>Omate角色卡管理器</h1>
             </div>
             <div class="controls">
+                <button class="github-btn" id="githubBtn">
+                    <i class="fab fa-github"></i> GitHub仓库
+                </button>
                 <button class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -653,6 +828,9 @@
                     <div class="editor-actions">
                         <button class="save-btn" id="saveCardBtn">
                             <i class="fas fa-save"></i> 保存
+                        </button>
+                        <button class="save-btn github-save" id="saveToGitHubBtn">
+                            <i class="fab fa-github"></i> GitHub保存
                         </button>
                         <button class="delete-btn" id="deleteCardBtn">
                             <i class="fas fa-trash-alt"></i> 删除
@@ -730,14 +908,17 @@
         </div>
         
         <div class="github-section">
-            <h3><i class="fab fa-github"></i> GitHub 连接</h3>
+            <h3><i class="fab fa-github"></i> GitHub 设置</h3>
             <p>连接到您的GitHub仓库管理角色卡</p>
             
             <label for="githubToken">GitHub Token:</label>
-            <input type="text" id="githubToken" class="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
+            <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
             
             <label for="repoName">仓库名称:</label>
-            <input type="text" id="repoName" class="token-input" placeholder="username/reponame">
+            <input type="text" id="repoName" class="github-input" placeholder="username/reponame">
+            
+            <label for="branchName">分支名称:</label>
+            <input type="text" id="branchName" class="github-input" placeholder="main" value="main">
             
             <button class="save-config-btn" id="saveGitHubConfig">
                 保存配置
@@ -773,6 +954,44 @@
         </button>
     </div>
 
+    <div class="modal-overlay" id="githubModal">
+        <div class="github-modal">
+            <div class="modal-header">
+                <h3><i class="fab fa-github"></i> 选择GitHub仓库</h3>
+                <p>选择包含角色卡数据的仓库</p>
+            </div>
+            
+            <div class="repo-list" id="repoList">
+                <div class="repo-item" data-repo="omate-master">
+                    <strong>omate-master</strong>
+                    <p>主仓库 · 上次更新: 2天前</p>
+                </div>
+                <div class="repo-item" data-repo="characters-cards">
+                    <strong>characters-cards</strong>
+                    <p>角色卡数据 · 上次更新: 4小时前</p>
+                </div>
+                <div class="repo-item" data-repo="my-project">
+                    <strong>my-project</strong>
+                    <p>个人项目 · 上次更新: 1个月前</p>
+                </div>
+            </div>
+            
+            <div class="file-path">
+                <p><strong>完整路径:</strong></p>
+                <p><code id="selectedRepo">username/reponame/cards.json</code></p>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn" id="closeModal">
+                    取消
+                </button>
+                <button class="modal-btn primary" id="loadCardsBtn">
+                    <i class="fas fa-download"></i> 加载角色卡
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 状态变量
@@ -784,7 +1003,9 @@
             let opacityValue = localStorage.getItem('opacity') || 70;
             let githubToken = localStorage.getItem('githubToken') || '';
             let repoName = localStorage.getItem('repoName') || '';
-            
+            let branchName = localStorage.getItem('branchName') || 'main';
+            let selectedRepo = '';
+
             // 初始化UI
             const initUI = () => {
                 document.documentElement.style.setProperty('--blur', `${blurStrength}px`);
@@ -806,11 +1027,12 @@
                 
                 document.getElementById('githubToken').value = githubToken;
                 document.getElementById('repoName').value = repoName;
+                document.getElementById('branchName').value = branchName;
                 
                 generateDemoCards();
             };
             
-            // 生成演示卡片（实际应用中从JSON加载）
+            // 生成演示卡片
             const generateDemoCards = () => {
                 cards = [
                     {
@@ -905,216 +1127,4 @@
                 // 填充编辑表单
                 document.getElementById('cardId').value = card.id;
                 document.getElementById('cardName').value = card.name;
-                document.getElementById('fileName').value = card.fileName;
-                document.getElementById('filePath').value = card.filePath;
-                document.getElementById('coverPath').value = card.coverPath;
-                document.getElementById('gender').value = card.gender;
-                document.getElementById('intro').value = card.intro;
-                document.getElementById('personality').value = card.personality;
-                
-                // 填充故事
-                const storiesList = document.getElementById('storiesList');
-                storiesList.innerHTML = '';
-                card.stories.forEach(story => {
-                    const storyItem = document.createElement('div');
-                    storyItem.className = 'story-item';
-                    storyItem.innerHTML = `
-                        <input type="text" value="${story}" class="story-input">
-                        <i class="fas fa-times remove-story"></i>
-                    `;
-                    storyItem.querySelector('.remove-story').addEventListener('click', () => {
-                        storyItem.remove();
-                    });
-                    storiesList.appendChild(storyItem);
-                });
-            };
-            
-            // 主题切换
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-                localStorage.setItem('theme', currentTheme);
-                
-                if (currentTheme === 'dark') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
-                }
-            });
-            
-            // 设置面板切换
-            document.getElementById('settingsBtn').addEventListener('click', () => {
-                document.getElementById('settingsPanel').classList.add('active');
-            });
-            
-            document.getElementById('closeSettings').addEventListener('click', () => {
-                document.getElementById('settingsPanel').classList.remove('active');
-            });
-            
-            // 添加新故事
-            document.getElementById('addStoryBtn').addEventListener('click', () => {
-                const storiesList = document.getElementById('storiesList');
-                const storyItem = document.createElement('div');
-                storyItem.className = 'story-item';
-                storyItem.innerHTML = `
-                    <input type="text" placeholder="故事文本" class="story-input">
-                    <i class="fas fa-times remove-story"></i>
-                `;
-                storyItem.querySelector('.remove-story').addEventListener('click', () => {
-                    storyItem.remove();
-                });
-                storiesList.appendChild(storyItem);
-            });
-            
-            // 保存卡片
-            document.getElementById('saveCardBtn').addEventListener('click', () => {
-                if (!document.getElementById('cardId').value || !document.getElementById('cardName').value) {
-                    alert('ID和角色名是必填字段！');
-                    return;
-                }
-                
-                const stories = Array.from(document.querySelectorAll('.story-input')).map(input => input.value);
-                
-                if (currentCard) {
-                    // 更新现有卡片
-                    currentCard.id = document.getElementById('cardId').value;
-                    currentCard.name = document.getElementById('cardName').value;
-                    currentCard.fileName = document.getElementById('fileName').value;
-                    currentCard.filePath = document.getElementById('filePath').value;
-                    currentCard.coverPath = document.getElementById('coverPath').value;
-                    currentCard.gender = document.getElementById('gender').value;
-                    currentCard.intro = document.getElementById('intro').value;
-                    currentCard.personality = document.getElementById('personality').value;
-                    currentCard.stories = stories;
-                } else {
-                    // 创建新卡片
-                    const newCard = {
-                        id: document.getElementById('cardId').value,
-                        name: document.getElementById('cardName').value,
-                        fileName: document.getElementById('fileName').value,
-                        filePath: document.getElementById('filePath').value,
-                        coverPath: document.getElementById('coverPath').value,
-                        fileType: 'png',
-                        uploadTime: new Date().toISOString(),
-                        gender: document.getElementById('gender').value,
-                        intro: document.getElementById('intro').value,
-                        personality: document.getElementById('personality').value,
-                        stories: stories
-                    };
-                    cards.push(newCard);
-                    currentCard = newCard;
-                }
-                
-                renderCardsList();
-                alert('角色卡保存成功！');
-                
-                // 实际应用中这里会调用GitHub API更新仓库
-                if (githubToken && repoName) {
-                    console.log('将更新GitHub仓库:', repoName);
-                    // 在实际实现中，这里会使用GitHub API更新cards.json
-                }
-            });
-            
-            // 删除卡片
-            document.getElementById('deleteCardBtn').addEventListener('click', () => {
-                if (currentCard && confirm('确定要删除这个角色卡吗？此操作不可恢复。')) {
-                    const index = cards.indexOf(currentCard);
-                    if (index !== -1) {
-                        cards.splice(index, 1);
-                        if (cards.length > 0) {
-                            selectCard(cards[0]);
-                        } else {
-                            document.getElementById('editor').style.display = 'none';
-                            currentCard = null;
-                        }
-                        renderCardsList();
-                    }
-                }
-            });
-            
-            // 新建卡片
-            document.getElementById('newCardBtn').addEventListener('click', () => {
-                currentCard = null;
-                document.getElementById('editor').style.display = 'block';
-                
-                // 清空表单
-                document.getElementById('cardId').value = '';
-                document.getElementById('cardName').value = '';
-                document.getElementById('fileName').value = '';
-                document.getElementById('filePath').value = '';
-                document.getElementById('coverPath').value = '';
-                document.getElementById('gender').value = 'male';
-                document.getElementById('intro').value = '';
-                document.getElementById('personality').value = '';
-                
-                // 重置故事列表
-                const storiesList = document.getElementById('storiesList');
-                storiesList.innerHTML = `
-                    <div class="story-item">
-                        <input type="text" placeholder="故事文本" class="story-input">
-                        <i class="fas fa-times remove-story"></i>
-                    </div>
-                `;
-                storiesList.querySelector('.remove-story').addEventListener('click', (e) => {
-                    e.target.closest('.story-item').remove();
-                });
-                
-                renderCardsList();
-            });
-            
-            // 配置GitHub设置
-            document.getElementById('saveGitHubConfig').addEventListener('click', () => {
-                githubToken = document.getElementById('githubToken').value;
-                repoName = document.getElementById('repoName').value;
-                
-                localStorage.setItem('githubToken', githubToken);
-                localStorage.setItem('repoName', repoName);
-                
-                alert('GitHub配置已保存！');
-            });
-            
-            // 应用UI设置
-            document.getElementById('applyUISettings').addEventListener('click', () => {
-                // 获取滑块值
-                blurStrength = parseInt(document.getElementById('blurSlider').value);
-                animationSpeed = parseInt(document.getElementById('animationSlider').value);
-                opacityValue = parseInt(document.getElementById('opacitySlider').value);
-                
-                // 保存设置
-                localStorage.setItem('blur', blurStrength);
-                localStorage.setItem('animationSpeed', animationSpeed);
-                localStorage.setItem('opacity', opacityValue);
-                
-                // 应用设置
-                document.documentElement.style.setProperty('--blur', `${blurStrength}px`);
-                document.documentElement.style.setProperty('--transition', `all ${0.4 - (animationSpeed/40)}s ease`);
-                
-                // 设置透明度（影响所有玻璃元素）
-                const glassElements = document.querySelectorAll('.sidebar, .editor, .theme-toggle, .settings-btn');
-                glassElements.forEach(el => {
-                    el.style.opacity = opacityValue / 100;
-                });
-                
-                alert('UI设置已应用！');
-            });
-            
-            // 滑块事件处理
-            document.getElementById('blurSlider').addEventListener('input', (e) => {
-                document.getElementById('blurValue').textContent = e.target.value;
-            });
-            
-            document.getElementById('animationSlider').addEventListener('input', (e) => {
-                document.getElementById('animationValue').textContent = e.target.value;
-            });
-            
-            document.getElementById('opacitySlider').addEventListener('input', (e) => {
-                document.getElementById('opacityValue').textContent = `${e.target.value}%`;
-            });
-            
-            // 初始加载
-            initUI();
-        });
-    </script>
-</body>
-</html>
+                document.getElementBy
