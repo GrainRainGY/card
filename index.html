@@ -30,6 +30,9 @@
             --file: #17a2b8;
             --image-bg: #f8f9fa;
             --pinned-bg: rgba(255, 245, 158, 0.25);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-blur: 15px;
+            --theme: light;
         }
 
         body {
@@ -41,19 +44,33 @@
             padding: 20px;
             color: var(--text);
             background-attachment: fixed;
+            transition: background 0.5s ease;
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f1a3d, #1a5a58);
+            --text: #f0f6fc;
+            --text-light: #8b949e;
+            --bg-light: rgba(22, 27, 34, 0.85);
+            --bg-darker: rgba(13, 17, 23, 0.9);
+            --border: rgba(48, 54, 61, 0.5);
+            --glass-bg: rgba(22, 27, 34, 0.15);
         }
 
         .glass-container {
             width: 100%;
             max-width: 1200px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
             border-radius: 24px;
             border: 1px solid var(--border);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
             overflow: hidden;
             animation: fadeIn 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            min-height: 90vh;
         }
 
         @keyframes fadeIn {
@@ -264,7 +281,7 @@
 
         .main-content {
             display: flex;
-            min-height: 500px;
+            flex: 1;
         }
 
         .file-browser {
@@ -439,6 +456,38 @@
             color: var(--text);
             font-size: 0.9rem;
             border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            flex: 1;
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 15px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .settings-btn i {
+            color: white;
+            font-size: 1.5rem;
         }
 
         /* 图片预览样式 */
@@ -507,6 +556,300 @@
             color: white;
         }
 
+        /* 文件操作按钮 */
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .file-action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-action-btn.edit {
+            background: var(--primary);
+            color: white;
+        }
+
+        .file-action-btn.download {
+            background: var(--success);
+            color: white;
+        }
+
+        .file-action-btn.upload {
+            background: var(--warning);
+            color: var(--text);
+        }
+
+        .file-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 设置面板 - 底部居中 */
+        .settings-panel {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            background: var(--bg-light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            z-index: 1000;
+            transition: transform 0.4s ease;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .close-settings:hover {
+            color: var(--danger);
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .theme-label {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .glass-settings {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .range-slider {
+            flex: 1;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-input {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .background-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bg-preset {
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .bg-preset:hover {
+            transform: scale(1.05);
+        }
+
+        .bg-preset.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(47, 129, 247, 0.5);
+        }
+
+        .custom-bg {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .custom-bg input {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-darker);
+            font-size: 1rem;
+        }
+
+        .initial-repo {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .repo-input {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-darker);
+            font-size: 1rem;
+        }
+
+        .save-settings {
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .save-settings:hover {
+            background: #1c6bdb;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 900px) {
             .main-content {
                 flex-direction: column;
@@ -522,6 +865,10 @@
             .btn-group {
                 flex-direction: column;
                 gap: 10px;
+            }
+            
+            .settings-panel {
+                width: 95%;
             }
         }
 
@@ -551,6 +898,19 @@
             
             .pinned-repos {
                 padding: 15px;
+            }
+            
+            .file-actions {
+                flex-direction: column;
+            }
+            
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .settings-btn {
+                margin-left: 0;
             }
         }
         
@@ -688,13 +1048,108 @@
                     <div class="file-type-label" id="fileTypeLabel"></div>
                     <div class="code-preview" id="codePreview"></div>
                     <div class="image-preview" id="imagePreview" style="display: none;"></div>
+                    
+                    <div class="file-actions">
+                        <button class="file-action-btn edit">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="file-action-btn download">
+                            <i class="fas fa-download"></i> 下载
+                        </button>
+                        <button class="file-action-btn upload">
+                            <i class="fas fa-upload"></i> 上传
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         
         <footer>
-            <p>© 2023 GitHub仓库浏览器 | 安全提示：请妥善保管您的token，不要与任何人分享</p>
+            <div class="footer-content">
+                <p>© 2023 GitHub仓库浏览器 | 安全提示：请妥善保管您的token，不要与任何人分享</p>
+            </div>
+            <button class="settings-btn">
+                <i class="fas fa-cog"></i>
+            </button>
         </footer>
+    </div>
+    
+    <!-- 设置面板 - 底部居中 -->
+    <div class="settings-panel">
+        <div class="settings-header">
+            <h2 class="settings-title"><i class="fas fa-cog"></i> 设置</h2>
+            <button class="close-settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="settings-section">
+            <h3><i class="fas fa-palette"></i> 主题设置</h3>
+            <div class="theme-switch">
+                <span class="theme-label">暗色主题</span>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3><i class="fas fa-window-restore"></i> 毛玻璃效果</h3>
+            <div class="glass-settings">
+                <div class="setting-item">
+                    <label class="setting-label">背景颜色</label>
+                    <div class="color-picker">
+                        <input type="color" id="glassColor" class="color-input" value="#ffffff">
+                        <span id="glassColorValue">#FFFFFF</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <label class="setting-label">透明度</label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="100" value="15" class="range-slider" id="glassOpacity">
+                        <span class="slider-value" id="opacityValue">15%</span>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <label class="setting-label">模糊程度</label>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="30" value="15" class="range-slider" id="glassBlur">
+                        <span class="slider-value" id="blurValue">15px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3><i class="fas fa-image"></i> 背景设置</h3>
+            <div class="background-presets">
+                <div class="bg-preset active" style="background: linear-gradient(135deg, #1a2980, #26d0ce);" data-bg="gradient1"></div>
+                <div class="bg-preset" style="background: linear-gradient(135deg, #4776E6, #8E54E9);" data-bg="gradient2"></div>
+                <div class="bg-preset" style="background: linear-gradient(135deg, #0f1a3d, #1a5a58);" data-bg="gradient3"></div>
+                <div class="bg-preset" style="background: linear-gradient(135deg, #FF512F, #DD2476);" data-bg="gradient4"></div>
+                <div class="bg-preset" style="background: linear-gradient(135deg, #1D2B64, #F8CDDA);" data-bg="gradient5"></div>
+                <div class="bg-preset" style="background: linear-gradient(135deg, #614385, #516395);" data-bg="gradient6"></div>
+            </div>
+            
+            <div class="custom-bg">
+                <h4><i class="fas fa-link"></i> 自定义背景</h4>
+                <input type="text" id="customBgUrl" placeholder="输入背景图片URL">
+                <button id="applyCustomBg" class="btn btn-primary">应用背景</button>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3><i class="fas fa-book"></i> 初始仓库设置</h3>
+            <div class="initial-repo">
+                <input type="text" id="initOwner" class="repo-input" placeholder="所有者（例如：microsoft）">
+                <input type="text" id="initRepo" class="repo-input" placeholder="仓库名称（例如：TypeScript）">
+            </div>
+        </div>
+        
+        <button class="save-settings">保存设置</button>
     </div>
     
     <script>
@@ -719,10 +1174,186 @@
             const fileTypeLabel = document.getElementById('fileTypeLabel');
             const viewMode = document.getElementById('viewMode');
             const pinnedList = document.getElementById('pinnedList');
+            const settingsBtn = document.querySelector('.settings-btn');
+            const settingsPanel = document.querySelector('.settings-panel');
+            const closeSettings = document.querySelector('.close-settings');
+            const themeToggle = document.getElementById('themeToggle');
+            const glassColor = document.getElementById('glassColor');
+            const glassOpacity = document.getElementById('glassOpacity');
+            const glassBlur = document.getElementById('glassBlur');
+            const opacityValue = document.getElementById('opacityValue');
+            const blurValue = document.getElementById('blurValue');
+            const bgPresets = document.querySelectorAll('.bg-preset');
+            const initOwner = document.getElementById('initOwner');
+            const initRepo = document.getElementById('initRepo');
+            const saveSettings = document.querySelector('.save-settings');
+            const editBtn = document.querySelector('.file-action-btn.edit');
+            const downloadBtn = document.querySelector('.file-action-btn.download');
+            const uploadBtn = document.querySelector('.file-action-btn.upload');
+            const customBgUrl = document.getElementById('customBgUrl');
+            const applyCustomBg = document.getElementById('applyCustomBg');
+            const glassColorValue = document.getElementById('glassColorValue');
             
             let currentPath = '';
             let currentFile = null;
             let currentRepo = '';
+            
+            // 初始化设置
+            function initSettings() {
+                // 从localStorage加载设置
+                const settings = JSON.parse(localStorage.getItem('githubBrowserSettings') || '{}');
+                
+                // 主题设置
+                if (settings.theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    themeToggle.checked = true;
+                }
+                
+                // 毛玻璃设置
+                if (settings.glassColor) {
+                    glassColor.value = settings.glassColor;
+                    glassColorValue.textContent = settings.glassColor;
+                    updateGlassColor(settings.glassColor);
+                }
+                
+                if (settings.glassOpacity) {
+                    glassOpacity.value = settings.glassOpacity;
+                    opacityValue.textContent = `${settings.glassOpacity}%`;
+                    updateGlassOpacity(settings.glassOpacity);
+                }
+                
+                if (settings.glassBlur) {
+                    glassBlur.value = settings.glassBlur;
+                    blurValue.textContent = `${settings.glassBlur}px`;
+                    updateGlassBlur(settings.glassBlur);
+                }
+                
+                // 背景设置
+                if (settings.background) {
+                    document.querySelector(`.bg-preset[data-bg="${settings.background}"]`).classList.add('active');
+                    applyBackground(settings.background);
+                }
+                
+                // 初始仓库设置
+                if (settings.initOwner) {
+                    initOwner.value = settings.initOwner;
+                    ownerInput.value = settings.initOwner;
+                }
+                
+                if (settings.initRepo) {
+                    initRepo.value = settings.initRepo;
+                    repoInput.value = settings.initRepo;
+                }
+                
+                // 自定义背景
+                if (settings.customBg) {
+                    customBgUrl.value = settings.customBg;
+                    applyCustomBackground(settings.customBg);
+                }
+            }
+            
+            // 保存设置
+            function saveAppSettings() {
+                const settings = {
+                    theme: themeToggle.checked ? 'dark' : 'light',
+                    glassColor: glassColor.value,
+                    glassOpacity: glassOpacity.value,
+                    glassBlur: glassBlur.value,
+                    background: document.querySelector('.bg-preset.active').dataset.bg,
+                    initOwner: initOwner.value,
+                    initRepo: initRepo.value,
+                    customBg: customBgUrl.value
+                };
+                
+                localStorage.setItem('githubBrowserSettings', JSON.stringify(settings));
+                showStatus('设置已保存', true);
+                
+                // 应用设置
+                applySettings();
+            }
+            
+            // 应用设置
+            function applySettings() {
+                // 应用主题
+                if (themeToggle.checked) {
+                    document.body.classList.add('dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                }
+                
+                // 应用毛玻璃设置
+                updateGlassColor(glassColor.value);
+                updateGlassOpacity(glassOpacity.value);
+                updateGlassBlur(glassBlur.value);
+                
+                // 应用背景
+                applyBackground(document.querySelector('.bg-preset.active').dataset.bg);
+                
+                // 更新初始仓库
+                ownerInput.value = initOwner.value;
+                repoInput.value = initRepo.value;
+                
+                // 应用自定义背景
+                if (customBgUrl.value) {
+                    applyCustomBackground(customBgUrl.value);
+                }
+            }
+            
+            // 更新毛玻璃颜色
+            function updateGlassColor(color) {
+                const opacity = parseInt(glassOpacity.value) / 100;
+                const r = parseInt(color.substr(1, 2), 16);
+                const g = parseInt(color.substr(3, 2), 16);
+                const b = parseInt(color.substr(5, 2), 16);
+                document.documentElement.style.setProperty('--glass-bg', `rgba(${r}, ${g}, ${b}, ${opacity})`);
+            }
+            
+            // 更新毛玻璃透明度
+            function updateGlassOpacity(value) {
+                const color = glassColor.value;
+                const r = parseInt(color.substr(1, 2), 16);
+                const g = parseInt(color.substr(3, 2), 16);
+                const b = parseInt(color.substr(5, 2), 16);
+                const opacity = parseInt(value) / 100;
+                document.documentElement.style.setProperty('--glass-bg', `rgba(${r}, ${g}, ${b}, ${opacity})`);
+            }
+            
+            // 更新毛玻璃模糊度
+            function updateGlassBlur(value) {
+                document.documentElement.style.setProperty('--glass-blur', `${value}px`);
+            }
+            
+            // 应用背景
+            function applyBackground(bg) {
+                switch(bg) {
+                    case 'gradient1':
+                        document.body.style.background = 'linear-gradient(135deg, #1a2980, #26d0ce)';
+                        break;
+                    case 'gradient2':
+                        document.body.style.background = 'linear-gradient(135deg, #4776E6, #8E54E9)';
+                        break;
+                    case 'gradient3':
+                        document.body.style.background = 'linear-gradient(135deg, #0f1a3d, #1a5a58)';
+                        break;
+                    case 'gradient4':
+                        document.body.style.background = 'linear-gradient(135deg, #FF512F, #DD2476)';
+                        break;
+                    case 'gradient5':
+                        document.body.style.background = 'linear-gradient(135deg, #1D2B64, #F8CDDA)';
+                        break;
+                    case 'gradient6':
+                        document.body.style.background = 'linear-gradient(135deg, #614385, #516395)';
+                        break;
+                }
+            }
+            
+            // 应用自定义背景
+            function applyCustomBackground(url) {
+                if (url) {
+                    document.body.style.background = `url(${url}) no-repeat center center fixed`;
+                    document.body.style.backgroundSize = 'cover';
+                }
+            }
             
             // 加载置顶仓库
             function loadPinnedRepos() {
@@ -1111,7 +1742,99 @@
                 addPinnedRepo(owner, repo);
             });
             
+            // 设置按钮点击事件
+            settingsBtn.addEventListener('click', function() {
+                settingsPanel.classList.add('open');
+            });
+            
+            // 关闭设置面板
+            closeSettings.addEventListener('click', function() {
+                settingsPanel.classList.remove('open');
+            });
+            
+            // 主题切换
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                }
+            });
+            
+            // 毛玻璃颜色调整
+            glassColor.addEventListener('input', function() {
+                updateGlassColor(this.value);
+                glassColorValue.textContent = this.value;
+            });
+            
+            // 毛玻璃透明度调整
+            glassOpacity.addEventListener('input', function() {
+                opacityValue.textContent = `${this.value}%`;
+                updateGlassOpacity(this.value);
+            });
+            
+            // 毛玻璃模糊度调整
+            glassBlur.addEventListener('input', function() {
+                blurValue.textContent = `${this.value}px`;
+                updateGlassBlur(this.value);
+            });
+            
+            // 背景预设选择
+            bgPresets.forEach(preset => {
+                preset.addEventListener('click', function() {
+                    document.querySelectorAll('.bg-preset').forEach(p => {
+                        p.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    applyBackground(this.dataset.bg);
+                });
+            });
+            
+            // 应用自定义背景
+            applyCustomBg.addEventListener('click', function() {
+                if (customBgUrl.value) {
+                    applyCustomBackground(customBgUrl.value);
+                    showStatus('自定义背景已应用', true);
+                } else {
+                    showStatus('请输入背景图片URL', false);
+                }
+            });
+            
+            // 保存设置
+            saveSettings.addEventListener('click', saveAppSettings);
+            
+            // 文件操作按钮
+            editBtn.addEventListener('click', function() {
+                if (!currentFile) {
+                    showStatus('请先选择一个文件', false);
+                    return;
+                }
+                
+                // 编辑功能实现
+                showStatus('编辑功能正在开发中', false);
+            });
+            
+            downloadBtn.addEventListener('click', function() {
+                if (!currentFile) {
+                    showStatus('请先选择一个文件', false);
+                    return;
+                }
+                
+                // 下载功能实现
+                const link = document.createElement('a');
+                link.href = currentFile.download_url;
+                link.download = currentFile.name;
+                link.click();
+                showStatus(`文件 ${currentFile.name} 已开始下载`, true);
+            });
+            
+            uploadBtn.addEventListener('click', function() {
+                // 上传功能实现
+                showStatus('上传功能正在开发中', false);
+            });
+            
             // 初始加载
+            initSettings();
             loadPinnedRepos();
             
             // 初始加载示例仓库
