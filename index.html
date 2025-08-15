@@ -3,875 +3,1118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卡片与图片管理系统</title>
+    <title>Omate角色卡管理器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --border: #dee2e6;
-            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --transition: all 0.3s ease;
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-color: #212529;
-            --header-bg: linear-gradient(135deg, #4361ee, #3f37c9);
+            --primary: #8a6cff;
+            --primary-light: #a18eff;
+            --text: #333333;
+            --bg: #f5f7ff;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --sidebar-bg: rgba(255, 255, 255, 0.7);
+            --glass: rgba(255, 255, 255, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+            --transition: all 0.4s ease;
+            --blur: 12px;
         }
-        
-        /* 暗色主题 */
-        .dark-theme {
-            --bg-color: #121826;
-            --card-bg: #1e293b;
-            --text-color: #e2e8f0;
-            --header-bg: linear-gradient(135deg, #1e3a8a, #0f172a);
-            --border: #334155;
+
+        [data-theme="dark"] {
+            --primary: #7b5cfa;
+            --primary-light: #8f73ff;
+            --text: #e0e0e0;
+            --bg: #161a2d;
+            --card-bg: rgba(27, 33, 58, 0.8);
+            --sidebar-bg: rgba(27, 33, 58, 0.7);
+            --glass: rgba(27, 33, 58, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             transition: var(--transition);
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         header {
-            background: var(--header-bg);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass);
+            margin-bottom: 30px;
+            backdrop-filter: blur(calc(var(--blur) * 1.2));
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.5rem;
-            font-weight: 600;
         }
-        
-        .logo i {
+
+        .logo h1 {
             font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        .header-actions {
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .controls {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        @media (min-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
-        .card {
+
+        .theme-toggle {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-            transition: var(--transition);
-            border: 1px solid var(--border);
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
-        
-        .card-header {
-            padding: 18px 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-        
-        .card-list {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .card-item {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .card-item:last-child {
-            border-bottom: none;
-        }
-        
-        .card-item:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-        }
-        
-        .card-item.active {
-            background-color: rgba(67, 97, 238, 0.15);
-            border-left: 3px solid var(--primary);
-        }
-        
-        .card-img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            object-fit: cover;
-            background-color: #e9ecef;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--gray);
-            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            color: var(--text);
         }
-        
+
+        .settings-btn {
+            background: var(--card-bg);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            color: var(--text);
+        }
+
+        .settings-btn:hover, .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05) rotate(8deg);
+        }
+
+        main {
+            display: flex;
+            gap: 30px;
+            min-height: calc(100vh - 150px);
+        }
+
+        .sidebar {
+            flex: 0 0 320px;
+            background: var(--sidebar-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            height: fit-content;
+            max-height: 80vh;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 50px;
+            border: 2px solid var(--glass);
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .new-card-btn {
+            padding: 12px 15px;
+            border-radius: 50px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .new-card-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        }
+
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .card-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-item.selected {
+            transform: translateX(10px);
+            border-left: 4px solid var(--primary);
+            background: var(--glass);
+        }
+
+        .card-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
         .card-info {
             flex: 1;
         }
-        
-        .card-name {
-            font-weight: 600;
-            margin-bottom: 4px;
+
+        .card-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
         }
-        
-        .card-meta {
+
+        .card-info p {
             font-size: 0.85rem;
-            color: var(--gray);
+            opacity: 0.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .card-actions button {
+            background: none;
+            border: none;
+            color: var(--text);
+            opacity: 0.5;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .card-actions button:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .editor {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass);
+        }
+
+        .editor-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .editor-actions {
             display: flex;
             gap: 15px;
         }
-        
-        .card-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn {
-            padding: 8px 15px;
-            border-radius: 6px;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.85rem;
-        }
-        
-        .btn-primary {
+
+        .save-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
             background: var(--primary);
             color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .btn-primary:hover {
-            background: var(--secondary);
+
+        .save-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
         }
-        
-        .btn-outline {
+
+        .delete-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
             background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .btn-outline:hover {
-            background: rgba(67, 97, 238, 0.1);
+
+        .delete-btn:hover {
+            background: rgba(255, 107, 107, 0.1);
+            transform: translateY(-2px);
         }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
-        }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
-        .form-label {
+
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
+            opacity: 0.9;
         }
-        
-        .form-control {
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--glass);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text);
             font-size: 1rem;
             transition: var(--transition);
-            background-color: var(--card-bg);
-            color: var(--text-color);
         }
-        
-        .form-control:focus {
-            outline: none;
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
         }
-        
-        textarea.form-control {
-            min-height: 100px;
+
+        .form-group textarea {
+            min-height: 120px;
             resize: vertical;
         }
-        
-        .image-preview {
-            width: 100%;
-            height: 200px;
-            background-color: var(--bg-color);
-            border: 1px dashed var(--border);
-            border-radius: 8px;
+
+        .stories-list {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 15px;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
         }
-        
-        .image-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+
+        .story-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
         }
-        
-        .image-preview i {
-            font-size: 3rem;
-            color: var(--gray);
+
+        .story-item input {
+            flex: 1;
         }
-        
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-bottom: 20px;
-            background-color: var(--card-bg);
-        }
-        
-        .upload-area:hover, .upload-area.drag-over {
-            border-color: var(--primary);
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-        
-        .upload-area i {
-            font-size: 2.5rem;
+
+        .add-story-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            border-radius: 50px;
+            background: var(--glass);
+            border: 2px dashed var(--primary);
             color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        .upload-text {
-            margin-bottom: 15px;
-        }
-        
-        .image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .image-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-            background-color: var(--bg-color);
+            font-weight: 600;
             cursor: pointer;
-        }
-        
-        .image-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .image-item .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
+            gap: 8px;
+        }
+
+        .add-story-btn:hover {
+            background: rgba(138, 108, 255, 0.2);
+            border-style: solid;
+        }
+
+        .remove-story {
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 5px;
             transition: var(--transition);
         }
-        
-        .image-item:hover .overlay {
-            opacity: 1;
+
+        .remove-story:hover {
+            background: rgba(255, 107, 107, 0.1);
         }
-        
-        .image-item .delete-btn {
-            color: white;
-            background: rgba(220, 53, 69, 0.8);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .image-item.selected {
-            border: 3px solid var(--primary);
-        }
-        
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--gray);
-            margin-top: 40px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--text-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border: 1px solid var(--border);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        /* 设置模态框样式 */
-        .modal {
+
+        .settings-panel {
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-content {
+            right: -400px;
+            width: 380px;
+            height: 100vh;
             background: var(--card-bg);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
+            backdrop-filter: blur(calc(var(--blur) * 1.5));
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: var(--transition);
+            z-index: 100;
             overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
         }
-        
-        .modal.active .modal-content {
-            transform: translateY(0);
+
+        .settings-panel.active {
+            right: 0;
         }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
+
+        .settings-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass);
         }
-        
-        .modal-title {
+
+        .settings-header h2 {
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
         }
-        
-        .modal-close {
-            background: none;
-            border: none;
+
+        .close-settings {
             font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            padding: 12px 20px;
+            color: var(--text);
             cursor: pointer;
             transition: var(--transition);
-            border-bottom: 3px solid transparent;
         }
-        
-        .tab.active {
-            border-bottom: 3px solid var(--primary);
+
+        .close-settings:hover {
             color: var(--primary);
-            font-weight: 600;
+            transform: scale(1.2);
         }
-        
-        .tab-content {
-            display: none;
+
+        .github-section {
+            padding: 20px;
+            background: rgba(138, 108, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 25px;
         }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .theme-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .theme-option {
-            height: 60px;
-            border-radius: 8px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid transparent;
+
+        .token-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--glass);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text);
+            font-size: 1rem;
             transition: var(--transition);
+            margin: 15px 0;
         }
-        
-        .theme-option.active {
+
+        .token-input:focus {
             border-color: var(--primary);
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
         }
-        
-        .theme-option.active::after {
-            content: "✓";
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 20px;
-            height: 20px;
+
+        .save-config-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
             background: var(--primary);
             color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
         }
-        
-        .color-picker {
+
+        .save-config-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        }
+
+        .slider-group {
+            margin-bottom: 25px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .slider-container {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-top: 15px;
         }
-        
-        .color-input {
-            width: 60px;
-            height: 40px;
-            border: none;
-            padding: 0;
+
+        .slider-value {
+            width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--glass);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
             cursor: pointer;
-            background: none;
+            transition: var(--transition);
         }
-        
-        .github-status {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(67, 97, 238, 0.1);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-            display: none;
+
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--primary-light);
+            transform: scale(1.2);
         }
-        
-        .github-status.connected {
-            display: block;
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        @media (max-width: 768px) {
-            .header-content {
+
+        /* Mobile responsiveness */
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+            }
+            
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .editor-header {
                 flex-direction: column;
                 gap: 15px;
-                text-align: center;
             }
             
-            .header-actions {
+            .editor-actions {
                 width: 100%;
-                justify-content: center;
+                justify-content: space-between;
             }
             
-            .card-actions {
-                flex-direction: column;
+            .save-btn, .delete-btn {
+                flex: 1;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-images"></i>
-                <span>卡片与图片管理系统</span>
-            </div>
-            <div class="header-actions">
-                <button id="saveBtn" class="btn btn-primary">
-                    <i class="fas fa-save"></i> 保存更改
-                </button>
-                <button id="settingsBtn" class="btn btn-warning">
-                    <i class="fas fa-cog"></i> 设置
-                </button>
-            </div>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="main-content">
-            <!-- 卡片管理区域 -->
-            <div class="card">
-                <div class="card-header">
-                    <span><i class="fas fa-address-card"></i> 卡片管理</span>
-                    <button id="addCardBtn" class="btn btn-sm btn-outline">
-                        <i class="fas fa-plus"></i> 添加卡片
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="card-list" id="cardsList">
-                        <!-- 卡片将通过JS动态加载 -->
-                        <div class="empty-state">
-                            <i class="fas fa-address-book"></i>
-                            <h3>暂无卡片数据</h3>
-                            <p>点击"添加卡片"按钮创建新卡片</p>
-                        </div>
-                    </div>
-                </div>
+        <header>
+            <div class="logo">
+                <i class="fas fa-ghost logo-icon"></i>
+                <h1>Omate角色卡管理器</h1>
             </div>
-            
-            <!-- 卡片编辑和图片区域 -->
-            <div>
-                <!-- 卡片编辑表单 -->
-                <div class="card" id="cardEditor">
-                    <div class="card-header">
-                        <span><i class="fas fa-edit"></i> 卡片编辑器</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="empty-state">
-                            <i class="fas fa-hand-pointer"></i>
-                            <h3>选择一张卡片进行编辑</h3>
-                            <p>在左侧选择一张卡片以查看或编辑其内容</p>
-                        </div>
-                        
-                        <form id="cardForm" style="display: none;">
-                            <input type="hidden" id="cardId">
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="cardName">卡片名称</label>
-                                <input type="text" class="form-control" id="cardName" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="cardDescription">描述</label>
-                                <textarea class="form-control" id="cardDescription"></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">封面图片</label>
-                                <div class="image-preview" id="coverPreview">
-                                    <i class="fas fa-image"></i>
-                                </div>
-                                <button type="button" class="btn btn-outline" id="selectCoverBtn">
-                                    <i class="fas fa-folder-open"></i> 选择图片
-                                </button>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="filePath">文件路径</label>
-                                <input type="text" class="form-control" id="filePath" placeholder="例如: img/card-image.png">
-                            </div>
-                            
-                            <div class="toolbar">
-                                <button type="button" class="btn btn-danger" id="deleteCardBtn">
-                                    <i class="fas fa-trash"></i> 删除卡片
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> 保存卡片
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                
-                <!-- 图片上传区域 -->
-                <div class="card" style="margin-top: 25px;">
-                    <div class="card-header">
-                        <span><i class="fas fa-cloud-upload-alt"></i> 图片管理</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="upload-area" id="uploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p class="upload-text">拖放图片到此处或点击上传</p>
-                            <button class="btn btn-outline">
-                                <i class="fas fa-folder-open"></i> 选择图片
-                            </button>
-                            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
-                        </div>
-                        
-                        <div class="image-grid" id="imageGrid">
-                            <!-- 图片将通过JS动态加载 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="footer">
-        <p>卡片与图片管理系统 &copy; 2023 | 部署于 Cloudflare Pages</p>
-    </div>
-    
-    <div class="toast" id="toast">操作成功！</div>
-    
-    <!-- 设置模态框 -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-cog"></i> 系统设置</h3>
-                <button class="modal-close" id="closeSettings">
-                    <i class="fas fa-times"></i>
+            <div class="controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="settings-btn" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="tabs">
-                    <div class="tab active" data-tab="appearance">外观设置</div>
-                    <div class="tab" data-tab="github">GitHub 设置</div>
-                    <div class="tab" data-tab="about">关于系统</div>
-                </div>
-                
-                <!-- 外观设置 -->
-                <div class="tab-content active" id="appearanceTab">
-                    <h4>主题设置</h4>
-                    
-                    <div class="theme-selector">
-                        <div class="theme-option active" data-theme="default" style="background: linear-gradient(135deg, #4361ee, #3f37c9);"></div>
-                        <div class="theme-option" data-theme="dark" style="background: linear-gradient(135deg, #1e3a8a, #0f172a);"></div>
-                        <div class="theme-option" data-theme="green" style="background: linear-gradient(135deg, #10b981, #047857);"></div>
-                        <div class="theme-option" data-theme="purple" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"></div>
-                        <div class="theme-option" data-theme="sunset" style="background: linear-gradient(135deg, #f97316, #ea580c);"></div>
-                    </div>
-                    
-                    <h4 style="margin-top: 25px;">自定义主题</h4>
-                    <div class="form-group">
-                        <label class="form-label">主色调</label>
-                        <div class="color-picker">
-                            <input type="color" class="color-input" id="primaryColor" value="#4361ee">
-                            <span>当前值: <span id="primaryColorValue">#4361ee</span></span>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">背景颜色</label>
-                        <div class="color-picker">
-                            <input type="color" class="color-input" id="bgColor" value="#f0f2f5">
-                            <span>当前值: <span id="bgColorValue">#f0f2f5</span></span>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-primary" id="applyThemeBtn">
-                        <i class="fas fa-paint-brush"></i> 应用主题
+        </header>
+
+        <main>
+            <div class="sidebar">
+                <div class="search-bar">
+                    <input type="text" placeholder="搜索角色名或介绍..." id="searchInput">
+                    <button class="new-card-btn" id="newCardBtn">
+                        <i class="fas fa-plus"></i> 新建
                     </button>
                 </div>
-                
-                <!-- GitHub 设置 -->
-                <div class="tab-content" id="githubTab">
-                    <h4>GitHub 仓库设置</h4>
-                    <p class="form-label">连接您的 GitHub 仓库以管理 cards.json 文件</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="githubRepo">GitHub 仓库</label>
-                        <input type="text" class="form-control" id="githubRepo" placeholder="username/repo-name">
-                        <small>例如: yourusername/cards-repository</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="githubToken">GitHub 访问令牌</label>
-                        <input type="password" class="form-control" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                        <small>需要具有仓库写入权限的 personal access token</small>
-                    </div>
-                    
-                    <div class="github-status" id="githubStatus">
-                        <i class="fas fa-check-circle"></i>
-                        <span>已连接到 GitHub 仓库: <span id="connectedRepo"></span></span>
-                    </div>
-                    
-                    <div class="toolbar">
-                        <button class="btn btn-outline" id="testGithubBtn">
-                            <i class="fas fa-plug"></i> 测试连接
+                <div class="cards-list" id="cardsList">
+                    <!-- 角色卡片列表会通过JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="editor" id="editor">
+                <div class="editor-header">
+                    <h2>角色信息编辑</h2>
+                    <div class="editor-actions">
+                        <button class="save-btn" id="saveCardBtn">
+                            <i class="fas fa-save"></i> 保存
                         </button>
-                        <button class="btn btn-primary" id="saveGithubBtn">
-                            <i class="fas fa-save"></i> 保存设置
+                        <button class="delete-btn" id="deleteCardBtn">
+                            <i class="fas fa-trash-alt"></i> 删除
                         </button>
                     </div>
                 </div>
                 
-                <!-- 关于系统 -->
-                <div class="tab-content" id="aboutTab">
-                    <h4>关于卡片管理系统</h4>
-                    <div style="text-align: center; margin: 25px 0;">
-                        <i class="fas fa-images" style="font-size: 4rem; color: var(--primary);"></i>
-                        <h3 style="margin: 15px 0;">卡片与图片管理系统</h3>
-                        <p>版本: 2.0.0</p>
+                <div class="editor-grid">
+                    <div class="form-group">
+                        <label for="cardId">ID *</label>
+                        <input type="text" id="cardId" required>
                     </div>
                     
-                    <div class="card" style="margin: 20px 0;">
-                        <div class="card-header">
-                            <i class="fas fa-info-circle"></i> 系统信息
-                        </div>
-                        <div class="card-body">
-                            <p>这是一个功能完整的卡片与图片管理系统，可以帮助您：</p>
-                            <ul style="padding-left: 20px; margin: 15px 0;">
-                                <li>管理 cards.json 文件</li>
-                                <li>上传和组织图片资源</li>
-                                <li>自定义系统外观主题</li>
-                                <li>连接 GitHub 仓库进行数据同步</li>
-                            </ul>
-                            <p>系统部署于 Cloudflare Pages，提供快速可靠的访问体验。</p>
-                        </div>
+                    <div class="form-group">
+                        <label for="cardName">角色名 *</label>
+                        <input type="text" id="cardName" required>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 30px;">
-                        <p>© 2023 卡片管理系统 | 保留所有权利</p>
+                    <div class="form-group">
+                        <label for="fileName">图片文件名 *</label>
+                        <input type="text" id="fileName">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="filePath">图片路径 *</label>
+                        <input type="text" id="filePath">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="coverPath">封面路径</label>
+                        <input type="text" id="coverPath">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">性别 *</label>
+                        <select id="gender">
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="intro">简介</label>
+                        <textarea id="intro"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="personality">个性</label>
+                        <textarea id="personality"></textarea>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label>故事</label>
+                        <div class="stories-list" id="storiesList">
+                            <div class="story-item">
+                                <input type="text" placeholder="故事文本" class="story-input">
+                                <i class="fas fa-times remove-story"></i>
+                            </div>
+                        </div>
+                        <button class="add-story-btn" id="addStoryBtn">
+                            <i class="fas fa-plus"></i> 添加故事
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-    
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>设置面板</h2>
+            <div class="close-settings" id="closeSettings">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        
+        <div class="github-section">
+            <h3><i class="fab fa-github"></i> GitHub 连接</h3>
+            <p>连接到您的GitHub仓库管理角色卡</p>
+            
+            <label for="githubToken">GitHub Token:</label>
+            <input type="text" id="githubToken" class="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
+            
+            <label for="repoName">仓库名称:</label>
+            <input type="text" id="repoName" class="token-input" placeholder="username/reponame">
+            
+            <button class="save-config-btn" id="saveGitHubConfig">
+                保存配置
+            </button>
+        </div>
+        
+        <div class="slider-group">
+            <label>毛玻璃效果强度</label>
+            <div class="slider-container">
+                <span class="slider-value" id="blurValue">12</span>
+                <input type="range" min="0" max="20" value="12" class="slider" id="blurSlider">
+            </div>
+        </div>
+        
+        <div class="slider-group">
+            <label>动效速度</label>
+            <div class="slider-container">
+                <span class="slider-value" id="animationValue">4</span>
+                <input type="range" min="1" max="10" value="4" class="slider" id="animationSlider">
+            </div>
+        </div>
+        
+        <div class="slider-group">
+            <label>UI透明度</label>
+            <div class="slider-container">
+                <span class="slider-value" id="opacityValue">70%</span>
+                <input type="range" min="20" max="90" value="70" class="slider" id="opacitySlider">
+            </div>
+        </div>
+        
+        <button class="save-config-btn" id="applyUISettings">
+            应用UI设置
+        </button>
+    </div>
+
     <script>
-        // 示例数据 - 在实际应用中，这将从cards.json加载
-        let cardsData = {
-            cards: [
-                {
-                    id: "1742218048477",
-                    name: "苏墨",
-                    fileName: "1742218048404-苏墨.png",
-                    filePath: "uploads/1742218048404-苏墨.png",
-                    coverPath: "uploads/1742218048404-苏墨-cover.jpg",
-                    fileType: "png",
-                    uploadTime: "2025-03-17T13:27:28.477Z",
-                    gender: "female",
-                    intro: "手绘设计师，倔强又敏感，在AI浪潮中坚持自我，用画笔描绘情感与梦想。",
-                    description: "苏墨，一位20岁的中国现代女性。",
-                    personality: "",
-                    stories: [
-                        {
-                            path: "uploads/stories/1741855693696-E88B8FE5A2A8-C3A5C2A4C28DC3A5C288C2BBC3A4C2BAC2BAC3A7C294C29FC382C2B7C3A4C2B8C28A.multi.h2book.json",
-                            name: "复刻人生·上.multi.h2book.json",
-                            uploadTime: "2025-03-13T08:48:13.702Z"
+        document.addEventListener('DOMContentLoaded', () => {
+            // 状态变量
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            let cards = [];
+            let currentCard = null;
+            let blurStrength = localStorage.getItem('blur') || 12;
+            let animationSpeed = localStorage.getItem('animationSpeed') || 4;
+            let opacityValue = localStorage.getItem('opacity') || 70;
+            let githubToken = localStorage.getItem('githubToken') || '';
+            let repoName = localStorage.getItem('repoName') || '';
+            
+            // 初始化UI
+            const initUI = () => {
+                document.documentElement.style.setProperty('--blur', `${blurStrength}px`);
+                document.documentElement.style.setProperty('--transition', `all ${0.4 - (animationSpeed/40)}s ease`);
+                
+                if (currentTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+                }
+                
+                document.getElementById('blurSlider').value = blurStrength;
+                document.getElementById('blurValue').textContent = blurStrength;
+                
+                document.getElementById('animationSlider').value = animationSpeed;
+                document.getElementById('animationValue').textContent = animationSpeed;
+                
+                document.getElementById('opacitySlider').value = opacityValue;
+                document.getElementById('opacityValue').textContent = `${opacityValue}%`;
+                
+                document.getElementById('githubToken').value = githubToken;
+                document.getElementById('repoName').value = repoName;
+                
+                generateDemoCards();
+            };
+            
+            // 生成演示卡片（实际应用中从JSON加载）
+            const generateDemoCards = () => {
+                cards = [
+                    {
+                        id: 'arc001',
+                        name: '赛博忍者',
+                        fileName: 'cyber-ninja.png',
+                        filePath: 'images/cyber-ninja.png',
+                        coverPath: 'covers/cyber-ninja-cover.png',
+                        fileType: 'png',
+                        uploadTime: '2025-03-17T13:27:28.477Z',
+                        gender: 'male',
+                        intro: '融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。',
+                        personality: '冷静、神秘、高效，很少表露情感',
+                        stories: [
+                            '在城市的地下世界执行机密任务',
+                            '使用古老的忍术对抗现代科技',
+                            '守护着人类与技术之间的平衡'
+                        ]
+                    },
+                    {
+                        id: 'arc002',
+                        name: '星界歌姬',
+                        fileName: 'star-singer.png',
+                        filePath: 'images/star-singer.png',
+                        coverPath: 'covers/star-singer-cover.png',
+                        fileType: 'png',
+                        uploadTime: '2025-04-22T09:15:42.120Z',
+                        gender: 'female',
+                        intro: '拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。',
+                        personality: '活泼、有创造力、情感丰富',
+                        stories: [
+                            '举办星际巡回演唱会',
+                            '用歌声化解文明间的冲突',
+                            '探索神秘的音乐维度'
+                        ]
+                    },
+                    {
+                        id: 'arc003',
+                        name: '机械智者',
+                        fileName: 'mech-sage.png',
+                        filePath: 'images/mech-sage.png',
+                        coverPath: 'covers/mech-sage-cover.png',
+                        fileType: 'png',
+                        uploadTime: '2025-05-11T16:40:33.255Z',
+                        gender: 'male',
+                        intro: '拥有超越人类智慧与机械精密性的合成体，思考宇宙之谜。',
+                        personality: '理性、深思、有耐心',
+                        stories: [
+                            '建造星系尺度的计算机',
+                            '研究宇宙的终极问题',
+                            '为不同的文明提供智慧解决方案'
+                        ]
+                    }
+                ];
+                
+                renderCardsList();
+                if (cards.length > 0) {
+                    selectCard(cards[0]);
+                }
+            };
+            
+            // 渲染卡片列表
+            const renderCardsList = () => {
+                const cardsListEl = document.getElementById('cardsList');
+                cardsListEl.innerHTML = '';
+                
+                cards.forEach(card => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `card-item ${currentCard === card ? 'selected' : ''}`;
+                    cardEl.innerHTML = `
+                        <div class="card-avatar">
+                            <i class="fas ${card.gender === 'male' ? 'fa-mars' : 'fa-venus'}"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>${card.name}</h3>
+                            <p>${card.intro.substring(0, 60)}${card.intro.length > 60 ? '...' : ''}</p>
+                        </div>
+                        <div class="card-actions">
+                            <button><i class="fas fa-pen"></i></button>
+                        </div>
+                    `;
+                    cardEl.addEventListener('click', () => selectCard(card));
+                    cardsListEl.appendChild(cardEl);
+                });
+            };
+            
+            // 选择卡片
+            const selectCard = (card) => {
+                currentCard = card;
+                renderCardsList();
+                
+                // 填充编辑表单
+                document.getElementById('cardId').value = card.id;
+                document.getElementById('cardName').value = card.name;
+                document.getElementById('fileName').value = card.fileName;
+                document.getElementById('filePath').value = card.filePath;
+                document.getElementById('coverPath').value = card.coverPath;
+                document.getElementById('gender').value = card.gender;
+                document.getElementById('intro').value = card.intro;
+                document.getElementById('personality').value = card.personality;
+                
+                // 填充故事
+                const storiesList = document.getElementById('storiesList');
+                storiesList.innerHTML = '';
+                card.stories.forEach(story => {
+                    const storyItem = document.createElement('div');
+                    storyItem.className = 'story-item';
+                    storyItem.innerHTML = `
+                        <input type="text" value="${story}" class="story-input">
+                        <i class="fas fa-times remove-story"></i>
+                    `;
+                    storyItem.querySelector('.remove-story').addEventListener('click', () => {
+                        storyItem.remove();
+                    });
+                    storiesList.appendChild(storyItem);
+                });
+            };
+            
+            // 主题切换
+            document.getElementById('themeToggle').addEventListener('click', () => {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', currentTheme);
+                
+                if (currentTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+            
+            // 设置面板切换
+            document.getElementById('settingsBtn').addEventListener('click', () => {
+                document.getElementById('settingsPanel').classList.add('active');
+            });
+            
+            document.getElementById('closeSettings').addEventListener('click', () => {
+                document.getElementById('settingsPanel').classList.remove('active');
+            });
+            
+            // 添加新故事
+            document.getElementById('addStoryBtn').addEventListener('click', () => {
+                const storiesList = document.getElementById('storiesList');
+                const storyItem = document.createElement('div');
+                storyItem.className = 'story-item';
+                storyItem.innerHTML = `
+                    <input type="text" placeholder="故事文本" class="story-input">
+                    <i class="fas fa-times remove-story"></i>
+                `;
+                storyItem.querySelector('.remove-story').addEventListener('click', () => {
+                    storyItem.remove();
+                });
+                storiesList.appendChild(storyItem);
+            });
+            
+            // 保存卡片
+            document.getElementById('saveCardBtn').addEventListener('click', () => {
+                if (!document.getElementById('cardId').value || !document.getElementById('cardName').value) {
+                    alert('ID和角色名是必填字段！');
+                    return;
+                }
+                
+                const stories = Array.from(document.querySelectorAll('.story-input')).map(input => input.value);
+                
+                if (currentCard) {
+                    // 更新现有卡片
+                    currentCard.id = document.getElementById('cardId').value;
+                    currentCard.name = document.getElementById('cardName').value;
+                    currentCard.fileName = document.getElementById('fileName').value;
+                    currentCard.filePath = document.getElementById('filePath').value;
+                    currentCard.coverPath = document.getElementById('coverPath').value;
+                    currentCard.gender = document.getElementById('gender').value;
+                    currentCard.intro = document.getElementById('intro').value;
+                    currentCard.personality = document.getElementById('personality').value;
+                    currentCard.stories = stories;
+                } else {
+                    // 创建新卡片
+                    const newCard = {
+                        id: document.getElementById('cardId').value,
+                        name: document.getElementById('cardName').value,
+                        fileName: document.getElementById('fileName').value,
+                        filePath: document.getElementById('filePath').value,
+                        coverPath: document.getElementById('coverPath').value,
+                        fileType: 'png',
+                        uploadTime: new Date().toISOString(),
+                        gender: document.getElementById('gender').value,
+                        intro: document.getElementById('intro').value,
+                        personality: document.getElementById('personality').value,
+                        stories: stories
+                    };
+                    cards.push(newCard);
+                    currentCard = newCard;
+                }
+                
+                renderCardsList();
+                alert('角色卡保存成功！');
+                
+                // 实际应用中这里会调用GitHub API更新仓库
+                if (githubToken && repoName) {
+                    console.log('将更新GitHub仓库:', repoName);
+                    // 在实际实现中，这里会使用GitHub API更新cards.json
+                }
+            });
+            
+            // 删除卡片
+            document.getElementById('deleteCardBtn').addEventListener('click', () => {
+                if (currentCard && confirm('确定要删除这个角色卡吗？此操作不可恢复。')) {
+                    const index = cards.indexOf(currentCard);
+                    if (index !== -1) {
+                        cards.splice(index, 1);
+                        if (cards.length > 0) {
+                            selectCard(cards[0]);
+                        } else {
+                            document.getElementById('editor').style.display = 'none';
+                            currentCard = null;
                         }
-                    ]
-                },
-                {
-                    id: "1742218048478",
-                    name: "林风",
-                    fileName: "1742218048405-林风.jpg",
-                    filePath: "uploads/1742218048405-林风.jpg",
-                    coverPath: "uploads/1742218048405-林风-cover.jpg",
-                    fileType: "jpg",
-                    uploadTime: "2025-03
+                        renderCardsList();
+                    }
+                }
+            });
+            
+            // 新建卡片
+            document.getElementById('newCardBtn').addEventListener('click', () => {
+                currentCard = null;
+                document.getElementById('editor').style.display = 'block';
+                
+                // 清空表单
+                document.getElementById('cardId').value = '';
+                document.getElementById('cardName').value = '';
+                document.getElementById('fileName').value = '';
+                document.getElementById('filePath').value = '';
+                document.getElementById('coverPath').value = '';
+                document.getElementById('gender').value = 'male';
+                document.getElementById('intro').value = '';
+                document.getElementById('personality').value = '';
+                
+                // 重置故事列表
+                const storiesList = document.getElementById('storiesList');
+                storiesList.innerHTML = `
+                    <div class="story-item">
+                        <input type="text" placeholder="故事文本" class="story-input">
+                        <i class="fas fa-times remove-story"></i>
+                    </div>
+                `;
+                storiesList.querySelector('.remove-story').addEventListener('click', (e) => {
+                    e.target.closest('.story-item').remove();
+                });
+                
+                renderCardsList();
+            });
+            
+            // 配置GitHub设置
+            document.getElementById('saveGitHubConfig').addEventListener('click', () => {
+                githubToken = document.getElementById('githubToken').value;
+                repoName = document.getElementById('repoName').value;
+                
+                localStorage.setItem('githubToken', githubToken);
+                localStorage.setItem('repoName', repoName);
+                
+                alert('GitHub配置已保存！');
+            });
+            
+            // 应用UI设置
+            document.getElementById('applyUISettings').addEventListener('click', () => {
+                // 获取滑块值
+                blurStrength = parseInt(document.getElementById('blurSlider').value);
+                animationSpeed = parseInt(document.getElementById('animationSlider').value);
+                opacityValue = parseInt(document.getElementById('opacitySlider').value);
+                
+                // 保存设置
+                localStorage.setItem('blur', blurStrength);
+                localStorage.setItem('animationSpeed', animationSpeed);
+                localStorage.setItem('opacity', opacityValue);
+                
+                // 应用设置
+                document.documentElement.style.setProperty('--blur', `${blurStrength}px`);
+                document.documentElement.style.setProperty('--transition', `all ${0.4 - (animationSpeed/40)}s ease`);
+                
+                // 设置透明度（影响所有玻璃元素）
+                const glassElements = document.querySelectorAll('.sidebar, .editor, .theme-toggle, .settings-btn');
+                glassElements.forEach(el => {
+                    el.style.opacity = opacityValue / 100;
+                });
+                
+                alert('UI设置已应用！');
+            });
+            
+            // 滑块事件处理
+            document.getElementById('blurSlider').addEventListener('input', (e) => {
+                document.getElementById('blurValue').textContent = e.target.value;
+            });
+            
+            document.getElementById('animationSlider').addEventListener('input', (e) => {
+                document.getElementById('animationValue').textContent = e.target.value;
+            });
+            
+            document.getElementById('opacitySlider').addEventListener('input', (e) => {
+                document.getElementById('opacityValue').textContent = `${e.target.value}%`;
+            });
+            
+            // 初始加载
+            initUI();
+        });
+    </script>
+</body>
+</html>
