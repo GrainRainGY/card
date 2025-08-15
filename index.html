@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub仓库浏览器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Nunito', sans-serif;
         }
 
         :root {
@@ -27,6 +28,7 @@
             --danger: #cf222e;
             --folder: #ffc107;
             --file: #17a2b8;
+            --image-bg: #f8f9fa;
         }
 
         body {
@@ -283,16 +285,15 @@
             color: var(--text-light);
         }
 
-        .content-area {
+        .content-container {
             flex: 1;
             background: white;
             border-radius: 12px;
             padding: 25px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
             overflow: auto;
-            font-family: 'Consolas', 'Courier New', monospace;
-            white-space: pre-wrap;
-            display: none;
+            display: flex;
+            flex-direction: column;
         }
 
         .file-metadata {
@@ -378,6 +379,72 @@
             color: var(--text);
             font-size: 0.9rem;
             border-top: 1px solid var(--border);
+        }
+
+        /* 图片预览样式 */
+        .image-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--image-bg);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 70vh;
+            overflow: auto;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 代码预览样式 */
+        .code-preview {
+            font-family: 'Consolas', 'Courier New', monospace;
+            white-space: pre;
+            overflow-x: auto;
+            padding: 15px;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 70vh;
+            overflow: auto;
+        }
+
+        /* 文件类型标签 */
+        .file-type-label {
+            background: var(--primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+            align-self: flex-start;
+        }
+
+        /* 查看模式切换 */
+        .view-mode {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .view-btn {
+            padding: 8px 15px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
         }
 
         @media (max-width: 900px) {
@@ -517,8 +584,8 @@
                         <div class="metadata-value" id="sizeValue">-</div>
                     </div>
                     <div class="metadata-item">
-                        <div>编码</div>
-                        <div class="metadata-value" id="encodingValue">-</div>
+                        <div>类型</div>
+                        <div class="metadata-value" id="typeValue">-</div>
                     </div>
                 </div>
                 
@@ -528,7 +595,15 @@
                     <p>从左侧文件列表中选择一个文件</p>
                 </div>
                 
-                <pre class="content-area" id="contentArea"></pre>
+                <div class="content-container" id="contentContainer" style="display: none;">
+                    <div class="view-mode" id="viewMode" style="display: none;">
+                        <button class="view-btn active" data-mode="code">代码视图</button>
+                        <button class="view-btn" data-mode="raw">原始视图</button>
+                    </div>
+                    <div class="file-type-label" id="fileTypeLabel"></div>
+                    <div class="code-preview" id="codePreview"></div>
+                    <div class="image-preview" id="imagePreview" style="display: none;"></div>
+                </div>
             </div>
         </div>
         
@@ -547,14 +622,19 @@
             const statusBar = document.getElementById('statusBar');
             const breadcrumb = document.getElementById('breadcrumb');
             const fileList = document.getElementById('fileList');
-            const contentArea = document.getElementById('contentArea');
             const noFile = document.getElementById('noFile');
             const metadata = document.getElementById('metadata');
             const pathValue = document.getElementById('pathValue');
             const sizeValue = document.getElementById('sizeValue');
-            const encodingValue = document.getElementById('encodingValue');
+            const typeValue = document.getElementById('typeValue');
+            const contentContainer = document.getElementById('contentContainer');
+            const codePreview = document.getElementById('codePreview');
+            const imagePreview = document.getElementById('imagePreview');
+            const fileTypeLabel = document.getElementById('fileTypeLabel');
+            const viewMode = document.getElementById('viewMode');
             
             let currentPath = '';
+            let currentFile = null;
             
             // 显示状态信息
             function showStatus(message, isSuccess) {
@@ -613,7 +693,7 @@
                 // 显示加载状态
                 fileList.innerHTML = '<li class="file-item"><i class="fas fa-spinner fa-spin"></i> 正在加载内容...</li>';
                 
-                // 构建API URL - 修复404问题的关键
+                // 构建API URL
                 let apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents`;
                 
                 if (path) {
@@ -717,41 +797,104 @@
                 const token = tokenInput.value.trim();
                 
                 // 显示加载状态
-                contentArea.textContent = '正在加载文件内容...';
-                contentArea.style.display = 'block';
+                contentContainer.style.display = 'flex';
                 noFile.style.display = 'none';
                 metadata.style.display = 'flex';
+                codePreview.textContent = '正在加载文件内容...';
+                imagePreview.style.display = 'none';
+                viewMode.style.display = 'none';
+                
+                // 更新元数据
+                pathValue.textContent = file.path;
+                sizeValue.textContent = `${(file.size / 1024).toFixed(2)} KB`;
                 
                 // 设置请求头
                 const headers = new Headers();
                 if (token) {
                     headers.append('Authorization', `token ${token}`);
                 }
-                headers.append('Accept', 'application/vnd.github.v3.raw');
                 
-                fetch(file.download_url, { headers: headers })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('文件加载失败: ' + response.status);
-                    }
-                    return response.text();
-                })
-                .then(content => {
-                    // 显示文件内容
-                    contentArea.textContent = content;
+                // 获取文件扩展名
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp'];
+                const codeExtensions = ['js', 'ts', 'html', 'css', 'scss', 'less', 'json', 'xml', 'py', 'java', 'c', 'cpp', 'php', 'rb', 'go', 'rs', 'swift', 'kt', 'sh', 'md'];
+                
+                // 判断文件类型
+                if (imageExtensions.includes(fileExt)) {
+                    // 图片文件
+                    typeValue.textContent = '图片';
+                    fileTypeLabel.textContent = '图片文件';
+                    fileTypeLabel.style.display = 'block';
+                    viewMode.style.display = 'none';
                     
-                    // 更新元数据
-                    pathValue.textContent = file.path;
-                    sizeValue.textContent = `${(file.size / 1024).toFixed(2)} KB`;
-                    encodingValue.textContent = 'UTF-8';
+                    // 直接使用下载URL显示图片
+                    imagePreview.innerHTML = `<img src="${file.download_url}" alt="${file.name}">`;
+                    imagePreview.style.display = 'flex';
+                    codePreview.style.display = 'none';
                     
-                    showStatus(`成功加载文件: ${file.name}`, true);
-                })
-                .catch(error => {
-                    console.error('读取文件失败:', error);
-                    contentArea.textContent = `无法显示文件内容: ${error.message}`;
-                    showStatus(`读取文件失败: ${error.message}`, false);
-                });
+                    showStatus(`成功加载图片: ${file.name}`, true);
+                } else if (codeExtensions.includes(fileExt)) {
+                    // 代码文件
+                    typeValue.textContent = '代码';
+                    fileTypeLabel.textContent = '代码文件';
+                    fileTypeLabel.style.display = 'block';
+                    viewMode.style.display = 'flex';
+                    
+                    headers.append('Accept', 'application/vnd.github.v3.raw');
+                    
+                    fetch(file.download_url, { headers: headers })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('文件加载失败: ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(content => {
+                        // 显示文件内容
+                        codePreview.textContent = content;
+                        codePreview.style.display = 'block';
+                        imagePreview.style.display = 'none';
+                        
+                        showStatus(`成功加载文件: ${file.name}`, true);
+                    })
+                    .catch(error => {
+                        console.error('读取文件失败:', error);
+                        codePreview.textContent = `无法显示文件内容: ${error.message}`;
+                        showStatus(`读取文件失败: ${error.message}`, false);
+                    });
+                } else {
+                    // 其他文件类型
+                    typeValue.textContent = '其他';
+                    fileTypeLabel.textContent = '文本文件';
+                    fileTypeLabel.style.display = 'block';
+                    viewMode.style.display = 'flex';
+                    
+                    headers.append('Accept', 'application/vnd.github.v3.raw');
+                    
+                    fetch(file.download_url, { headers: headers })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('文件加载失败: ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(content => {
+                        // 显示文件内容
+                        codePreview.textContent = content;
+                        codePreview.style.display = 'block';
+                        imagePreview.style.display = 'none';
+                        
+                        showStatus(`成功加载文件: ${file.name}`, true);
+                    })
+                    .catch(error => {
+                        console.error('读取文件失败:', error);
+                        codePreview.textContent = `无法显示文件内容: ${error.message}`;
+                        showStatus(`读取文件失败: ${error.message}`, false);
+                    });
+                }
+                
+                // 保存当前文件信息
+                currentFile = file;
             }
             
             // 连接按钮点击事件
@@ -760,12 +903,44 @@
                 listRepositoryContents('');
             });
             
-            // 文件内容区域点击事件
-            contentArea.addEventListener('click', function() {
-                if (noFile.style.display !== 'none') {
-                    noFile.style.display = 'flex';
-                    contentArea.style.display = 'none';
-                    metadata.style.display = 'none';
+            // 视图模式切换
+            viewMode.addEventListener('click', function(e) {
+                if (e.target.classList.contains('view-btn')) {
+                    // 更新按钮状态
+                    document.querySelectorAll('.view-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    
+                    const mode = e.target.dataset.mode;
+                    
+                    if (mode === 'raw' && currentFile) {
+                        // 显示原始内容
+                        const headers = new Headers();
+                        if (tokenInput.value.trim()) {
+                            headers.append('Authorization', `token ${tokenInput.value.trim()}`);
+                        }
+                        headers.append('Accept', 'application/vnd.github.v3.raw');
+                        
+                        fetch(currentFile.download_url, { headers: headers })
+                        .then(response => response.text())
+                        .then(content => {
+                            codePreview.textContent = content;
+                        });
+                    } else if (currentFile) {
+                        // 显示代码视图（如果有语法高亮）
+                        const headers = new Headers();
+                        if (tokenInput.value.trim()) {
+                            headers.append('Authorization', `token ${tokenInput.value.trim()}`);
+                        }
+                        headers.append('Accept', 'application/vnd.github.v3.raw');
+                        
+                        fetch(currentFile.download_url, { headers: headers })
+                        .then(response => response.text())
+                        .then(content => {
+                            codePreview.textContent = content;
+                        });
+                    }
                 }
             });
             
