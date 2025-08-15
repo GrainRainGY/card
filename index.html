@@ -29,6 +29,7 @@
             --folder: #ffc107;
             --file: #17a2b8;
             --image-bg: #f8f9fa;
+            --pinned-bg: rgba(255, 245, 158, 0.25);
         }
 
         body {
@@ -113,6 +114,54 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .pinned-repos {
+            background: var(--pinned-bg);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .pinned-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .pinned-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pinned-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .pinned-item:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .pinned-item i {
+            color: var(--warning);
+            cursor: pointer;
         }
 
         .controls {
@@ -200,6 +249,11 @@
         .btn-success {
             background: linear-gradient(135deg, var(--success), #1c8440);
             color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #c9c910);
+            color: var(--text);
         }
 
         .main-content {
@@ -483,6 +537,10 @@
                 top: 15px;
                 right: 15px;
             }
+            
+            .pinned-repos {
+                padding: 15px;
+            }
         }
         
         .spinner {
@@ -500,6 +558,33 @@
             flex: 1;
             word-break: break-all;
         }
+        
+        .pin-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .pin-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .pin-btn i {
+            color: var(--warning);
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 <body>
@@ -515,7 +600,20 @@
                     <i class="fas fa-plug"></i> 连接仓库
                 </button>
             </div>
+            <button id="pinBtn" class="pin-btn">
+                <i class="fas fa-thumbtack"></i>
+            </button>
         </header>
+        
+        <div class="pinned-repos">
+            <div class="pinned-header">
+                <i class="fas fa-thumbtack"></i>
+                <h3>置顶仓库</h3>
+            </div>
+            <div class="pinned-list" id="pinnedList">
+                <!-- 置顶仓库将在这里显示 -->
+            </div>
+        </div>
         
         <div class="controls">
             <div class="control-group">
@@ -632,9 +730,73 @@
             const imagePreview = document.getElementById('imagePreview');
             const fileTypeLabel = document.getElementById('fileTypeLabel');
             const viewMode = document.getElementById('viewMode');
+            const pinBtn = document.getElementById('pinBtn');
+            const pinnedList = document.getElementById('pinnedList');
             
             let currentPath = '';
             let currentFile = null;
+            let currentRepo = '';
+            
+            // 加载置顶仓库
+            function loadPinnedRepos() {
+                const pinnedRepos = JSON.parse(localStorage.getItem('pinnedRepos') || '[]');
+                pinnedList.innerHTML = '';
+                
+                pinnedRepos.forEach(repo => {
+                    const repoItem = document.createElement('div');
+                    repoItem.className = 'pinned-item';
+                    repoItem.innerHTML = `
+                        <span>${repo.owner}/${repo.repo}</span>
+                        <i class="fas fa-times" data-owner="${repo.owner}" data-repo="${repo.repo}"></i>
+                    `;
+                    
+                    repoItem.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'SPAN') {
+                            ownerInput.value = repo.owner;
+                            repoInput.value = repo.repo;
+                            connectBtn.click();
+                        }
+                    });
+                    
+                    pinnedList.appendChild(repoItem);
+                });
+                
+                // 添加删除事件
+                document.querySelectorAll('.pinned-item .fa-times').forEach(icon => {
+                    icon.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const owner = this.dataset.owner;
+                        const repo = this.dataset.repo;
+                        removePinnedRepo(owner, repo);
+                    });
+                });
+            }
+            
+            // 添加置顶仓库
+            function addPinnedRepo(owner, repo) {
+                const pinnedRepos = JSON.parse(localStorage.getItem('pinnedRepos') || '[]');
+                
+                // 检查是否已存在
+                const exists = pinnedRepos.some(r => r.owner === owner && r.repo === repo);
+                if (exists) {
+                    showStatus('该仓库已在置顶列表中', false);
+                    return;
+                }
+                
+                pinnedRepos.push({ owner, repo });
+                localStorage.setItem('pinnedRepos', JSON.stringify(pinnedRepos));
+                loadPinnedRepos();
+                showStatus(`已置顶仓库: ${owner}/${repo}`, true);
+            }
+            
+            // 移除置顶仓库
+            function removePinnedRepo(owner, repo) {
+                const pinnedRepos = JSON.parse(localStorage.getItem('pinnedRepos') || '[]');
+                const newRepos = pinnedRepos.filter(r => !(r.owner === owner && r.repo === repo));
+                localStorage.setItem('pinnedRepos', JSON.stringify(newRepos));
+                loadPinnedRepos();
+                showStatus(`已移除置顶仓库: ${owner}/${repo}`, true);
+            }
             
             // 显示状态信息
             function showStatus(message, isSuccess) {
@@ -689,6 +851,9 @@
                     showStatus('请填写所有者(Owner)和仓库名称(Repo)', false);
                     return;
                 }
+                
+                // 更新当前仓库信息
+                currentRepo = `${owner}/${repo}`;
                 
                 // 显示加载状态
                 fileList.innerHTML = '<li class="file-item"><i class="fas fa-spinner fa-spin"></i> 正在加载内容...</li>';
@@ -795,6 +960,8 @@
             // 获取并显示文件内容
             function fetchFileContent(file) {
                 const token = tokenInput.value.trim();
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
                 
                 // 显示加载状态
                 contentContainer.style.display = 'flex';
@@ -943,6 +1110,22 @@
                     }
                 }
             });
+            
+            // 置顶按钮点击事件
+            pinBtn.addEventListener('click', function() {
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
+                
+                if (!owner || !repo) {
+                    showStatus('请先填写所有者和仓库名称', false);
+                    return;
+                }
+                
+                addPinnedRepo(owner, repo);
+            });
+            
+            // 初始加载
+            loadPinnedRepos();
             
             // 初始加载示例仓库
             setTimeout(() => {
