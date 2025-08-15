@@ -711,6 +711,130 @@
             color: #2196F3;
         }
 
+        .github-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .github-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .github-modal-content {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(var(--blur));
+        }
+
+        .github-modal.active .github-modal-content {
+            transform: translateY(0);
+        }
+
+        .github-modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .github-modal-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .github-modal-body {
+            margin-bottom: 25px;
+        }
+
+        .github-modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            margin-bottom: 25px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-state .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state .btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -916,6 +1040,10 @@
             <button class="save-config-btn" id="saveGitHubConfig">
                 保存配置
             </button>
+            
+            <button class="save-config-btn github-btn" id="loadRepoBtn">
+                <i class="fab fa-github"></i> 加载仓库数据
+            </button>
         </div>
         
         <div class="slider-group">
@@ -952,6 +1080,31 @@
         <span id="notificationText">操作成功！</span>
     </div>
 
+    <div class="github-modal" id="githubModal">
+        <div class="github-modal-content">
+            <div class="github-modal-header">
+                <h3><i class="fab fa-github"></i> GitHub 仓库</h3>
+                <p>选择要打开的 cards.json 文件</p>
+            </div>
+            
+            <div class="github-modal-body">
+                <div class="form-group">
+                    <label for="filePathInput">文件路径:</label>
+                    <input type="text" id="filePathInput" class="github-input" placeholder="例如: /cards.json">
+                </div>
+            </div>
+            
+            <div class="github-modal-actions">
+                <button class="modal-btn" id="closeModalBtn">
+                    取消
+                </button>
+                <button class="modal-btn primary" id="openFileBtn">
+                    <i class="fas fa-folder-open"></i> 打开文件
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 状态管理
         const state = {
@@ -965,7 +1118,8 @@
             repoName: localStorage.getItem('repoName') || '',
             branchName: localStorage.getItem('branchName') || 'main',
             cardImage: null,
-            coverImage: null
+            coverImage: null,
+            cardsLoaded: false
         };
 
         // DOM元素引用
@@ -1009,7 +1163,12 @@
             coverImageInput: document.getElementById('coverImageInput'),
             cardImagePreview: document.getElementById('cardImagePreview'),
             coverImagePreview: document.getElementById('coverImagePreview'),
-            editorTitle: document.getElementById('editorTitle')
+            editorTitle: document.getElementById('editorTitle'),
+            githubModal: document.getElementById('githubModal'),
+            filePathInput: document.getElementById('filePathInput'),
+            openFileBtn: document.getElementById('openFileBtn'),
+            closeModalBtn: document.getElementById('closeModalBtn'),
+            loadRepoBtn: document.getElementById('loadRepoBtn')
         };
 
         // 初始化应用
@@ -1017,7 +1176,19 @@
             applyTheme();
             applyUIValues();
             setupEventListeners();
-            loadDemoCards();
+            checkInitialState();
+        }
+
+        // 检查初始状态
+        function checkInitialState() {
+            if (!state.githubToken || !state.repoName) {
+                // 如果没有配置GitHub信息，显示设置面板
+                elements.settingsPanel.classList.add('active');
+                showNotification('请先配置GitHub信息', 'info');
+            } else {
+                // 如果已配置GitHub信息，显示加载提示
+                showNotification('点击GitHub按钮加载仓库数据', 'info');
+            }
         }
 
         // 应用主题
@@ -1050,11 +1221,29 @@
             elements.branchName.value = state.branchName;
         }
 
-        // 加载演示卡片
-        function loadDemoCards() {
-            // 模拟从GitHub加载卡片
+        // 加载GitHub数据
+        function loadFromGitHub() {
+            if (!state.githubToken || !state.repoName) {
+                showNotification('请先配置GitHub信息', 'error');
+                elements.settingsPanel.classList.add('active');
+                return;
+            }
+            
+            // 显示GitHub文件选择模态框
+            elements.githubModal.classList.add('active');
+        }
+
+        // 打开GitHub文件
+        function openGitHubFile() {
+            const filePath = elements.filePathInput.value || '/cards.json';
+            
+            // 模拟从GitHub加载数据
+            showNotification(`正在加载 ${filePath}...`, 'info');
+            
+            // 模拟加载延迟
             setTimeout(() => {
-                state.cards = [
+                // 模拟从GitHub加载的卡片数据
+                const demoCards = [
                     {
                         id: 'arc001',
                         name: '赛博忍者',
@@ -1091,18 +1280,49 @@
                     }
                 ];
                 
+                state.cards = demoCards;
+                state.cardsLoaded = true;
                 renderCardsList();
+                
                 if (state.cards.length > 0) {
                     selectCard(state.cards[0]);
                 }
                 
-                showNotification('角色卡加载成功！');
-            }, 1000);
+                elements.githubModal.classList.remove('active');
+                showNotification(`成功加载 ${state.cards.length} 张角色卡！`);
+            }, 1500);
         }
 
         // 渲染卡片列表
         function renderCardsList() {
             elements.cardsList.innerHTML = '';
+            
+            if (!state.cardsLoaded) {
+                elements.cardsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <h3>未加载角色卡数据</h3>
+                        <p>请先连接GitHub仓库并加载cards.json文件</p>
+                        <button class="btn" id="loadDataBtn">
+                            <i class="fab fa-github"></i> 加载GitHub数据
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('loadDataBtn').addEventListener('click', loadFromGitHub);
+                return;
+            }
+            
+            if (state.cards.length === 0) {
+                elements.cardsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>没有角色卡数据</h3>
+                        <p>cards.json文件中没有角色卡数据，请创建新角色卡</p>
+                    </div>
+                `;
+                return;
+            }
             
             state.cards.forEach(card => {
                 const cardEl = document.createElement('div');
@@ -1269,9 +1489,9 @@
             const timestamp = new Date().getTime();
             
             return {
-                fileName: `${safeName}-card-${timestamp}.png`,
-                filePath: `img/${safeName}-card-${timestamp}.png`,
-                coverPath: `img/${safeName}-${timestamp}.png`
+                fileName: `${safeName}-card.png`,
+                filePath: `img/${safeName}-card.png`,
+                coverPath: `img/${safeName}.png`
             };
         }
 
@@ -1465,13 +1685,7 @@
             });
             
             // GitHub按钮
-            elements.githubBtn.addEventListener('click', () => {
-                if (!state.githubToken || !state.repoName) {
-                    showNotification('请先在设置中配置GitHub信息！', 'error');
-                    return;
-                }
-                saveToGitHub();
-            });
+            elements.githubBtn.addEventListener('click', loadFromGitHub);
             
             // 新建卡片
             elements.newCardBtn.addEventListener('click', createNewCard);
@@ -1523,6 +1737,15 @@
             elements.coverImageInput.addEventListener('change', () => {
                 handleImageUpload(elements.coverImageInput, elements.coverImagePreview, 'cover');
             });
+            
+            // GitHub模态框事件
+            elements.openFileBtn.addEventListener('click', openGitHubFile);
+            elements.closeModalBtn.addEventListener('click', () => {
+                elements.githubModal.classList.remove('active');
+            });
+            
+            // 加载仓库数据按钮
+            elements.loadRepoBtn.addEventListener('click', loadFromGitHub);
         }
 
         // 初始化应用
