@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片与图片管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .card-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .card-item:last-child {
+            border-bottom: none;
+        }
+        
+        .card-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .card-item.active {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .card-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 1.5rem;
+        }
+        
+        .card-info {
+            flex: 1;
+        }
+        
+        .card-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .card-meta {
+            font-size: 0.85rem;
+            color: var(--gray);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            background-color: #f8f9fa;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .image-preview i {
+            font-size: 3rem;
+            color: var(--gray);
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            margin-bottom: 15px;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .image-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-item .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .image-item:hover .overlay {
+            opacity: 1;
+        }
+        
+        .image-item .delete-btn {
+            color: white;
+            background: rgba(220, 53, 69, 0.8);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .image-item.selected {
+            border: 3px solid var(--primary);
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            margin-top: 40px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            background: var(--dark);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-images"></i>
+                <span>卡片与图片管理系统</span>
+            </div>
+            <div class="header-actions">
+                <button id="saveBtn" class="btn btn-primary">
+                    <i class="fas fa-save"></i> 保存更改
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 卡片管理区域 -->
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-address-card"></i> 卡片管理</span>
+                    <button id="addCardBtn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-plus"></i> 添加卡片
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="card-list" id="cardsList">
+                        <!-- 卡片将通过JS动态加载 -->
+                        <div class="empty-state">
+                            <i class="fas fa-address-book"></i>
+                            <h3>暂无卡片数据</h3>
+                            <p>点击"添加卡片"按钮创建新卡片</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 卡片编辑和图片区域 -->
+            <div>
+                <!-- 卡片编辑表单 -->
+                <div class="card" id="cardEditor">
+                    <div class="card-header">
+                        <span><i class="fas fa-edit"></i> 卡片编辑器</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <i class="fas fa-hand-pointer"></i>
+                            <h3>选择一张卡片进行编辑</h3>
+                            <p>在左侧选择一张卡片以查看或编辑其内容</p>
+                        </div>
+                        
+                        <form id="cardForm" style="display: none;">
+                            <input type="hidden" id="cardId">
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="cardName">卡片名称</label>
+                                <input type="text" class="form-control" id="cardName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="cardDescription">描述</label>
+                                <textarea class="form-control" id="cardDescription"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">封面图片</label>
+                                <div class="image-preview" id="coverPreview">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                <button type="button" class="btn btn-outline" id="selectCoverBtn">
+                                    <i class="fas fa-folder-open"></i> 选择图片
+                                </button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="filePath">文件路径</label>
+                                <input type="text" class="form-control" id="filePath" placeholder="例如: img/card-image.png">
+                            </div>
+                            
+                            <div class="toolbar">
+                                <button type="button" class="btn btn-danger" id="deleteCardBtn">
+                                    <i class="fas fa-trash"></i> 删除卡片
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> 保存卡片
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- 图片上传区域 -->
+                <div class="card" style="margin-top: 25px;">
+                    <div class="card-header">
+                        <span><i class="fas fa-cloud-upload-alt"></i> 图片管理</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p class="upload-text">拖放图片到此处或点击上传</p>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-folder-open"></i> 选择图片
+                            </button>
+                            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                        
+                        <div class="image-grid" id="imageGrid">
+                            <!-- 图片将通过JS动态加载 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>卡片与图片管理系统 &copy; 2023 | 部署于 Cloudflare Pages</p>
+    </div>
+    
+    <div class="toast" id="toast">操作成功！</div>
+    
+    <script>
+        // 示例数据 - 在实际应用中，这将从cards.json加载
+        let cardsData = {
+            cards: [
+                {
+                    id: "1742218048477",
+                    name: "苏墨",
+                    fileName: "1742218048404-苏墨.png",
+                    filePath: "uploads/1742218048404-苏墨.png",
+                    coverPath: "uploads/1742218048404-苏墨-cover.jpg",
+                    fileType: "png",
+                    uploadTime: "2025-03-17T13:27:28.477Z",
+                    gender: "female",
+                    intro: "手绘设计师，倔强又敏感，在AI浪潮中坚持自我，用画笔描绘情感与梦想。",
+                    description: "苏墨，一位20岁的中国现代女性。",
+                    personality: "",
+                    stories: [
+                        {
+                            path: "uploads/stories/1741855693696-E88B8FE5A2A8-C3A5C2A4C28DC3A5C288C2BBC3A4C2BAC2BAC3A7C294C29FC382C2B7C3A4C2B8C28A.multi.h2book.json",
+                            name: "复刻人生·上.multi.h2book.json",
+                            uploadTime: "2025-03-13T08:48:13.702Z"
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        // 模拟图片库
+        let imageLibrary = [
+            "1742218048404-苏墨.png",
+            "1742218048404-苏墨-cover.jpg",
+            "character1.jpg",
+            "character2.png",
+            "landscape.jpg",
+            "artwork1.jpg",
+            "artwork2.png"
+        ];
+        
+        // DOM元素
+        const cardsList = document.getElementById('cardsList');
+        const cardForm = document.getElementById('cardForm');
+        const cardEditor = document.getElementById('cardEditor');
+        const imageGrid = document.getElementById('imageGrid');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const selectCoverBtn = document.getElementById('selectCoverBtn');
+        
+        // 当前选中的卡片
+        let selectedCard = null;
+        
+        // 初始化
+        function init() {
+            renderCards();
+            renderImageGrid();
+            setupEventListeners();
+        }
+        
+        // 渲染卡片列表
+        function renderCards() {
+            if (cardsData.cards.length === 0) {
+                cardsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-address-book"></i>
+                        <h3>暂无卡片数据</h3>
+                        <p>点击"添加卡片"按钮创建新卡片</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            cardsList.innerHTML = '';
+            
+            cardsData.cards.forEach(card => {
+                const isActive = selectedCard && selectedCard.id === card.id;
+                const cardElement = document.createElement('div');
+                cardElement.className = `card-item ${isActive ? 'active' : ''}`;
+                cardElement.dataset.id = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="card-img">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-meta">
+                            <span><i class="fas fa-user"></i> ${card.gender}</span>
+                            <span><i class="fas fa-calendar"></i> ${new Date(card.uploadTime).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-outline edit-btn">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-btn">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                cardsList.appendChild(cardElement);
+                
+                // 添加点击事件
+                cardElement.addEventListener('click', () => {
+                    selectCard(card);
+                });
+                
+                // 添加编辑按钮事件
+                cardElement.querySelector('.edit-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectCard(card);
+                });
+                
+                // 添加删除按钮事件
+                cardElement.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteCard(card.id);
+                });
+            });
+        }
+        
+        // 渲染图片网格
+        function renderImageGrid() {
+            if (imageLibrary.length === 0) {
+                imageGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-image"></i>
+                        <p>暂无图片，请上传图片</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            imageGrid.innerHTML = '';
+            
+            imageLibrary.forEach(img => {
+                const imgElement = document.createElement('div');
+                imgElement.className = 'image-item';
+                imgElement.dataset.image = img;
+                
+                imgElement.innerHTML = `
+                    <img src="https://placehold.co/200x200/4361ee/white?text=${img.substring(0, 4)}" alt="${img}">
+                    <div class="overlay">
+                        <div class="delete-btn">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                `;
+                
+                imageGrid.appendChild(imgElement);
+                
+                // 添加点击事件
+                imgElement.addEventListener('click', () => {
+                    // 在实际应用中，这里会设置封面预览
+                    showToast(`已选择图片: ${img}`);
+                    
+                    // 如果正在编辑卡片，更新封面预览
+                    if (selectedCard) {
+                        coverPreview.innerHTML = `
+                            <img src="https://placehold.co/600x400/4361ee/white?text=${img.substring(0, 4)}" alt="预览">
+                        `;
+                        document.getElementById('filePath').value = `img/${img}`;
+                    }
+                });
+                
+                // 添加删除事件
+                imgElement.querySelector('.delete-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteImage(img);
+                });
+            });
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 添加卡片按钮
+            document.getElementById('addCardBtn').addEventListener('click', addNewCard);
+            
+            // 卡片表单提交
+            cardForm.addEventListener('submit', saveCard);
+            
+            // 删除卡片按钮
+            document.getElementById('deleteCardBtn').addEventListener('click', deleteSelectedCard);
+            
+            // 上传区域点击
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // 文件选择
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // 拖放功能
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                
+                if (e.dataTransfer.files.length) {
+                    // 在实际应用中，这里会处理文件上传
+                    showToast(`已选择 ${e.dataTransfer.files.length} 个文件`);
+                    
+                    // 模拟添加到图片库
+                    Array.from(e.dataTransfer.files).forEach(file => {
+                        if (!imageLibrary.includes(file.name)) {
+                            imageLibrary.push(file.name);
+                        }
+                    });
+                    
+                    renderImageGrid();
+                }
+            });
+            
+            // 选择封面按钮
+            selectCoverBtn.addEventListener('click', () => {
+                showToast("请在下方图片库中选择一张图片");
+            });
+            
+            // 保存按钮
+            document.getElementById('saveBtn').addEventListener('click', () => {
+                // 在实际应用中，这里会保存所有更改到cards.json
+                showToast("所有更改已保存成功！");
+            });
+        }
+        
+        // 选择卡片
+        function selectCard(card) {
+            selectedCard = card;
+            
+            // 更新卡片列表选中状态
+            document.querySelectorAll('.card-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.id === card.id) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // 显示卡片编辑器
+            cardEditor.querySelector('.empty-state').style.display = 'none';
+            cardForm.style.display = 'block';
+            
+            // 填充表单
+            document.getElementById('cardId').value = card.id;
+            document.getElementById('cardName').value = card.name;
+            document.getElementById('cardDescription').value = card.description || '';
+            document.getElementById('filePath').value = card.filePath || '';
+            
+            // 更新封面预览
+            coverPreview.innerHTML = `
+                <img src="https://placehold.co/600x400/4361ee/white?text=${card.name.substring(0, 2)}" alt="预览">
+            `;
+        }
+        
+        // 添加新卡片
+        function addNewCard() {
+            const newCard = {
+                id: Date.now().toString(),
+                name: "新卡片",
+                fileName: "",
+                filePath: "",
+                fileType: "",
+                uploadTime: new Date().toISOString(),
+                gender: "female",
+                intro: "",
+                description: "",
+                personality: "",
+                stories: []
+            };
+            
+            cardsData.cards.push(newCard);
+            renderCards();
+            selectCard(newCard);
+            
+            showToast("已创建新卡片");
+        }
+        
+        // 保存卡片
+        function saveCard(e) {
+            e.preventDefault();
+            
+            if (!selectedCard) return;
+            
+            // 更新卡片数据
+            selectedCard.name = document.getElementById('cardName').value;
+            selectedCard.description = document.getElementById('cardDescription').value;
+            selectedCard.filePath = document.getElementById('filePath').value;
+            
+            // 更新卡片列表
+            renderCards();
+            
+            showToast("卡片已保存");
+        }
+        
+        // 删除卡片
+        function deleteCard(cardId) {
+            if (confirm("确定要删除这张卡片吗？此操作不可撤销。")) {
+                cardsData.cards = cardsData.cards.filter(card => card.id !== cardId);
+                
+                if (selectedCard && selectedCard.id === cardId) {
+                    selectedCard = null;
+                    cardForm.style.display = 'none';
+                    cardEditor.querySelector('.empty-state').style.display = 'block';
+                }
+                
+                renderCards();
+                showToast("卡片已删除");
+            }
+        }
+        
+        // 删除选中的卡片
+        function deleteSelectedCard() {
+            if (selectedCard) {
+                deleteCard(selectedCard.id);
+            }
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(e) {
+            if (e.target.files.length) {
+                showToast(`已选择 ${e.target.files.length} 个文件`);
+                
+                // 模拟添加到图片库
+                Array.from(e.target.files).forEach(file => {
+                    if (!imageLibrary.includes(file.name)) {
+                        imageLibrary.push(file.name);
+                    }
+                });
+                
+                renderImageGrid();
+            }
+        }
+        
+        // 删除图片
+        function deleteImage(imageName) {
+            if (confirm("确定要删除这张图片吗？")) {
+                imageLibrary = imageLibrary.filter(img => img !== imageName);
+                renderImageGrid();
+                showToast("图片已删除");
+            }
+        }
+        
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+  </html>
