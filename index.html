@@ -80,7 +80,7 @@
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+           50% { transform: translateY(-10px); }
         }
 
         header {
@@ -850,6 +850,121 @@
             transform: translateY(-2px);
         }
 
+        /* 编辑和上传模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-darker);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
         @media (max-width: 900px) {
             .main-content {
                 flex-direction: column;
@@ -1152,6 +1267,66 @@
         <button class="save-settings">保存设置</button>
     </div>
     
+    <!-- 编辑文件模态框 -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-edit"></i> 编辑文件</h3>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editFileName">文件名</label>
+                    <input type="text" id="editFileName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editFileContent">文件内容</label>
+                    <textarea id="editFileContent" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="commitMessage">提交信息</label>
+                    <input type="text" id="commitMessage" class="form-control" placeholder="描述您的更改">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">取消</button>
+                <button class="btn btn-primary" id="saveEditBtn">保存更改</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 上传文件模态框 -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-upload"></i> 上传文件</h3>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="fileName">文件名</label>
+                    <input type="text" id="fileName" class="form-control" placeholder="例如: newfile.txt">
+                </div>
+                <div class="form-group">
+                    <label for="fileContent">文件内容</label>
+                    <textarea id="fileContent" class="form-control" placeholder="输入文件内容..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="uploadCommitMessage">提交信息</label>
+                    <input type="text" id="uploadCommitMessage" class="form-control" placeholder="描述您的更改">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">取消</button>
+                <button class="btn btn-primary" id="confirmUploadBtn">上传文件</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tokenInput = document.getElementById('token');
@@ -1194,9 +1369,23 @@
             const applyCustomBg = document.getElementById('applyCustomBg');
             const glassColorValue = document.getElementById('glassColorValue');
             
+            // 模态框元素
+            const editModal = document.getElementById('editModal');
+            const uploadModal = document.getElementById('uploadModal');
+            const closeModalBtns = document.querySelectorAll('.close-modal');
+            const saveEditBtn = document.getElementById('saveEditBtn');
+            const confirmUploadBtn = document.getElementById('confirmUploadBtn');
+            const editFileName = document.getElementById('editFileName');
+            const editFileContent = document.getElementById('editFileContent');
+            const commitMessage = document.getElementById('commitMessage');
+            const fileName = document.getElementById('fileName');
+            const fileContent = document.getElementById('fileContent');
+            const uploadCommitMessage = document.getElementById('uploadCommitMessage');
+            
             let currentPath = '';
             let currentFile = null;
             let currentRepo = '';
+            let currentFileSHA = '';
             
             // 初始化设置
             function initSettings() {
@@ -1593,6 +1782,9 @@
                 pathValue.textContent = file.path;
                 sizeValue.textContent = `${(file.size / 1024).toFixed(2)} KB`;
                 
+                // 保存文件SHA（用于编辑）
+                currentFileSHA = file.sha;
+                
                 // 设置请求头
                 const headers = new Headers();
                 if (token) {
@@ -1803,17 +1995,23 @@
             // 保存设置
             saveSettings.addEventListener('click', saveAppSettings);
             
-            // 文件操作按钮
+            // 编辑按钮点击事件
             editBtn.addEventListener('click', function() {
                 if (!currentFile) {
                     showStatus('请先选择一个文件', false);
                     return;
                 }
                 
-                // 编辑功能实现
-                showStatus('编辑功能正在开发中', false);
+                // 填充编辑表单
+                editFileName.value = currentFile.name;
+                editFileContent.value = codePreview.textContent;
+                commitMessage.value = `更新 ${currentFile.name}`;
+                
+                // 显示编辑模态框
+                editModal.classList.add('open');
             });
             
+            // 下载按钮点击事件
             downloadBtn.addEventListener('click', function() {
                 if (!currentFile) {
                     showStatus('请先选择一个文件', false);
@@ -1828,9 +2026,162 @@
                 showStatus(`文件 ${currentFile.name} 已开始下载`, true);
             });
             
+            // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
-                // 上传功能实现
-                showStatus('上传功能正在开发中', false);
+                // 清空上传表单
+                fileName.value = '';
+                fileContent.value = '';
+                uploadCommitMessage.value = '添加新文件';
+                
+                // 显示上传模态框
+                uploadModal.classList.add('open');
+            });
+            
+            // 关闭模态框
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    editModal.classList.remove('open');
+                    uploadModal.classList.remove('open');
+                });
+            });
+            
+            // 保存编辑
+            saveEditBtn.addEventListener('click', function() {
+                const token = tokenInput.value.trim();
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
+                const branch = branchInput.value.trim() || 'main';
+                const filename = editFileName.value.trim();
+                const content = editFileContent.value;
+                const message = commitMessage.value.trim();
+                
+                if (!filename || !content || !message) {
+                    showStatus('请填写所有字段', false);
+                    return;
+                }
+                
+                if (!token) {
+                    showStatus('需要GitHub Token才能编辑文件', false);
+                    return;
+                }
+                
+                // 显示加载状态
+                saveEditBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+                saveEditBtn.disabled = true;
+                
+                // 构建请求数据
+                const data = {
+                    message: message,
+                    content: btoa(unescape(encodeURIComponent(content))),
+                    branch: branch,
+                    sha: currentFileSHA
+                };
+                
+                // 设置请求头
+                const headers = new Headers();
+                headers.append('Authorization', `token ${token}`);
+                headers.append('Accept', 'application/vnd.github.v3+json');
+                headers.append('Content-Type', 'application/json');
+                
+                // 构建API URL
+                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(currentFile.path)}`;
+                
+                // 发送PUT请求更新文件
+                fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: headers,
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('文件更新失败: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    showStatus('文件更新成功', true);
+                    // 关闭模态框
+                    editModal.classList.remove('open');
+                    // 重新加载文件内容
+                    fetchFileContent(currentFile);
+                })
+                .catch(error => {
+                    console.error('更新文件失败:', error);
+                    showStatus(`更新文件失败: ${error.message}`, false);
+                })
+                .finally(() => {
+                    saveEditBtn.innerHTML = '保存更改';
+                    saveEditBtn.disabled = false;
+                });
+            });
+            
+            // 确认上传
+            confirmUploadBtn.addEventListener('click', function() {
+                const token = tokenInput.value.trim();
+                const owner = ownerInput.value.trim();
+                const repo = repoInput.value.trim();
+                const branch = branchInput.value.trim() || 'main';
+                const name = fileName.value.trim();
+                const content = fileContent.value;
+                const message = uploadCommitMessage.value.trim();
+                
+                if (!name || !content || !message) {
+                    showStatus('请填写所有字段', false);
+                    return;
+                }
+                
+                if (!token) {
+                    showStatus('需要GitHub Token才能上传文件', false);
+                    return;
+                }
+                
+                // 显示加载状态
+                confirmUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上传中...';
+                confirmUploadBtn.disabled = true;
+                
+                // 构建请求数据
+                const data = {
+                    message: message,
+                    content: btoa(unescape(encodeURIComponent(content))),
+                    branch: branch
+                };
+                
+                // 设置请求头
+                const headers = new Headers();
+                headers.append('Authorization', `token ${token}`);
+                headers.append('Accept', 'application/vnd.github.v3+json');
+                headers.append('Content-Type', 'application/json');
+                
+                // 构建API URL
+                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(currentPath)}/${encodeURIComponent(name)}`;
+                
+                // 发送PUT请求创建文件
+                fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: headers,
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('文件上传失败: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    showStatus('文件上传成功', true);
+                    // 关闭模态框
+                    uploadModal.classList.remove('open');
+                    // 重新加载当前目录
+                    listRepositoryContents(currentPath);
+                })
+                .catch(error => {
+                    console.error('上传文件失败:', error);
+                    showStatus(`上传文件失败: ${error.message}`, false);
+                })
+                .finally(() => {
+                    confirmUploadBtn.innerHTML = '上传文件';
+                    confirmUploadBtn.disabled = false;
+                });
             });
             
             // 初始加载
