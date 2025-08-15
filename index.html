@@ -256,6 +256,12 @@
             color: var(--text);
         }
 
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
         .main-content {
             display: flex;
             min-height: 500px;
@@ -512,6 +518,11 @@
                 border-bottom: 1px solid var(--border);
                 max-height: 300px;
             }
+            
+            .btn-group {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -558,33 +569,6 @@
             flex: 1;
             word-break: break-all;
         }
-        
-        .pin-btn {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-        
-        .pin-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-        
-        .pin-btn i {
-            color: var(--warning);
-            font-size: 1.2rem;
-        }
     </style>
 </head>
 <body>
@@ -596,13 +580,7 @@
                     <i class="fas fa-folder-open logo-icon"></i>
                     <h1>GitHub 仓库浏览器</h1>
                 </div>
-                <button id="connectBtn" class="btn btn-primary">
-                    <i class="fas fa-plug"></i> 连接仓库
-                </button>
             </div>
-            <button id="pinBtn" class="pin-btn">
-                <i class="fas fa-thumbtack"></i>
-            </button>
         </header>
         
         <div class="pinned-repos">
@@ -650,6 +628,15 @@
                     <i class="fas fa-share-alt"></i>
                     <input type="text" id="branch" placeholder="默认分支（无需填写）">
                 </div>
+            </div>
+            
+            <div class="btn-group">
+                <button id="connectBtn" class="btn btn-primary">
+                    <i class="fas fa-plug"></i> 连接仓库
+                </button>
+                <button id="pinBtn" class="btn btn-warning">
+                    <i class="fas fa-thumbtack"></i> 置顶仓库
+                </button>
             </div>
         </div>
         
@@ -717,6 +704,7 @@
             const repoInput = document.getElementById('repo');
             const branchInput = document.getElementById('branch');
             const connectBtn = document.getElementById('connectBtn');
+            const pinBtn = document.getElementById('pinBtn');
             const statusBar = document.getElementById('statusBar');
             const breadcrumb = document.getElementById('breadcrumb');
             const fileList = document.getElementById('fileList');
@@ -730,7 +718,6 @@
             const imagePreview = document.getElementById('imagePreview');
             const fileTypeLabel = document.getElementById('fileTypeLabel');
             const viewMode = document.getElementById('viewMode');
-            const pinBtn = document.getElementById('pinBtn');
             const pinnedList = document.getElementById('pinnedList');
             
             let currentPath = '';
