@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub仓库管理器</title>
+    <title>GitHub仓库浏览器</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -67,17 +67,17 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo h1 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 600;
             color: var(--text);
         }
 
         .logo-icon {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--primary);
         }
 
@@ -115,24 +115,6 @@
             color: var(--text);
         }
 
-        .github-btn {
-            background: var(--github);
-            border-radius: 6px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            color: white;
-            font-weight: 500;
-        }
-
-        .github-btn:hover {
-            background: var(--github-light);
-        }
-
         .settings-btn:hover, .theme-toggle:hover {
             background: rgba(88, 166, 255, 0.1);
             border-color: var(--primary);
@@ -156,6 +138,53 @@
             overflow-y: auto;
         }
 
+        .repo-input {
+            margin-bottom: 20px;
+        }
+
+        .repo-input h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .repo-input-field {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .repo-input-field:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
+        }
+
+        .load-repo-btn {
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .load-repo-btn:hover {
+            background: var(--primary-light);
+        }
+
         .repo-info {
             display: flex;
             align-items: center;
@@ -166,15 +195,15 @@
         }
 
         .repo-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
         .repo-details h2 {
@@ -215,8 +244,8 @@
         }
 
         .file-icon {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -304,105 +333,33 @@
             color: var(--text);
         }
 
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 380px;
-            height: 100vh;
-            background: var(--card-bg);
-            border-left: 1px solid var(--border);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            transition: var(--transition);
-            z-index: 100;
-            overflow-y: auto;
-        }
-
-        .settings-panel.active {
-            right: 0;
-        }
-
-        .settings-header {
+        .empty-state {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .settings-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .close-settings {
-            font-size: 1.5rem;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
             color: var(--text);
-            cursor: pointer;
-            transition: var(--transition);
+            opacity: 0.7;
         }
 
-        .close-settings:hover {
-            color: var(--primary);
-        }
-
-        .github-section {
-            margin-bottom: 25px;
-        }
-
-        .github-section h3 {
-            font-size: 1.1rem;
+        .empty-state i {
+            font-size: 3rem;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: var(--primary);
+            opacity: 0.5;
         }
 
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
             font-weight: 500;
-            font-size: 0.9rem;
         }
 
-        .github-input {
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 0.95rem;
-            transition: var(--transition);
-        }
-
-        .github-input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
-        }
-
-        .save-config-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: var(--radius);
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .save-config-btn:hover {
-            background: var(--primary-light);
+        .empty-state p {
+            max-width: 500px;
+            margin-bottom: 20px;
         }
 
         .notification {
@@ -455,50 +412,90 @@
             color: var(--primary);
         }
 
-        .empty-state {
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            transition: var(--transition);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .settings-panel.active {
+            right: 0;
+        }
+
+        .settings-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px 20px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-settings {
+            font-size: 1.5rem;
             color: var(--text);
-            opacity: 0.7;
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
+        .close-settings:hover {
             color: var(--primary);
-            opacity: 0.5;
+            transform: scale(1.2);
         }
 
-        .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            font-weight: 500;
+        .github-section {
+            padding: 20px;
+            background: rgba(138, 108, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 25px;
         }
 
-        .empty-state p {
-            max-width: 500px;
-            margin-bottom: 20px;
+        .github-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+            margin: 8px 0 15px;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: var(--radius);
+        .github-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .save-config-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 50px;
             background: var(--primary);
             color: white;
             border: none;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 1rem;
         }
 
-        .btn:hover {
+        .save-config-btn:hover {
             background: var(--primary-light);
         }
 
@@ -535,6 +532,10 @@
                 flex: 1;
                 text-align: center;
             }
+            
+            .input-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -543,12 +544,9 @@
         <header>
             <div class="logo">
                 <i class="fab fa-github logo-icon"></i>
-                <h1>GitHub仓库管理器</h1>
+                <h1>GitHub仓库浏览器</h1>
             </div>
             <div class="controls">
-                <button class="github-btn" id="githubBtn">
-                    <i class="fab fa-github"></i> GitHub仓库
-                </button>
                 <button class="theme-toggle" id="themeToggle">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -560,13 +558,23 @@
 
         <main>
             <div class="sidebar">
-                <div class="repo-info">
+                <div class="repo-input">
+                    <h3>浏览GitHub仓库</h3>
+                    <div class="input-group">
+                        <input type="text" class="repo-input-field" id="repoInput" placeholder="owner/repo">
+                        <button class="load-repo-btn" id="loadRepoBtn">
+                            <i class="fas fa-search"></i> 加载
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="repo-info" id="repoInfo">
                     <div class="repo-avatar">
                         <i class="fas fa-folder"></i>
                     </div>
                     <div class="repo-details">
-                        <h2>omate-character-cards</h2>
-                        <p>main branch</p>
+                        <h2 id="repoName">仓库名称</h2>
+                        <p id="repoBranch">main分支</p>
                     </div>
                 </div>
                 
@@ -582,8 +590,8 @@
                         <button class="action-btn">
                             <i class="fas fa-download"></i> 下载
                         </button>
-                        <button class="action-btn primary">
-                            <i class="fas fa-save"></i> 保存
+                        <button class="action-btn">
+                            <i class="fas fa-code-branch"></i> 历史
                         </button>
                     </div>
                 </div>
@@ -606,20 +614,11 @@
         <div class="github-section">
             <h3><i class="fab fa-github"></i> GitHub 设置</h3>
             
-            <div class="form-group">
-                <label for="githubToken">GitHub Token</label>
-                <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
-            </div>
-            
-            <div class="form-group">
-                <label for="repoName">仓库名称</label>
-                <input type="text" id="repoName" class="github-input" placeholder="username/reponame">
-            </div>
-            
-            <div class="form-group">
-                <label for="branchName">分支名称</label>
-                <input type="text" id="branchName" class="github-input" placeholder="main" value="main">
-            </div>
+            <label for="githubToken">GitHub Token (可选)</label>
+            <input type="password" id="githubToken" class="github-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxx">
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: -10px; margin-bottom: 15px;">
+                提供Token可提高API请求限制
+            </p>
             
             <button class="save-config-btn" id="saveGitHubConfig">
                 保存配置
@@ -637,8 +636,7 @@
         const state = {
             currentTheme: localStorage.getItem('theme') || 'light',
             githubToken: localStorage.getItem('githubToken') || '',
-            repoName: localStorage.getItem('repoName') || '',
-            branchName: localStorage.getItem('branchName') || 'main',
+            currentRepo: null,
             currentFile: null,
             files: []
         };
@@ -649,8 +647,11 @@
             settingsBtn: document.getElementById('settingsBtn'),
             closeSettings: document.getElementById('closeSettings'),
             settingsPanel: document.getElementById('settingsPanel'),
-            githubBtn: document.getElementById('githubBtn'),
-            saveGitHubConfig: document.getElementById('saveGitHubConfig'),
+            loadRepoBtn: document.getElementById('loadRepoBtn'),
+            repoInput: document.getElementById('repoInput'),
+            repoInfo: document.getElementById('repoInfo'),
+            repoName: document.getElementById('repoName'),
+            repoBranch: document.getElementById('repoBranch'),
             fileBrowser: document.getElementById('fileBrowser'),
             contentArea: document.getElementById('contentArea'),
             contentTitle: document.getElementById('contentTitle'),
@@ -658,8 +659,7 @@
             notification: document.getElementById('notification'),
             notificationText: document.getElementById('notificationText'),
             githubToken: document.getElementById('githubToken'),
-            repoName: document.getElementById('repoName'),
-            branchName: document.getElementById('branchName')
+            saveGitHubConfig: document.getElementById('saveGitHubConfig')
         };
 
         // 初始化应用
@@ -667,7 +667,6 @@
             applyTheme();
             applyUIValues();
             setupEventListeners();
-            loadRepoFiles();
         }
 
         // 应用主题
@@ -684,27 +683,42 @@
         // 应用UI设置
         function applyUIValues() {
             elements.githubToken.value = state.githubToken;
-            elements.repoName.value = state.repoName;
-            elements.branchName.value = state.branchName;
         }
 
         // 加载仓库文件
         function loadRepoFiles() {
-            // 模拟从GitHub加载文件
-            state.files = [
-                { id: 'file1', name: 'cards.json', path: '/cards.json', type: 'file', content: '{\n  "cards": [\n    {\n      "id": "arc001",\n      "name": "赛博忍者",\n      "fileName": "cyber-ninja-card.png",\n      "filePath": "img/cyber-ninja-card.png",\n      "coverPath": "img/cyber-ninja.png",\n      "fileType": "png",\n      "uploadTime": "2025-03-17T13:27:28.477Z",\n      "gender": "male",\n      "intro": "融合了传统忍术和尖端科技的战士，在黑夜的城市中执行神秘任务。",\n      "personality": "冷静、神秘、高效，很少表露情感",\n      "stories": [\n        "在城市的地下世界执行机密任务",\n        "使用古老的忍术对抗现代科技",\n        "守护着人类与技术之间的平衡"\n      ]\n    },\n    {\n      "id": "arc002",\n      "name": "星界歌姬",\n      "fileName": "star-singer-card.png",\n      "filePath": "img/star-singer-card.png",\n      "coverPath": "img/star-singer.png",\n      "fileType": "png",\n      "uploadTime": "2025-04-22T09:15:42.120Z",\n      "gender": "female",\n      "intro": "拥有来自异次元的歌声，能用音乐影响现实世界的歌姬。",\n      "personality": "活泼、有创造力、情感丰富",\n      "stories": [\n        "举办星际巡回演唱会",\n        "用歌声化解文明间的冲突",\n        "探索神秘的音乐维度"\n      ]\n    }\n  ]\n}' },
-                { id: 'file2', name: 'README.md', path: '/README.md', type: 'file', content: '# Omate角色卡仓库\n\n这个仓库包含所有Omate平台的角色卡数据。\n\n## 结构\n\n- `cards.json`: 主要角色卡数据文件\n- `img/`: 角色卡图片目录\n- `covers/`: 封面图片目录\n\n## 使用\n\n1. 克隆本仓库\n2. 编辑`cards.json`文件添加新角色卡\n3. 将图片放入相应目录\n4. 提交更改并推送\n' },
-                { id: 'folder1', name: 'img', path: '/img', type: 'folder', content: '' },
-                { id: 'folder2', name: 'covers', path: '/covers', type: 'folder', content: '' },
-                { id: 'file3', name: 'config.json', path: '/config.json', type: 'file', content: '{\n  "appName": "Omate角色卡管理器",\n  "version": "1.0.0",\n  "defaultBranch": "main",\n  "maxFileSize": 5242880\n}' }
-            ];
-            
-            renderFileBrowser();
-            
-            // 默认选择第一个文件
-            if (state.files.length > 0) {
-                selectFile(state.files[0]);
+            const repo = elements.repoInput.value.trim();
+            if (!repo) {
+                showNotification('请输入仓库名称（格式：owner/repo）', 'error');
+                return;
             }
+            
+            state.currentRepo = repo;
+            elements.repoName.textContent = repo;
+            
+            showNotification(`正在加载 ${repo} 仓库...`, 'info');
+            
+            // 模拟加载延迟
+            setTimeout(() => {
+                // 模拟仓库文件结构
+                state.files = [
+                    { id: 'file1', name: 'README.md', path: '/README.md', type: 'file', content: '# GitHub仓库浏览器\n\n这是一个简单的GitHub仓库浏览器工具，允许您浏览仓库的文件结构并查看文件内容。\n\n## 功能\n\n- 浏览仓库文件结构\n- 查看文件内容\n- 支持亮色/暗色主题\n- 基本文件操作（下载）\n\n## 使用说明\n\n1. 在左侧输入仓库名称（格式：owner/repo）\n2. 点击"加载"按钮\n3. 浏览文件结构并点击文件查看内容\n' },
+                    { id: 'file2', name: 'LICENSE', path: '/LICENSE', type: 'file', content: 'MIT License\n\nCopyright (c) 2023 GitHub Browser\n\nPermission is hereby granted...' },
+                    { id: 'folder1', name: 'src', path: '/src', type: 'folder', content: '' },
+                    { id: 'folder2', name: 'docs', path: '/docs', type: 'folder', content: '' },
+                    { id: 'file3', name: 'package.json', path: '/package.json', type: 'file', content: '{\n  "name": "github-repo-browser",\n  "version": "1.0.0",\n  "description": "A simple GitHub repository browser",\n  "main": "index.js",\n  "scripts": {\n    "start": "node index.js"\n  },\n  "dependencies": {\n    "express": "^4.17.1"\n  }\n}' },
+                    { id: 'file4', name: 'index.js', path: '/index.js', type: 'file', content: 'const express = require(\'express\');\nconst app = express();\nconst port = 3000;\n\napp.get(\'/\', (req, res) => {\n  res.send(\'GitHub Repository Browser API\');\n});\n\napp.listen(port, () => {\n  console.log(`Server running at http://localhost:${port}`);\n});' }
+                ];
+                
+                renderFileBrowser();
+                
+                // 默认选择第一个文件
+                if (state.files.length > 0) {
+                    selectFile(state.files[0]);
+                }
+                
+                showNotification(`成功加载 ${repo} 仓库！`, 'success');
+            }, 1500);
         }
 
         // 渲染文件浏览器
@@ -727,7 +741,7 @@
                 fileEl.className = `file-item ${state.currentFile === file ? 'selected' : ''}`;
                 fileEl.innerHTML = `
                     <div class="file-icon">
-                        <i class="${file.type === 'folder' ? 'fas fa-folder' : 'fas fa-file-code'}"></i>
+                        <i class="${file.type === 'folder' ? 'fas fa-folder' : 'fas fa-file'}"></i>
                     </div>
                     <div>
                         <div class="file-name">${file.name}</div>
@@ -771,18 +785,9 @@
         // 保存GitHub配置
         function saveGitHubConfig() {
             state.githubToken = elements.githubToken.value;
-            state.repoName = elements.repoName.value;
-            state.branchName = elements.branchName.value;
-            
             localStorage.setItem('githubToken', state.githubToken);
-            localStorage.setItem('repoName', state.repoName);
-            localStorage.setItem('branchName', state.branchName);
-            
             showNotification('GitHub配置已保存！', 'success');
             elements.settingsPanel.classList.remove('active');
-            
-            // 重新加载仓库文件
-            loadRepoFiles();
         }
 
         // 切换主题
@@ -810,21 +815,14 @@
             // 保存GitHub配置
             elements.saveGitHubConfig.addEventListener('click', saveGitHubConfig);
             
-            // GitHub按钮
-            elements.githubBtn.addEventListener('click', () => {
-                if (!state.githubToken || !state.repoName) {
-                    showNotification('请先在设置中配置GitHub信息！', 'error');
-                    elements.settingsPanel.classList.add('active');
-                    return;
-                }
-                
-                showNotification('正在连接GitHub仓库...', 'info');
-                
-                // 模拟连接过程
-                setTimeout(() => {
-                    showNotification(`成功连接到 ${state.repoName} 仓库！`, 'success');
+            // 加载仓库
+            elements.loadRepoBtn.addEventListener('click', loadRepoFiles);
+            
+            // 支持回车键加载仓库
+            elements.repoInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
                     loadRepoFiles();
-                }, 1500);
+                }
             });
         }
 
