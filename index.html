@@ -711,111 +711,100 @@
             color: #2196F3;
         }
 
-        .github-modal {
+        .github-browser {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: var(--bg);
+            z-index: 1000;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            flex-direction: column;
+            transition: var(--transition);
         }
 
-        .github-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .github-modal-content {
+        .github-header {
+            padding: 20px;
             background: var(--card-bg);
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 500px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            transform: translateY(20px);
-            transition: all 0.4s ease;
             backdrop-filter: blur(var(--blur));
-        }
-
-        .github-modal.active .github-modal-content {
-            transform: translateY(0);
-        }
-
-        .github-modal-header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .github-modal-header h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .github-header h2 {
+            font-size: 1.8rem;
+            display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .github-modal-body {
-            margin-bottom: 25px;
-        }
-
-        .github-modal-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .modal-btn.primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .modal-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--text);
-            opacity: 0.7;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
+        .github-header i {
             color: var(--primary);
         }
 
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+        .repo-path {
+            padding: 10px 20px;
+            background: var(--glass);
+            border-bottom: 1px solid var(--glass);
+            font-family: monospace;
+            font-size: 1.1rem;
         }
 
-        .empty-state p {
-            margin-bottom: 25px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+        .file-browser {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
         }
 
-        .empty-state .btn {
+        .file-item {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .file-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .file-item i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .file-item.folder i {
+            color: var(--primary-light);
+        }
+
+        .file-item.file.selected {
+            background: rgba(138, 108, 255, 0.2);
+            border: 2px solid var(--primary);
+        }
+
+        .file-name {
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .file-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .open-file-btn {
             padding: 12px 25px;
             border-radius: 50px;
             background: var(--primary);
@@ -829,10 +818,14 @@
             gap: 8px;
         }
 
-        .empty-state .btn:hover {
+        .open-file-btn:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(138, 108, 255, 0.4);
+        }
+
+        .hidden {
+            display: none;
         }
 
         /* Animations */
@@ -864,6 +857,10 @@
             .image-upload {
                 flex-direction: column;
             }
+            
+            .file-browser {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
         }
 
         @media (max-width: 500px) {
@@ -881,11 +878,45 @@
                 flex: 1;
                 text-align: center;
             }
+            
+            .file-browser {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- GitHub文件浏览器视图 -->
+    <div class="github-browser" id="githubBrowser">
+        <div class="github-header">
+            <h2><i class="fab fa-github"></i> GitHub 仓库浏览器</h2>
+            <div class="controls">
+                <button class="theme-toggle" id="browserThemeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="settings-btn" id="browserSettingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="repo-path" id="repoPath">
+            /<span id="currentPath">仓库名称</span>
+        </div>
+        
+        <div class="file-browser" id="fileBrowser">
+            <!-- 文件夹和文件将通过JS动态生成 -->
+        </div>
+        
+        <div class="file-actions">
+            <button class="open-file-btn" id="openFileBtn">
+                <i class="fas fa-folder-open"></i> 打开选中的文件
+            </button>
+        </div>
+    </div>
+
+    <!-- 主应用视图 -->
+    <div class="container hidden" id="mainApp">
         <header>
             <div class="logo">
                 <i class="fas fa-ghost logo-icon"></i>
@@ -1040,10 +1071,6 @@
             <button class="save-config-btn" id="saveGitHubConfig">
                 保存配置
             </button>
-            
-            <button class="save-config-btn github-btn" id="loadRepoBtn">
-                <i class="fab fa-github"></i> 加载仓库数据
-            </button>
         </div>
         
         <div class="slider-group">
@@ -1080,31 +1107,6 @@
         <span id="notificationText">操作成功！</span>
     </div>
 
-    <div class="github-modal" id="githubModal">
-        <div class="github-modal-content">
-            <div class="github-modal-header">
-                <h3><i class="fab fa-github"></i> GitHub 仓库</h3>
-                <p>选择要打开的 cards.json 文件</p>
-            </div>
-            
-            <div class="github-modal-body">
-                <div class="form-group">
-                    <label for="filePathInput">文件路径:</label>
-                    <input type="text" id="filePathInput" class="github-input" placeholder="例如: /cards.json">
-                </div>
-            </div>
-            
-            <div class="github-modal-actions">
-                <button class="modal-btn" id="closeModalBtn">
-                    取消
-                </button>
-                <button class="modal-btn primary" id="openFileBtn">
-                    <i class="fas fa-folder-open"></i> 打开文件
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // 状态管理
         const state = {
@@ -1119,11 +1121,21 @@
             branchName: localStorage.getItem('branchName') || 'main',
             cardImage: null,
             coverImage: null,
-            cardsLoaded: false
+            cardsLoaded: false,
+            currentPath: '/',
+            selectedFile: null
         };
 
         // DOM元素引用
         const elements = {
+            githubBrowser: document.getElementById('githubBrowser'),
+            mainApp: document.getElementById('mainApp'),
+            repoPath: document.getElementById('repoPath'),
+            currentPath: document.getElementById('currentPath'),
+            fileBrowser: document.getElementById('fileBrowser'),
+            openFileBtn: document.getElementById('openFileBtn'),
+            browserThemeToggle: document.getElementById('browserThemeToggle'),
+            browserSettingsBtn: document.getElementById('browserSettingsBtn'),
             themeToggle: document.getElementById('themeToggle'),
             settingsBtn: document.getElementById('settingsBtn'),
             closeSettings: document.getElementById('closeSettings'),
@@ -1163,12 +1175,7 @@
             coverImageInput: document.getElementById('coverImageInput'),
             cardImagePreview: document.getElementById('cardImagePreview'),
             coverImagePreview: document.getElementById('coverImagePreview'),
-            editorTitle: document.getElementById('editorTitle'),
-            githubModal: document.getElementById('githubModal'),
-            filePathInput: document.getElementById('filePathInput'),
-            openFileBtn: document.getElementById('openFileBtn'),
-            closeModalBtn: document.getElementById('closeModalBtn'),
-            loadRepoBtn: document.getElementById('loadRepoBtn')
+            editorTitle: document.getElementById('editorTitle')
         };
 
         // 初始化应用
@@ -1176,19 +1183,7 @@
             applyTheme();
             applyUIValues();
             setupEventListeners();
-            checkInitialState();
-        }
-
-        // 检查初始状态
-        function checkInitialState() {
-            if (!state.githubToken || !state.repoName) {
-                // 如果没有配置GitHub信息，显示设置面板
-                elements.settingsPanel.classList.add('active');
-                showNotification('请先配置GitHub信息', 'info');
-            } else {
-                // 如果已配置GitHub信息，显示加载提示
-                showNotification('点击GitHub按钮加载仓库数据', 'info');
-            }
+            generateFileBrowser();
         }
 
         // 应用主题
@@ -1196,9 +1191,11 @@
             if (state.currentTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                elements.browserThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             } else {
                 document.documentElement.removeAttribute('data-theme');
                 elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                elements.browserThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
         }
 
@@ -1221,24 +1218,74 @@
             elements.branchName.value = state.branchName;
         }
 
-        // 加载GitHub数据
-        function loadFromGitHub() {
-            if (!state.githubToken || !state.repoName) {
-                showNotification('请先配置GitHub信息', 'error');
-                elements.settingsPanel.classList.add('active');
+        // 生成文件浏览器
+        function generateFileBrowser() {
+            elements.fileBrowser.innerHTML = '';
+            
+            // 模拟仓库文件结构
+            const folders = [
+                { name: 'img', type: 'folder' },
+                { name: 'covers', type: 'folder' },
+                { name: 'characters', type: 'folder' },
+                { name: 'data', type: 'folder' }
+            ];
+            
+            const files = [
+                { name: 'cards.json', type: 'file' },
+                { name: 'config.json', type: 'file' },
+                { name: 'README.md', type: 'file' }
+            ];
+            
+            // 添加文件夹
+            folders.forEach(folder => {
+                const folderEl = document.createElement('div');
+                folderEl.className = 'file-item folder';
+                folderEl.innerHTML = `
+                    <i class="fas fa-folder"></i>
+                    <div class="file-name">${folder.name}</div>
+                `;
+                folderEl.addEventListener('click', () => {
+                    state.currentPath += `${folder.name}/`;
+                    elements.currentPath.textContent = state.currentPath;
+                    generateFileBrowser();
+                });
+                elements.fileBrowser.appendChild(folderEl);
+            });
+            
+            // 添加文件
+            files.forEach(file => {
+                const fileEl = document.createElement('div');
+                fileEl.className = 'file-item file';
+                fileEl.innerHTML = `
+                    <i class="fas fa-file-code"></i>
+                    <div class="file-name">${file.name}</div>
+                `;
+                fileEl.addEventListener('click', () => {
+                    // 移除之前的选择
+                    document.querySelectorAll('.file-item.file').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    // 选中当前文件
+                    fileEl.classList.add('selected');
+                    state.selectedFile = file.name;
+                });
+                elements.fileBrowser.appendChild(fileEl);
+            });
+        }
+
+        // 打开选中的文件
+        function openSelectedFile() {
+            if (!state.selectedFile) {
+                showNotification('请先选择一个文件！', 'error');
                 return;
             }
             
-            // 显示GitHub文件选择模态框
-            elements.githubModal.classList.add('active');
-        }
-
-        // 打开GitHub文件
-        function openGitHubFile() {
-            const filePath = elements.filePathInput.value || '/cards.json';
+            if (state.selectedFile !== 'cards.json') {
+                showNotification('请选择cards.json文件！', 'error');
+                return;
+            }
             
-            // 模拟从GitHub加载数据
-            showNotification(`正在加载 ${filePath}...`, 'info');
+            showNotification('正在加载角色卡数据...', 'info');
             
             // 模拟加载延迟
             setTimeout(() => {
@@ -1277,6 +1324,23 @@
                             '用歌声化解文明间的冲突',
                             '探索神秘的音乐维度'
                         ]
+                    },
+                    {
+                        id: 'arc003',
+                        name: '机械智者',
+                        fileName: 'mech-sage-card.png',
+                        filePath: 'img/mech-sage-card.png',
+                        coverPath: 'img/mech-sage.png',
+                        fileType: 'png',
+                        uploadTime: new Date().toISOString(),
+                        gender: 'male',
+                        intro: '拥有超越人类智慧与机械精密性的合成体，思考宇宙之谜。',
+                        personality: '理性、深思、有耐心',
+                        stories: [
+                            '建造星系尺度的计算机',
+                            '研究宇宙的终极问题',
+                            '为不同的文明提供智慧解决方案'
+                        ]
                     }
                 ];
                 
@@ -1288,7 +1352,10 @@
                     selectCard(state.cards[0]);
                 }
                 
-                elements.githubModal.classList.remove('active');
+                // 切换到主应用视图
+                elements.githubBrowser.classList.add('hidden');
+                elements.mainApp.classList.remove('hidden');
+                
                 showNotification(`成功加载 ${state.cards.length} 张角色卡！`);
             }, 1500);
         }
@@ -1303,13 +1370,8 @@
                         <i class="fas fa-cloud-download-alt"></i>
                         <h3>未加载角色卡数据</h3>
                         <p>请先连接GitHub仓库并加载cards.json文件</p>
-                        <button class="btn" id="loadDataBtn">
-                            <i class="fab fa-github"></i> 加载GitHub数据
-                        </button>
                     </div>
                 `;
-                
-                document.getElementById('loadDataBtn').addEventListener('click', loadFromGitHub);
                 return;
             }
             
@@ -1674,9 +1736,14 @@
         function setupEventListeners() {
             // 主题切换
             elements.themeToggle.addEventListener('click', toggleTheme);
+            elements.browserThemeToggle.addEventListener('click', toggleTheme);
             
             // 设置面板
             elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsPanel.classList.add('active');
+            });
+            
+            elements.browserSettingsBtn.addEventListener('click', () => {
                 elements.settingsPanel.classList.add('active');
             });
             
@@ -1685,7 +1752,14 @@
             });
             
             // GitHub按钮
-            elements.githubBtn.addEventListener('click', loadFromGitHub);
+            elements.githubBtn.addEventListener('click', () => {
+                // 返回文件浏览器
+                elements.mainApp.classList.add('hidden');
+                elements.githubBrowser.classList.remove('hidden');
+            });
+            
+            // 打开文件按钮
+            elements.openFileBtn.addEventListener('click', openSelectedFile);
             
             // 新建卡片
             elements.newCardBtn.addEventListener('click', createNewCard);
@@ -1737,15 +1811,6 @@
             elements.coverImageInput.addEventListener('change', () => {
                 handleImageUpload(elements.coverImageInput, elements.coverImagePreview, 'cover');
             });
-            
-            // GitHub模态框事件
-            elements.openFileBtn.addEventListener('click', openGitHubFile);
-            elements.closeModalBtn.addEventListener('click', () => {
-                elements.githubModal.classList.remove('active');
-            });
-            
-            // 加载仓库数据按钮
-            elements.loadRepoBtn.addEventListener('click', loadFromGitHub);
         }
 
         // 初始化应用
