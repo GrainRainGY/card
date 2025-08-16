@@ -1,7 +1,0 @@
-{
-  "version": 1,
-  "include": ["/*"],
-  "exclude": [
-    "/tool/*"  // 对 /tool 路径禁用框架路由
-  ]
-}
