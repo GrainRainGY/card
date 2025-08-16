@@ -1,4 +1,0 @@
-# 将 /tool 和 /tool/ 都指向物理文件
-/tool/*  /tool/:splat  200
-/tool    /tool/index.html  200
-/tool/   /tool/index.html  200
