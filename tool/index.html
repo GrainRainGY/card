@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具集合网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        :root {
+            --primary: #2f81f7;
+            --primary-light: #58a6ff;
+            --secondary: #1f2328;
+            --text: #24292f;
+            --text-light: #57606a;
+            --bg-light: rgba(255, 255, 255, 0.85);
+            --bg-darker: rgba(245, 248, 250, 0.9);
+            --border: rgba(208, 215, 222, 0.5);
+            --success: #2da44e;
+            --warning: #d8d417;
+            --danger: #cf222e;
+            --folder: #ffc107;
+            --file: #17a2b8;
+            --image-bg: #f8f9fa;
+            --pinned-bg: rgba(255, 245, 158, 0.25);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-blur: 15px;
+            --theme: light;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text);
+            background-attachment: fixed;
+            transition: background 0.5s ease;
+        }
+
+        body.dark-theme {
+            background: linear-gradient(135deg, #0f1a3d, #1a5a58);
+            --text: #f0f6fc;
+            --text-light: #8b949e;
+            --bg-light: rgba(22, 27, 34, 0.85);
+            --bg-darker: rgba(13, 17, 23, 0.9);
+            --border: rgba(48, 54, 61, 0.5);
+            --glass-bg: rgba(22, 27, 34, 0.15);
+        }
+
+        .glass-container {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            background: linear-gradient(120deg, #1d3557, #457b9d);
+            padding: 25px 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2.8rem;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .github-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 8rem;
+            opacity: 0.1;
+            z-index: 1;
+            animation: spin 30s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .tools-container {
+            flex: 1;
+            padding: 30px;
+            background: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tools-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tools-title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tools-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .add-tool-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-tool-btn:hover {
+            background: #1c6bdb;
+            transform: translateY(-3px);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .tool-card {
+            background: var(--bg-darker);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-icon {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), #1859c9);
+            color: white;
+            font-size: 3rem;
+        }
+
+        .tool-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .tool-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .tool-link {
+            display: block;
+            padding: 10px 15px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tool-link:hover {
+            background: #1c6bdb;
+        }
+
+        .tool-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .tool-action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-action-btn.edit {
+            background: var(--warning);
+            color: var(--text);
+        }
+
+        .tool-action-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .tool-action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            flex: 1;
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 15px;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .settings-btn i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .status-bar {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+            background: rgba(47, 129, 247, 0.15);
+        }
+
+        .status-bar.success {
+            background: rgba(45, 164, 78, 0.15);
+            color: var(--success);
+        }
+
+        .status-bar.error {
+            background: rgba(207, 34, 46, 0.15);
+            color: var(--danger);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-darker);
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .tools-header {
+                flex-direction: column;
+            }
+            
+            .tools-title-container {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .add-tool-btn {
+                width: 100%;
+            }
+            
+            footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .settings-btn {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <i class="fas fa-tools github-icon"></i>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-toolbox logo-icon"></i>
+                    <h1>工具集合网站</h1>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="tools-container">
+                <div class="tools-header">
+                    <div class="tools-title-container">
+                        <h2 class="tools-title">我的工具集</h2>
+                        <button class="add-tool-btn" id="addToolBtn">
+                            <i class="fas fa-plus"></i> 添加工具
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tools-grid" id="toolsGrid">
+                    <!-- 工具卡片将在这里动态生成 -->
+                </div>
+                
+                <div id="statusBar" class="status-bar">
+                    状态信息将在这里显示
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="footer-content">
+                <p>© 2023 工具集合网站 | 收集您最常用的在线工具</p>
+            </div>
+            <button class="settings-btn">
+                <i class="fas fa-cog"></i>
+            </button>
+        </footer>
+    </div>
+    
+    <!-- 添加工具模态框 -->
+    <div class="modal" id="addToolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加新工具</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="toolName">工具名称</label>
+                    <input type="text" id="toolName" placeholder="输入工具名称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="toolUrl">工具网址</label>
+                    <input type="url" id="toolUrl" placeholder="https://example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="toolDescription">工具描述</label>
+                    <textarea id="toolDescription" placeholder="输入工具描述"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="toolIcon">图标</label>
+                    <select id="toolIcon" class="form-control">
+                        <option value="fa-globe">地球</option>
+                        <option value="fa-code">代码</option>
+                        <option value="fa-calculator">计算器</option>
+                        <option value="fa-chart-bar">图表</option>
+                        <option value="fa-image">图片</option>
+                        <option value="fa-video">视频</option>
+                        <option value="fa-music">音乐</option>
+                        <option value="fa-book">书籍</option>
+                        <option value="fa-gamepad">游戏</option>
+                        <option value="fa-shopping-cart">购物</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="saveToolBtn">保存工具</button>
+                    <button class="btn btn-secondary" id="cancelToolBtn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const addToolBtn = document.getElementById('addToolBtn');
+            const saveToolBtn = document.getElementById('saveToolBtn');
+            const toolsGrid = document.getElementById('toolsGrid');
+            const statusBar = document.getElementById('statusBar');
+            const addToolModal = document.getElementById('addToolModal');
+            const closeModal = document.getElementById('closeModal');
+            const cancelToolBtn = document.getElementById('cancelToolBtn');
+            const settingsBtn = document.querySelector('.settings-btn');
+            
+            // 从localStorage加载工具
+            function loadTools() {
+                const tools = JSON.parse(localStorage.getItem('tools') || '[]');
+                toolsGrid.innerHTML = '';
+                
+                if (tools.length === 0) {
+                    toolsGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-tools" style="font-size: 3rem; margin-bottom: 20px; color: var(--primary-light);"></i>
+                            <h3>暂无工具</h3>
+                            <p>点击"添加工具"按钮开始添加您的第一个工具</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                tools.forEach(tool => {
+                    const toolCard = document.createElement('div');
+                    toolCard.className = 'tool-card';
+                    toolCard.innerHTML = `
+                        <div class="tool-icon">
+                            <i class="fas ${tool.icon}"></i>
+                        </div>
+                        <div class="tool-content">
+                            <h3 class="tool-name">${tool.name}</h3>
+                            <p class="tool-description">${tool.description || '暂无描述'}</p>
+                            <a href="${tool.url}" class="tool-link" target="_blank">访问网站</a>
+                            <div class="tool-actions">
+                                <button class="tool-action-btn edit" data-id="${tool.id}">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </button>
+                                <button class="tool-action-btn delete" data-id="${tool.id}">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    toolsGrid.appendChild(toolCard);
+                });
+                
+                // 添加编辑和删除事件
+                document.querySelectorAll('.tool-action-btn.edit').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const toolId = this.dataset.id;
+                        editTool(toolId);
+                    });
+                });
+                
+                document.querySelectorAll('.tool-action-btn.delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const toolId = this.dataset.id;
+                        deleteTool(toolId);
+                    });
+                });
+            }
+            
+            // 添加新工具
+            function addTool() {
+                const name = document.getElementById('toolName').value;
+                const url = document.getElementById('toolUrl').value;
+                const description = document.getElementById('toolDescription').value;
+                const icon = document.getElementById('toolIcon').value;
+                
+                if (!name || !url) {
+                    showStatus('请填写工具名称和网址', false);
+                    return;
+                }
+                
+                const tools = JSON.parse(localStorage.getItem('tools') || '[]');
+                const newTool = {
+                    id: Date.now().toString(),
+                    name,
+                    url,
+                    description,
+                    icon
+                };
+                
+                tools.push(newTool);
+                localStorage.setItem('tools', JSON.stringify(tools));
+                
+                // 清空表单
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolUrl').value = '';
+                document.getElementById('toolDescription').value = '';
+                
+                loadTools();
+                showStatus('工具添加成功', true);
+                addToolModal.classList.remove('active');
+            }
+            
+            // 编辑工具
+            function editTool(toolId) {
+                const tools = JSON.parse(localStorage.getItem('tools') || '[]');
+                const tool = tools.find(t => t.id === toolId);
+                
+                if (tool) {
+                    document.getElementById('toolName').value = tool.name;
+                    document.getElementById('toolUrl').value = tool.url;
+                    document.getElementById('toolDescription').value = tool.description || '';
+                    document.getElementById('toolIcon').value = tool.icon;
+                    
+                    // 设置保存按钮的数据属性
+                    saveToolBtn.dataset.id = toolId;
+                    
+                    // 显示模态框
+                    addToolModal.classList.add('active');
+                }
+            }
+            
+            // 删除工具
+            function deleteTool(toolId) {
+                if (confirm('确定要删除这个工具吗？')) {
+                    const tools = JSON.parse(localStorage.getItem('tools') || '[]');
+                    const newTools = tools.filter(tool => tool.id !== toolId);
+                    localStorage.setItem('tools', JSON.stringify(newTools));
+                    loadTools();
+                    showStatus('工具已删除', true);
+                }
+            }
+            
+            // 保存编辑的工具
+            function saveEditedTool() {
+                const toolId = saveToolBtn.dataset.id;
+                const name = document.getElementById('toolName').value;
+                const url = document.getElementById('toolUrl').value;
+                const description = document.getElementById('toolDescription').value;
+                const icon = document.getElementById('toolIcon').value;
+                
+                if (!name || !url) {
+                    showStatus('请填写工具名称和网址', false);
+                    return;
+                }
+                
+                const tools = JSON.parse(localStorage.getItem('tools') || '[]');
+                const toolIndex = tools.findIndex(t => t.id === toolId);
+                
+                if (toolIndex !== -1) {
+                    tools[toolIndex] = {
+                        ...tools[toolIndex],
+                        name,
+                        url,
+                        description,
+                        icon
+                    };
+                    
+                    localStorage.setItem('tools', JSON.stringify(tools));
+                    loadTools();
+                    showStatus('工具更新成功', true);
+                    addToolModal.classList.remove('active');
+                }
+            }
+            
+            // 显示状态信息
+            function showStatus(message, isSuccess) {
+                statusBar.textContent = message;
+                statusBar.className = 'status-bar';
+                statusBar.classList.add(isSuccess ? 'success' : 'error');
+                statusBar.style.display = 'block';
+                
+                // 5秒后自动隐藏
+                setTimeout(() => {
+                    statusBar.style.display = 'none';
+                }, 5000);
+            }
+            
+            // 事件监听器
+            addToolBtn.addEventListener('click', function() {
+                // 清空表单
+                document.getElementById('toolName').value = '';
+                document.getElementById('toolUrl').value = '';
+                document.getElementById('toolDescription').value = '';
+                document.getElementById('toolIcon').value = 'fa-globe';
+                
+                // 移除保存按钮的data-id属性
+                if (saveToolBtn.hasAttribute('data-id')) {
+                    saveToolBtn.removeAttribute('data-id');
+                }
+                
+                // 显示模态框
+                addToolModal.classList.add('active');
+            });
+            
+            saveToolBtn.addEventListener('click', function() {
+                if (this.hasAttribute('data-id')) {
+                    saveEditedTool();
+                } else {
+                    addTool();
+                }
+            });
+            
+            closeModal.addEventListener('click', function() {
+                addToolModal.classList.remove('active');
+            });
+            
+            cancelToolBtn.addEventListener('click', function() {
+                addToolModal.classList.remove('active');
+            });
+            
+            // 点击模态框外部关闭
+            addToolModal.addEventListener('click', function(e) {
+                if (e.target === addToolModal) {
+                    addToolModal.classList.remove('active');
+                }
+            });
+            
+            // 设置按钮点击事件
+            settingsBtn.addEventListener('click', function() {
+                // 这里可以添加设置面板的逻辑
+                showStatus('设置功能正在开发中', false);
+            });
+            
+            // 初始化加载工具
+            loadTools();
+        });
+    </script>
+</body>
+</html>
