@@ -15,5 +15,13 @@ h1 {
 </head>
   <body>
     <h1>WCNM</h1>
+    <button>按钮</button>
+    <script>
+      let d = document.getElementsByTagName('button')[0]
+      let he = document.getElementsByTagName('h1')[0]
+      d.addEventListener('click', () => {
+        he.style.fontsize = '200px'
+      })
+    </script>
   </body>
 </html>
