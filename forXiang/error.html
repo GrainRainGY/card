@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="A new web page" />
+        <meta name="robots" content="index, follow" />
+        <link rel="icon" href="favicon.ico" />
+        <title>Document</title>
+        <style>
+            /* Minimal CSS Reset */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: system-ui, sans-serif;
+                background: #fafbfc;
+                color: #222;
+                min-height: 100vh;
+                line-height: 1.6;
+            }
+            h2 {
+                margin: 20px 10px;
+            }
+            p {
+                margin: 0 10px;
+            }
+            .refresh {
+                background-color: lightgrey;
+                border: none;
+                border-radius: 2px;
+                width: 40px;
+                height: 40px;
+                display: block;
+                margin: 20px auto;
+                transition: all 0.3s;
+            }
+            .refresh:hover {
+                background-color: grey;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>哦不!看起来有些地方出错了</h2>
+        <p>Error Code:Error10110110</p>
+        <button class="refresh">刷新</button>
+        <script>
+            let refreshbtn = document.getElementsByClassName("refresh")[0];
+
+            refreshbtn.addEventListener("click", function () {
+                window.location.href = "./prise.html";
+            });
+        </script>
+    </body>
+</html>

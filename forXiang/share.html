@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>来自TangisHandsome的分享 白云网盘</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Microsoft YaHei", sans-serif;
+            }
+
+            body {
+                background-color: #f5f7fa;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 400px;
+                padding: 30px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+
+            .logo {
+                font-size: 28px;
+                color: #2d7ff9;
+                margin-bottom: 25px;
+                font-weight: bold;
+            }
+
+            .title {
+                font-size: 18px;
+                color: #333;
+                margin-bottom: 20px;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+            }
+
+            #extract-code {
+                width: 100%;
+                height: 45px;
+                padding: 0 15px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 16px;
+                outline: none;
+            }
+
+            #extract-code:focus {
+                border-color: #2d7ff9;
+            }
+
+            .submit-btn {
+                width: 100%;
+                height: 45px;
+                background-color: #2d7ff9;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .submit-btn:hover {
+                background-color: #1f6fe8;
+            }
+            .tips {
+             margin-top: 15px;
+             font-size: 12px;
+             color: #999;
+
+            .notification {
+                transition: all 0.3s;
+                transform: translateY(-120%);
+                padding: 0 20px 0;
+                text-align: center;
+                line-height: 45px;
+                position: absolute;
+                top: 0;
+                display: block;
+                background-color: #fff;
+                height: 45px;
+                border: none;
+                border-radius: 4px;
+                box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.111);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">白云网盘</div>
+            <div class="title">该分享需要输入提取码才能访问</div>
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="extract-code"
+                    placeholder="请输入提取码"
+                />
+            </div>
+            <button class="submit-btn" id="submit-btn">立即验证</button>
+            <div class="tips">提示:密码为数字, 而且它在某个错误的地方</div>
+        </div>
+        <div class="notification"></div>
+
+        <script>
+            console.log(
+                document.getElementsByClassName("notification")[0].textContent
+            );
+            // 点击验证按钮的模拟提示
+            document
+                .getElementById("submit-btn")
+                .addEventListener("click", function () {
+                    const code = document
+                        .getElementById("extract-code")
+                        .value.trim();
+                    if (code === "10110110") {
+                        window.location.href = "./download.html";
+                        return;
+                    } else if (code === "") {
+                        document.getElementsByClassName(
+                            "notification"
+                        )[0].style.transform = "translateY(25%)";
+                        document.getElementsByClassName(
+                            "notification"
+                        )[0].textContent = "请输入提取码";
+                        setTimeout(() => {
+                            document.getElementsByClassName(
+                                "notification"
+                            )[0].style.transform = "translateY(-120%)";
+                        }, 1500);
+                    } else {
+                        document.getElementsByClassName(
+                            "notification"
+                        )[0].style.transform = "translateY(25%)";
+                        document.getElementsByClassName(
+                            "notification"
+                        )[0].textContent = "提取码错误";
+                        setTimeout(() => {
+                            document.getElementsByClassName(
+                                "notification"
+                            )[0].style.transform = "translateY(-120%)";
+                        }, 1500);
+                    }
+                });
+        </script>
+    </body>
+</html>
