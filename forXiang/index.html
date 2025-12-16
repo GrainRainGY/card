@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="A new web page" />
+        <meta name="robots" content="index, follow" />
+        <link rel="icon" href="favicon.ico" />
+        <title>Document</title>
+        <style>
+            /* Minimal CSS Reset */
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            li {
+                list-style: none;
+            }
+
+            body {
+                font-family: system-ui, sans-serif;
+                background: #fafbfc;
+                color: #222;
+                min-height: 100vh;
+                line-height: 1.6;
+            }
+
+            body {
+                background-color: rgb(130, 195, 224);
+            }
+
+            .title {
+                margin: 10px auto 0;
+                background: white;
+                width: 80%;
+                border-radius: 20px;
+                text-align: center;
+                font-size: 30px;
+                font-weight: 700;
+            }
+
+            .login {
+                margin: 10px auto 0;
+                background: white;
+                width: 80%;
+                border-radius: 20px;
+            }
+
+            .input {
+                padding: 10px 10px 10px;
+                position: relative;
+            }
+
+            input {
+                background-color: rgb(130, 195, 224);
+                width: 200px;
+                height: 30px;
+                border: none;
+                border-radius: 10px;
+                box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.138);
+                display: block;
+                margin: 0 auto;
+                padding: 0 10px;
+            }
+
+            label {
+                display: block;
+                text-align: center;
+            }
+
+            .loginbtn {
+                background-color: rgb(130, 195, 224);
+                border: none;
+                border-radius: 10px;
+                box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.138);
+                display: block;
+                margin: 10px auto;
+                width: 60px;
+                height: 30px;
+                transition: all 0.3s;
+            }
+
+            .loginbtn:hover {
+                background-color: rgb(98, 165, 195);
+            }
+            .cover {
+                visibility: hidden;
+                display: block;
+                background-color: rgb(130, 195, 224);
+                width: 100%;
+                height: 100%;
+                z-index: 10;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            p {
+                font-size: 30px;
+                font-weight: 700;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="title">登陆</div>
+        <div class="login">
+            <ul class="input">
+                <li>
+                    <label>你的名字</label
+                    ><input type="text" class="xiangname" />
+                </li>
+                <li>
+                    <label
+                        >你的生日<input
+                            type="text"
+                            class="xiangbirth"
+                            placeholder="格式:月/日(阿拉伯数字)"
+                    /></label>
+                </li>
+                <li>
+                    <label>邀请码(我的生日)</label
+                    ><input
+                        type="text"
+                        class="mybirth"
+                        placeholder="格式:月/日(阿拉伯数字)"
+                    />
+                </li>
+                <li><button class="loginbtn">登陆</button></li>
+            </ul>
+        </div>
+        <div class="cover"><p>跳转中...</p></div>
+        <script>
+            let xiangname = document.getElementsByClassName("xiangname")[0];
+            let xiangbirth = document.getElementsByClassName("xiangbirth")[0];
+            let mybirth = document.getElementsByClassName("mybirth")[0];
+            let loginbtn = document.getElementsByClassName("loginbtn")[0];
+            let cover = document.getElementsByClassName("cover")[0];
+
+            loginbtn.addEventListener("click", () => {
+                if (
+                    (xiangname.value === "项惠美" &&
+                        xiangbirth.value === "12/17" &&
+                        mybirth.value === "10/8") ||
+                    mybirth.value === "10/08"
+                ) {
+                    alert("恭喜您,中大奖了!");
+                    cover.style.visibility = "visible";
+                    window.location.href = "./error.html";
+                } else {
+                    alert("是不是哪里错了");
+                    window.location.href = "./error.html";
+                }
+            });
+        </script>
+    </body>
+</html>
